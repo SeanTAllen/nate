@@ -1,0 +1,8 @@
+The Mockito library is used for Mocking and Stugging in Tests.
+http://mockito.googlecode.com/svn/tags/latest/javadoc/org/mockito/Mockito.html
+
+My approach to test classes is to create a test class that represents the context being tested,
+not just one test class per non-test class. This means the class is more specific to the 
+items being tested, and hopefully more readable/meaningful.
+
+
