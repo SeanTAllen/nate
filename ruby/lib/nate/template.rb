@@ -3,6 +3,8 @@ require 'nokogiri'
 
 module Nate
   class Template
+    CONTENT_ATTRIBUTE = 'content'
+    
     def initialize html
       @html = html
     end
@@ -33,7 +35,11 @@ module Nate
           }
         else
           values.each { | attribute, value |
-            transform_attribute( node, attribute, value )
+            unless attribute == CONTENT_ATTRIBUTE
+              transform_attribute( node, attribute, value )
+            else
+              transform_node( node, value)
+            end
           }
         end
     end
