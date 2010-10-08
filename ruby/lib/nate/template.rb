@@ -43,7 +43,7 @@ module Nate
     end
     
     def transform_node node, value
-      node.content = value
+      node.content = value unless value.nil?
     end
   end
 end

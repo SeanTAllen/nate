@@ -8,7 +8,12 @@ Feature:
     Given the plain HTML fragment "<ul><li></li></ul>"
       When {} is injected
       Then the plain HTML fragment is <ul><li></li></ul>
-      
+ 
+  Scenario: nil value shouldn't modify matched element
+    Given the plain HTML fragment "<h1>Header</h1>"
+      When { 'h1' => nil } is injected
+      Then the plain HTML fragment is <h1>Header</h1>
+            
   Scenario Outline: match and inject a single data value
     Given the plain HTML fragment "<div class='section'><span class='content'></span></div>"
      When <data> is injected
