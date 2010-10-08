@@ -20,6 +20,6 @@ Feature:
      Then the plain HTML fragment is <transformed>
     
     Examples:
-      | data                             | transformed                                                             |
+      | data                             | transformed                                                           |
       | {'.section' => 'Hello Section' } | <div class="section">Hello Section</div>                              |
       | {'.content' => 'Hello Content'}  | <div class="section"><span class="content">Hello Content</span></div> |
