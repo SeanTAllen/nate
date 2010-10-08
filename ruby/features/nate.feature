@@ -4,6 +4,11 @@ Feature:
  In order to keep the HTML free from logic
  I want 'nate' to transform plain HTML based on data I supply
 
+  Scenario: empty data results in no change to the html
+    Given the plain HTML fragment "<ul><li></li></ul>"
+      When {} is injected
+      Then the plain HTML fragment is <ul><li></li></ul>
+      
   Scenario Outline: match and inject a single data value
     Given the plain HTML fragment "<div class='section'><span class='content'></span></div>"
      When <data> is injected
