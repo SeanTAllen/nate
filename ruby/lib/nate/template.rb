@@ -18,7 +18,7 @@ module Nate
          end
         }
       }
-      return parsed.to_s.gsub /\n/, ''
+      return parsed.to_html
     end
     
     private

@@ -7,5 +7,5 @@ When /^(.*) is injected$/ do | data|
 end
 
 Then /^the plain HTML fragment is (.*)$/ do |expected_html|
-  @transformed_html.should == expected_html
+  Lorax::Signature.new( Nokogiri::HTML(@transformed_html).root ).signature.should == Lorax::Signature.new( Nokogiri::HTML(expected_html).root ).signature
 end
