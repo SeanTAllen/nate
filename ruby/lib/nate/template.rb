@@ -10,7 +10,7 @@ module Nate
     end
     
     def inject_with data
-      nokogiri_fragment = transform( Nokogiri::HTML.fragment( @html ), data )
+      nokogiri_fragment = transform( Nokogiri::HTML.fragment( template_to_html ), data )
       nokogiri_fragment.to_html
     end
     
@@ -64,6 +64,10 @@ module Nate
     
     def contains_attributes( node, values )
       values.keys.any? { | key | node[ key ].nil? == false }
+    end
+    
+    def template_to_html
+      raise "My subclass needs to implement template_to_html"
     end
   end
 end
