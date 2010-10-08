@@ -20,7 +20,7 @@ Feature:
       Then the plain HTML fragment is <transformed>
       
     Examples:
-      | data                             | transformed                                                           |
+      | data                                          | transformed                                             |
       | {'.section' => [ 'Section 1', 'Section 2' ] } | <div class="section">Section 1</div><div class="section">Section 2</div>                                |
       | {'.content' => [ 'Content 1', 'Content 2' ]}  | <div class="section"><span class="content">Content 1</span><span class="content">Content 2</span></div> |
 
