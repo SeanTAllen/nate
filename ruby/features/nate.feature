@@ -35,7 +35,7 @@ Feature:
       Then the plain HTML fragment is <transformed>
     
     Examples:
-      | data                                     | transformed |
+      | data                                         | transformed |
       | { '.section' => { '.greeting' => 'Hello' } } | <div class="section"><span class="greeting">Hello</span></div> |
       | { '.section' => { 'span' => 'Hello' } }      | <div class="section"><span class="greeting">Hello</span></div> |
 
