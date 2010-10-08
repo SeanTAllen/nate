@@ -58,6 +58,11 @@ Feature:
     Given the plain HTML fragment "<a href='#'>my link</a>"
       When { 'a' => { 'href' => 'http://www.example.com' } } is injected
       Then the plain HTML fragment is <a href="http://www.example.com">my link</a>
+
+  Scenario: non-existent attributes on an element should be ignored
+    Given the plain HTML fragment "<h1>Header</h1>"
+      When { 'a' => { 'style' => 'http://www.example.com' } } is injected
+      Then the plain HTML fragment is <h1>Header</h1>
       
   Scenario: when doing an attribute match, special 'content' attribute should change the inner_html
     Given the plain HTML fragment "<a href='#'>my link</a>"
