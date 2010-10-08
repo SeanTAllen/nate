@@ -53,4 +53,9 @@ Feature:
       | data                                                                           | transformed |
       | { '.section' => [ { '.greeting' => 'Hello' }, { '.greeting' => 'Goodbye' } ] } | <div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div> |
       | { '.section' => [ { 'span' => 'Hello' }, { 'span' => 'Goodbye' } ] }           | <div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div> |
+      
+  Scenario: match and inject data into element attributes
+    Given the plain HTML fragment "<a href='#'>my link</a>"
+      When { 'a' => { 'href' => 'http://www.example.com' } } is injected
+      Then the plain HTML fragment is <a href="http://www.example.com">my link</a>
 

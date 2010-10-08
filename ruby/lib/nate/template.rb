@@ -8,7 +8,7 @@ module Nate
     end
     
     def inject_with data
-      nokogiri_fragment = transform Nokogiri::HTML.fragment( @html ), data
+      nokogiri_fragment = transform( Nokogiri::HTML.fragment( @html ), data )
       nokogiri_fragment.to_html
     end
     
@@ -25,11 +25,17 @@ module Nate
     end
     
     def transform_hash( node, values)
-      values.each { | selector, value |
-        node.css( selector.to_s).each { | subnode |
-            transform( subnode, value )
+      unless contains_attributes( node, values)
+        values.each { | selector, value |
+          node.css( selector.to_s).each { | subnode |
+              transform( subnode, value )
+            }
           }
-        }
+        else
+          values.each { | attribute, value |
+            transform_attribute( node, attribute, value )
+          }
+        end
     end
     
     def transform_list( node, values )
@@ -42,8 +48,16 @@ module Nate
       node.replace( nodes.join )
     end
     
-    def transform_node node, value
+    def transform_node( node, value )
       node.content = value unless value.nil?
+    end
+    
+    def transform_attribute( node, attribute, value )
+      node[ attribute ] = value
+    end
+    
+    def contains_attributes( node, values )
+      values.keys.any? { | key | node[ key ].nil? == false }
     end
   end
 end
