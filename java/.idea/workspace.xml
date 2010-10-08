@@ -60,10 +60,10 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="NateSteps.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="NateSteps.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/org/nate/NateSteps.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="36" selection-start="209" selection-end="209" vertical-scroll-proportion="0.20166074">
+            <state line="10" column="36" selection-start="209" selection-end="209" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -71,10 +71,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="nate.feature" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="nate.feature" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/features/nate.feature">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="0" selection-start="536" selection-end="536" vertical-scroll-proportion="0.0">
+            <state line="14" column="0" selection-start="536" selection-end="536" vertical-scroll-proportion="0.2874396">
               <folding />
             </state>
           </provider>
@@ -133,8 +133,8 @@
       <showLibraryContents />
       <hideEmptyPackages />
       <abbreviatePackageNames />
-      <autoscrollToSource />
-      <autoscrollFromSource />
+      <autoscrollToSource ProjectPane="true" />
+      <autoscrollFromSource ProjectPane="true" />
       <sortByType />
     </navigator>
     <panes>
@@ -212,6 +212,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="features" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -470,19 +484,19 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/features/nate.feature">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="0" selection-start="536" selection-end="536" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/org/nate/NateSteps.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="36" selection-start="209" selection-end="209" vertical-scroll-proportion="0.20166074">
+        <state line="10" column="36" selection-start="209" selection-end="209" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/nate.feature">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="0" selection-start="536" selection-end="536" vertical-scroll-proportion="0.2874396">
+          <folding />
         </state>
       </provider>
     </entry>

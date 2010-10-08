@@ -10,6 +10,6 @@ Feature:
     Then the plain HTML fragment is <transformed>
 
    Examples:
-     | data                                              | transformed |
-     | "{'.character' => 'Leonard'}"                     | '<ul><li class="character">Leonard</li></ul>' |
-     | "{'.character' => ['Leonard','Sheldon','Penny']}" | '<ul><li class="character">Leonard</li><li class="character">Sheldon</li><li class="character">Penny</li></ul>' |
+     | data                                            | transformed |
+     | {'.character' => 'Leonard'}                     | <ul><li class="character">Leonard</li></ul> |
+     | {'.character' => ['Leonard','Sheldon','Penny']} | <ul><li class="character">Leonard</li><li class="character">Sheldon</li><li class="character">Penny</li></ul> |
