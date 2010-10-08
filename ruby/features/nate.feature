@@ -13,6 +13,11 @@ Feature:
     Given the plain HTML fragment "<h1>Header</h1>"
       When { 'h1' => nil } is injected
       Then the plain HTML fragment is <h1>Header</h1>
+  
+  Scenario: unmatched selectors result in no change to the html
+    Given the plain HTML fragment "<h1>Header</h1>"
+      When { 'h2' => 'Monkey' } is injected
+      Then the plain HTML fragment is <h1>Header</h1>
             
   Scenario Outline: match and inject a single data value
     Given the plain HTML fragment "<div class='section'><span class='content'></span></div>"
