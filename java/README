@@ -1,0 +1,27 @@
+
+To build:
+
+mvn -Dcucumber.installGems=true cuke4duke:cucumber
+mvn clean install
+
+To run Tests:
+
+mvn integration-test
+
+To run Cucumber (without recompiling):
+
+mvn cuke4duke:cucumber
+
+Note: I had problems getting cuke4duke installed ok ....
+
+Missing:
+----------
+1) cuke4duke:cuke4duke:jar:0.4.3
+
+  Try downloading the file manually from the project website.
+
+  Then, install it using the command: 
+      mvn install:install-file -DgroupId=cuke4duke -DartifactId=cuke4duke -Dversion=0.4.3 -Dpackaging=jar -Dfile=/path/to/file
+
+So I built the sources and installed it manuall using the command above.
+
