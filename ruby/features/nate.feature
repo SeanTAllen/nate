@@ -74,7 +74,12 @@ Feature:
       When { 'a' => { 'href' => 'http://www.example.com', 'content' => 'example.com' } } is injected
       Then the plain HTML fragment is <a href="http://www.example.com">example.com</a>
       
-  Scenario: matches on multiple items should inject into all matches
+  Scenario Outline: matches on multiple items should inject into all matches
     Given the plain HTML fragment "<h1>First Header</h1><h2>Second Header</h2><h1>Third Header</h1>"
-      When { 'h1' => 'New Header' } is injected
-      Then the plain HTML fragment is <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1>
+      When <data> is injected
+      Then the plain HTML fragment is <transformed>
+
+    Examples:
+      | data                             | transformed |
+      | { 'h1' => 'New Header' }         | <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1> |
+      | { 'h1' => [ 'Hello', 'There' ] } | <h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1> |
