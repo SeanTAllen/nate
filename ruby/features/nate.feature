@@ -38,4 +38,14 @@ Feature:
       | data                                         | transformed |
       | { '.section' => { '.greeting' => 'Hello' } } | <div class="section"><span class="greeting">Hello</span></div> |
       | { '.section' => { 'span' => 'Hello' } }      | <div class="section"><span class="greeting">Hello</span></div> |
+      
+  Scenario Outline: match and inject multiple data values into a subselection of matched html
+    Given the plain HTML fragment "<div class='section'><span class='greeting'></span></div>"
+      When <data> is injected
+      Then the plain HTML fragment is <transformed>
+      
+    Examples:
+      | data                                                                           | transformed |
+      | { '.section' => [ { '.greeting' => 'Hello' }, { '.greeting' => 'Goodbye' } ] } | <div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div> |
+      | { '.section' => [ { 'span' => 'Hello' }, { 'span' => 'Goodbye' } ] }           | <div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div> |
 
