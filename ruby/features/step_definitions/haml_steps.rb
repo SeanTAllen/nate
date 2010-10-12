@@ -1,3 +1,3 @@
 Given /^the Haml fragment "([^"]*)"$/ do |haml|
-  @nate = Nate::HamlTemplate.new haml
+  @nate = Nate::HamlEngine.new haml
 end

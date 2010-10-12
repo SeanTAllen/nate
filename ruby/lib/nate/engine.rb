@@ -2,15 +2,15 @@ require 'rubygems'
 require 'nokogiri'
 
 module Nate
-  class Template
+  class Engine
     CONTENT_ATTRIBUTE = 'content'
 
-    def initialize html
-      @html = html
+    def initialize template
+      @template = template
     end
 
     def inject_with data
-      nokogiri_fragment = transform( Nokogiri::HTML.fragment( template_to_html ), data )
+      nokogiri_fragment = transform( Nokogiri::HTML.fragment( encode_template() ), data )
       nokogiri_fragment.to_html
     end
 
@@ -66,8 +66,8 @@ module Nate
       values.keys.any? { | key | node[ key ].nil? == false }
     end
 
-    def template_to_html
-      raise "My subclass needs to implement template_to_html"
+    def encode_template
+      raise "My subclass needs to implement encode_template"
     end
   end
 end

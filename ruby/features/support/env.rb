@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../../lib')
 
 require 'nate'
-require 'nate/haml_template'
+require 'nate/haml_engine'
 
 require 'rubygems'
 require 'haml'

@@ -1,1 +1,1 @@
-require 'nate/html_template'
+require 'nate/html_engine'
