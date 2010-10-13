@@ -81,7 +81,7 @@ Feature:
       
   Scenario: when doing an attribute match, special 'content' attribute should change the inner_html
     Given the plain HTML fragment "<a href='#'>my link</a>"
-      When { 'a' => { 'href' => 'http://www.example.com', 'content' => 'example.com' } } is injected
+      When { 'a' => { 'href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
       Then the plain HTML fragment is <a href="http://www.example.com">example.com</a>
       
   Scenario Outline: matches on multiple items should inject into all matches

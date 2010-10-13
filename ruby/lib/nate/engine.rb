@@ -3,7 +3,7 @@ require 'nokogiri'
 
 module Nate
   class Engine
-    CONTENT_ATTRIBUTE = 'content'
+    CONTENT_ATTRIBUTE = '*content*'
 
     def initialize template
       @template = template
