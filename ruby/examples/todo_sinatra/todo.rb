@@ -26,10 +26,16 @@ DataMapper.auto_migrate!
 # helpers
 
 def todo_list
-  todos = ToDo.all( :complete => false ).collect { |todo| todo.title }
-  todos = nil if todos.empty?
   template = Nate::Engine.from_file 'list.html'
-  template.inject_with( { '.todo' => todos } )
+  todos = ToDo.all( :complete => false )
+  unless todos.empty?
+    data = todos.collect do |todo|
+      { '.title' => todo.title, 'input[name=id]' => { 'value' => todo.id }}
+    end 
+  else
+    data = 'Nothing to do right now'
+  end
+  template.inject_with( { '.todo' => data } )
 end
 
 # controllers
@@ -44,5 +50,11 @@ end
 
 post '/add' do
   ToDo.create( :title => params[:title], :created_at => Time.now )
+  redirect '/'
+end
+
+post '/finished' do
+  todo = ToDo.get( params[:id] )
+  todo.update( :complete => true )
   redirect '/'
 end

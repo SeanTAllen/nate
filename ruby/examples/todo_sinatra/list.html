@@ -1,9 +1,17 @@
-<p>
-  <h2>Here is what you have to do today:</h2>
-</p>
-<p>
-  <ol><li class="todo">Nothing to do - go have fun</li></ol>
-</p>
+<h2>Here is what you have to do today:</h2>
+
+<table>
+  <tr class="todo">
+    <td class="title"></td>
+    <td>
+      <form method="post" action="/finished">
+        <input type="hidden" name="id" value="">
+        <input type="submit" value="Completed">
+      </form>
+    </td>
+  </tr>
+</table>
+
 <p>
   <a href="/new">Add New To Do</a>
 </p>
