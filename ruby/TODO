@@ -1,0 +1,11 @@
+Added larger scale examples rather than just the simple ones we have on github wiki
+
+Add support for instantiating with file rather than string.
+
+Update Jeweler gemspec configuration to take into account required minimum version for dependencies.
+
+Refactor transform_list in Nate::Engine
+
+Add specs once we are a bit more settled.
+
+Document nokogiri related gotchas in terms of inconsistent case (in)sensitive selector handling.
