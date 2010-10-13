@@ -6,5 +6,5 @@ Feature:
   Scenario: Haml content should work with nate
     Given the Haml fragment "%strong{:class => 'code', :id => 'message'} Hello, World!"
       When { 'strong' => 'Goodbye, World!' } is injected
-      Then the plain HTML fragment is <strong class="code" id="message">Goodbye, World!</strong>
+      Then the HTML fragment is <strong class="code" id="message">Goodbye, World!</strong>
       
