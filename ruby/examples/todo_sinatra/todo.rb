@@ -26,8 +26,10 @@ DataMapper.auto_migrate!
 # helpers
 
 def todo_list
+  todos = ToDo.all( :complete => false ).collect { |todo| todo.title }
+  todos = nil if todos.empty?
   template = Nate::Engine.new( (File.new 'list.html').read )
-  template.inject_with( { '.todo' => ToDo.all( :complete => false ).collect { |todo| todo.title } } )
+  template.inject_with( { '.todo' => todos } )
 end
 
 # controllers
