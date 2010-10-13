@@ -1,7 +1,5 @@
-require 'nate/engine'
-
 module Nate
-  class HTMLEngine < Engine
+  class Engine
     private
     def encode_template
       @template

@@ -1,5 +1,5 @@
 Given /^the plain HTML fragment "([^"]*)"$/ do |html|
-  @nate = Nate::HTMLEngine.new html
+  @nate = Nate::Engine.new html, :html
 end
 
 When /^(.*) is injected$/ do | data|
