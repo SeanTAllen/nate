@@ -5,6 +5,22 @@ module Nate
   class Engine
     CONTENT_ATTRIBUTE = '*content*'
 
+    def self.from_string source, encoder_type = :html
+      self.new source, encoder_type
+    end
+    
+    def self.from_file path
+      case path
+      when /\.html/
+        encoder_type = :html
+      when /\.hml/
+        encoder_type = :haml
+      else
+        raise "Unsupported file type"
+      end
+      self.new File.new( path ).read, encoder_type
+    end
+    
     def initialize source, encoder_type = :html
       @template = source
       case encoder_type

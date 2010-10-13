@@ -93,3 +93,8 @@ Feature:
       | data                             | transformed |
       | { 'h1' => 'New Header' }         | <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1> |
       | { 'h1' => [ 'Hello', 'There' ] } | <h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1> |
+      
+  Scenario: use a file rather than a string as source input
+    Given the file "features/support/file.html"
+      When { 'h1' => 'Monkey in a file' } is injected
+      Then the HTML fragment is <h1>Monkey in a file</h1>

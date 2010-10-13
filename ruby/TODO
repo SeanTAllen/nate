@@ -1,6 +1,6 @@
 Added larger scale examples rather than just the simple ones we have on github wiki
 
-Add support for instantiating with file rather than string.
+Review design for instantiating with file rather than string with James.
 
 Update Jeweler gemspec configuration to take into account required minimum version for dependencies.
 
