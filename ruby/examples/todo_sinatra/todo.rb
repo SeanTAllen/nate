@@ -30,7 +30,7 @@ def todo_list
   todos = ToDo.all( :complete => false )
   unless todos.empty?
     todo_data = todos.collect do |todo|
-      { '.title' => todo.title, 'input[name=id]' => { 'value' => todo.id }}
+      { '.title' => todo.title, 'input[@name=id]' => { 'value' => todo.id }}
     end 
     data = { '.todo' => todo_data }
   else

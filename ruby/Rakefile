@@ -12,7 +12,7 @@ begin
     s.homepage = 'http://github.com/jamesladd/nate/tree/master/ruby/'
     s.files.exclude 'features/'
     s.files.exclude 'spec/'
-    s.add_dependency 'nokogiri'
+    s.add_dependency 'hpricot'
     s.add_development_dependency 'cucumber'
     s.add_development_dependency 'lorax'
   end

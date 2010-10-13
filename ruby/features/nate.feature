@@ -84,6 +84,11 @@ Feature:
       When { 'a' => { 'href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">example.com</a>
       
+  Scenario: multiple value matches shouldn't leak from one value to the next
+    Given the HTML fragment "<a href='#'>link</a>"
+      When { 'a' => [ { 'href' => 'x' }, 'new link' ] } is injected
+      Then the HTML fragment is <a href="x">link</a><a href="#">new link</a>
+      
   Scenario Outline: matches on multiple items should inject into all matches
     Given the HTML fragment "<h1>First Header</h1><h2>Second Header</h2><h1>Third Header</h1>"
       When <data> is injected

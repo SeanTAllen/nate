@@ -8,4 +8,6 @@ Refactor transform_list in Nate::Engine
 
 Add specs once we are a bit more settled.
 
-Document nokogiri related gotchas in terms of inconsistent case (in)sensitive selector handling.
+Figure out why the hpricot hacks I used to get tests passing ( see attribute check code )
+
+Look for hpricot gotchas

@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'nokogiri'
+require 'hpricot'
 
 module Nate
   class Engine
@@ -8,7 +8,7 @@ module Nate
     def self.from_string source, encoder_type = :html
       self.new source, encoder_type
     end
-    
+
     def self.from_file path
       case path
       when /\.html/
@@ -20,7 +20,7 @@ module Nate
       end
       self.new File.new( path ).read, encoder_type
     end
-    
+
     def initialize source, encoder_type = :html
       @template = source
       case encoder_type
@@ -34,8 +34,8 @@ module Nate
     end
 
     def inject_with data
-      nokogiri_fragment = transform( Nokogiri::HTML.fragment( encode_template() ), data )
-      nokogiri_fragment.to_html
+      fragment = transform( Hpricot( encode_template() ), data )
+      fragment.to_html
     end
 
     private
@@ -53,7 +53,7 @@ module Nate
     def transform_hash( node, values)
       unless contains_attributes( node, values)
         values.each do | selector, value |
-          node.css( selector.to_s).each do | subnode | 
+          node.search( selector.to_s).each do | subnode | 
             transform( subnode, value ) 
           end
         end
@@ -71,11 +71,12 @@ module Nate
     def transform_list( node, values )
       nodes = []
       values.each do | value |
-        node_copy = node.clone
+        node_copy = Hpricot( node.to_html ).root
         transform( node_copy, value )
-        nodes << node_copy
+        nodes << node_copy.to_html
       end
-      node.replace( nodes.join )
+      node_html = nodes.empty? ? ' ' : nodes.join
+      node.swap( node_html )
     end
 
     def transform_node( node, value )
@@ -83,11 +84,17 @@ module Nate
     end
 
     def transform_attribute( node, attribute, value )
-      node[ attribute ] = value.to_s
+      node.attributes[ attribute ] = value.to_s
     end
 
     def contains_attributes( node, values )
-      values.keys.any? { | key | node[ key ].nil? == false }
+      values.keys.any? do | key | 
+        begin
+          node.has_attribute?( key )
+        rescue
+          false 
+        end
+      end
     end
   end
 end
