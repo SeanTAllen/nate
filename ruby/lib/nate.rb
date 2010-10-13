@@ -83,7 +83,7 @@ module Nate
     end
 
     def transform_attribute( node, attribute, value )
-      node[ attribute ] = value
+      node[ attribute ] = value.to_s
     end
 
     def contains_attributes( node, values )

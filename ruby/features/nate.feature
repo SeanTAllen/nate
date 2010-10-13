@@ -94,6 +94,16 @@ Feature:
       | { 'h1' => 'New Header' }         | <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1> |
       | { 'h1' => [ 'Hello', 'There' ] } | <h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1> |
       
+  Scenario Outline: value can be anything that has a string representation
+    Given the HTML fragment "<a href='#'></a>"
+      When <data> is injected
+      Then the HTML fragment is <transformed>
+      
+    Examples:
+      | data                       | transformed              |
+      | { 'a' => { 'href' => 1 } } | <a href='1'></a>         |
+      | { 'a' => 'click me' }      | <a href="#">click me</a> |
+      
   Scenario: use a file rather than a string as source input
     Given the file "features/support/file.html"
       When { 'h1' => 'Monkey in a file' } is injected
