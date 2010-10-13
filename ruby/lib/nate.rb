@@ -9,9 +9,9 @@ module Nate
       @template = source
       case encoder_type
       when :html
-        require 'encoder/html'
+        require 'nate/encoder/html'
       when :haml
-        require 'encoder/haml'
+        require 'nate/encoder/haml'
       else
         raise "Nate encoder type needs to be set"
       end
