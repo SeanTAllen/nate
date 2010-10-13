@@ -1,1 +1,7 @@
-Details specific to using the ruby version of Nate go here.
+h2. How to build your own Nate gem
+
+{% highlight console %}
+rake build
+gem build nate.gemspec
+gem install *name of created gem*
+{% endhighlight %}
