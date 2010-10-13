@@ -1,5 +1,9 @@
 Given /^the HTML fragment "([^"]*)"$/ do |html|
-  @nate = Nate::Engine.new html, :html
+  @nate = Nate::Engine.from_string html, :html
+end
+
+Given /^the file "([^"]*)"$/ do |file|
+  @nate = Nate::Engine.from_file file
 end
 
 When /^(.*) is injected$/ do | data|

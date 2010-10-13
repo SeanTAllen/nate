@@ -1,0 +1,22 @@
+require 'rubygems'
+require 'rake'
+
+begin
+  gem 'jeweler', '>= 0.11.0'
+  require 'jeweler'
+  Jeweler::Tasks.new do |s|
+    s.name = "nate"
+    s.summary = "A HTML templating engine that uses logicless and valueless templates."
+    s.description = 'Description of Nate here'
+    s.authors = [ 'Sean T Allen', 'James Ladd' ]
+    s.homepage = 'http://github.com/jamesladd/nate/tree/master/ruby/'
+    s.files.exclude 'features/'
+    s.files.exclude 'spec/'
+    s.add_dependency 'nokogiri'
+    s.add_development_dependency 'cucumber'
+    s.add_development_dependency 'lorax'
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install jeweler --version '>= 0.11.0'"
+  exit(1)
+end
