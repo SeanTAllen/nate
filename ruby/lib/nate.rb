@@ -79,7 +79,7 @@ module Nate
     end
 
     def transform_node( node, value )
-      node.content = value unless value.nil?
+      node.inner_html = value unless value.nil?
     end
 
     def transform_attribute( node, attribute, value )

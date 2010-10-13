@@ -104,6 +104,11 @@ Feature:
       | { 'a' => { 'href' => 1 } } | <a href='1'></a>         |
       | { 'a' => 'click me' }      | <a href="#">click me</a> |
       
+  Scenario: embed additional html in my injected data
+    Given the HTML fragment "<div></div>"
+    When { 'div' => '<strong>Hi</strong>'} is injected
+    Then the HTML fragment is <div><strong>Hi</strong></div>
+    
   Scenario: use a file rather than a string as source input
     Given the file "features/support/file.html"
       When { 'h1' => 'Monkey in a file' } is injected
