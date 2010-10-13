@@ -33,7 +33,7 @@ def todo_list
       { '.title' => todo.title, 'input[name=id]' => { 'value' => todo.id }}
     end 
   else
-    data = 'Nothing to do right now'
+    data = '<td>Nothing to do right now</td>'
   end
   template.inject_with( { '.todo' => data } )
 end
