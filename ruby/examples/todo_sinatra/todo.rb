@@ -29,13 +29,14 @@ def todo_list
   template = Nate::Engine.from_file 'list.html'
   todos = ToDo.all( :complete => false )
   unless todos.empty?
-    data = todos.collect do |todo|
+    todo_data = todos.collect do |todo|
       { '.title' => todo.title, 'input[name=id]' => { 'value' => todo.id }}
     end 
+    data = { '.todo' => todo_data }
   else
-    data = '<td>Nothing to do right now</td>'
+    data = 'Nothing to do right now'
   end
-  template.inject_with( { '.todo' => data } )
+  template.inject_with( { '.todolist' => data } )
 end
 
 # controllers
