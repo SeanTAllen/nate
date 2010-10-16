@@ -25,28 +25,33 @@ DataMapper.auto_migrate!
 
 # helpers
 
+def layout content
+  layout = Nate::Engine.from_file 'layout.html'
+  layout.inject_with( { '#content' => content } )
+end
+
 def todo_list
   template = Nate::Engine.from_file 'list.html'
   todos = ToDo.all( :complete => false )
-  unless todos.empty?
-    todo_data = todos.collect do |todo|
-      { '.title' => todo.title, 'input[@name=id]' => { 'value' => todo.id }}
-    end 
-    data = { '.todo' => todo_data }
-  else
-    data = 'Nothing to do right now'
-  end
+  todo_data = todos.collect do |todo|
+    { '.title' => todo.title, 'input[@name=id]' => { 'value' => todo.id }}
+  end 
+  data = { '.todo' => todo_data }
   template.inject_with( { '.todolist' => data } )
+end
+
+def form
+  File.new( 'form.html', 'r' ).readlines.to_s
 end
 
 # controllers
 
 get '/' do
-  todo_list()
+  layout( todo_list() )
 end
 
 get '/new' do
-  File.new 'form.html'
+  layout( form() )
 end
 
 post '/add' do
