@@ -4,7 +4,7 @@
 
   <target name="configure">
     <property name="ivy" value="true"/>
-    <property name="gem" value="true"/>
+    <property name="gems" value="true"/>
     <antcall target="-install-gems"/>
   </target>
 
@@ -55,7 +55,7 @@
   <target name="clean-deps" description="Delete all dependencies">
     <delete dir="${basedir}/lib/.jruby"/>
     <delete>
-      <fileset dir="${basedir}/lib" includes=".jar"/>
+      <fileset dir="${basedir}/lib" includes="*.jar"/>
     </delete>
   </target>
 
