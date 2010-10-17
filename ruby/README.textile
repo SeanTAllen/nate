@@ -1,7 +1,10 @@
 h2. How to build your own Nate gem
 
-```console
+<notextile>
+<pre>
+console
 rake build
 gem build nate.gemspec
 gem install *name of created gem*
-```
+</pre>
+</notextile>

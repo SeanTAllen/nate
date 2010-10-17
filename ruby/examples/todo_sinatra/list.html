@@ -1,19 +1,19 @@
-<h2>Here is what you have to do today:</h2>
+<div class="span-2">
+  <a href="/new"><img src="/images/add.png" alt="Add New To Do"></a>
+</div>
 
-<div class="todolist">
+<div class="todolist span-18 last">
 <table>
   <tr class="todo">
-    <td class="title"></td>
-    <td>
+    <td class="completion span-1">
       <form method="post" action="/finished">
         <input type="hidden" name="id" value="">
-        <input type="submit" value="Completed">
+        <input type="image" src="/images/completed.png">
       </form>
     </td>
+    <td class="title span-17"></td>
   </tr>
 </table>
 </div>
 
-<p>
-  <a href="/new">Add New To Do</a>
-</p>
+
