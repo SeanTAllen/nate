@@ -14,7 +14,7 @@ begin
     s.files.exclude 'spec/'
     s.add_dependency 'hpricot'
     s.add_development_dependency 'cucumber'
-    s.add_development_dependency 'lorax'
+    s.add_development_dependency 'lorax', '> 0.2.0'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install jeweler --version '>= 0.11.0'"
