@@ -26,12 +26,12 @@ DataMapper.auto_migrate!
 # helpers
 
 def layout content
-  layout = Nate::Engine.from_file 'layout.html'
+  layout = Nate::Engine.from_file 'templates/layout.html'
   layout.inject_with( { '#content' => content } )
 end
 
 def todo_list
-  template = Nate::Engine.from_file 'list.html'
+  template = Nate::Engine.from_file 'templates/list.html'
   todos = ToDo.all( :complete => false )
   todo_data = todos.collect do |todo|
     { '.title' => todo.title, 'input[@name=id]' => { 'value' => todo.id }}
@@ -41,7 +41,7 @@ def todo_list
 end
 
 def form
-  File.new( 'form.html', 'r' ).readlines.to_s
+  File.new( 'templates/form.html', 'r' ).readlines.to_s
 end
 
 # controllers
