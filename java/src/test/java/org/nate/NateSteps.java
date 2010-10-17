@@ -8,7 +8,7 @@ public class NateSteps {
 	private String htmlFragment;
 	private String data;
 
-	@Given("^the plain HTML fragment \"([^\"]*)\"$")
+	@Given("^the HTML fragment \"([^\"]*)\"$")
 	public void setHtml(String htmlFragment) {
 		this.htmlFragment = htmlFragment;
 	}
@@ -18,7 +18,11 @@ public class NateSteps {
 		this.data = data;
 	}
 
-	@Then("^the plain HTML fragment is (.*)$")
+	@Then("^the HTML fragment is (.*)$")
 	public void test(String data) {
+	}
+
+	@Given ("^the file \"([^\"]*)\"$")
+	public void theFile(String filename) {
 	}
 }
