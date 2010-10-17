@@ -7,7 +7,8 @@ require 'nate'
 
 # Datamapper setup
 
-DataMapper.setup( :default, "sqlite::memory:")
+db_temp_file = Tempfile.new( "nate_todo_db" )
+DataMapper.setup( :default, "sqlite://#{db_temp_file.path}")
 
 class ToDo
   include DataMapper::Resource
