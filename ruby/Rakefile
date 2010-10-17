@@ -14,6 +14,7 @@ begin
     s.files.exclude 'spec/'
     s.add_dependency 'hpricot'
     s.add_development_dependency 'cucumber'
+    s.add_development_dependency 'jeweler', '>= 0.11.0'
     s.add_development_dependency 'lorax', '> 0.2.0'
   end
 rescue LoadError
