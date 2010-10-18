@@ -1,0 +1,10 @@
+desc "Build example"
+task :build do
+  system "rm -rf public/stylesheets/"
+  system "compass compile"
+end
+
+desc "Run ToDo application example"
+task :run => [ :build ] do
+  system "ruby todo.rb"
+end
