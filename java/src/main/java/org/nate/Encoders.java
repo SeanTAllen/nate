@@ -22,18 +22,18 @@ public class Encoders {
 		encoders.put(type, encoder);
 	}
 
-	public Encoder of(String type) {
-		return ofType(type.toUpperCase());
+	public Encoder encoderFor(String type) {
+		return encoderForType(type.toUpperCase());
 	}
 
-	private Encoder ofType(String type) {
+	private Encoder encoderForType(String type) {
 		if (encoders.containsKey(type))
 			return encoders.get(type);
 		return NULL_ENCODER;
 	}
 
-	public Encoder of(File file) {
-		return of(filenameExtension(file));
+	public Encoder encoderFor(File file) {
+		return encoderFor(filenameExtension(file));
 	}
 
 	private String filenameExtension(File file) {

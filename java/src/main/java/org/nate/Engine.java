@@ -19,12 +19,12 @@ public class Engine {
 		return encoders;
 	}
 
-	public static Engine create(String source, Encoder encoder) {
+	public static Engine newWith(String source, Encoder encoder) {
 		return new Engine(source, encoder);
 	}
 
-	public static Engine create(File file) {
-		Encoder encoder = encoders.of(file);
+	public static Engine newWith(File file) {
+		Encoder encoder = encoders.encoderFor(file);
 		return new Engine(HtmlFile.contentsOf(file), encoder);
 	}
 

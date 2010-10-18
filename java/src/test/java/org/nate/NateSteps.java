@@ -14,13 +14,13 @@ public class NateSteps {
 
 	@Given("^the HTML fragment \"([^\"]*)\"$")
 	public void setHtml(String html) {
-		encoder = Engine.encoders().of("HTML");
-		nate = Engine.create(html, encoder);
+		encoder = Engine.encoders().encoderFor("HTML");
+		nate = Engine.newWith(html, encoder);
 	}
 
 	@Given ("^the file \"([^\"]*)\"$")
 	public void theFile(String filename) {
-		nate = Engine.create(new File(filename));
+		nate = Engine.newWith(new File(filename));
 	}
 
 	@When("^([^\"]*) is injected$")
