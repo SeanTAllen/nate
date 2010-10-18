@@ -1,10 +1,5 @@
 Switch over from using table to div/css for To Do layout.
 
-Use Less, Sass or Compass to generate css thereby hiding the use of blueprint.
-Blueprint extras in the html is noise in the way of understanding the Nate. 
-
 Document Dependencies for the example.
-
-Simple 'how to run' for the example.
 
 Description of what we are doing?
