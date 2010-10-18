@@ -11,7 +11,7 @@ module Nate
 
     def self.from_file path
       case path
-      when /\.html/
+      when /\.htm(l)?/
         encoder_type = :html
       when /\.hml/
         encoder_type = :haml
