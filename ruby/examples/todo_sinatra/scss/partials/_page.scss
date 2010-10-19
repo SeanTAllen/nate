@@ -54,12 +54,12 @@ body.bp
 .todolist .completion
 {
   text-align: center;
-  @include column(1, false);
+  @include span(1, false);
 }
 
 .todolist .title
 {
-  @include column(17, false);
+  @include span(17, false);
 }
 
 .title-entry
