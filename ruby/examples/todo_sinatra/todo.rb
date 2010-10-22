@@ -36,7 +36,7 @@ def todo_list
   template = Nate::Engine.from_file 'templates/list.html'
   todos = ToDo.all( :complete => false )
   todo_data = todos.collect do |todo|
-    { '.title' => Sanitize.clean( todo.title ),  'input[@name=id]' => { 'value' => todo.id }}
+    { '.title' => todo.title,  'input[@name=id]' => { 'value' => todo.id }}
   end 
   data = { '.todo' => todo_data }
   template.inject_with( { '.todolist' => data } )
@@ -57,7 +57,7 @@ get '/new' do
 end
 
 post '/add' do
-  ToDo.create( :title => params[:title], :created_at => Time.now )
+  ToDo.create( :title => Sanitize.clean( params[:title] ), :created_at => Time.now )
   redirect '/'
 end
 
