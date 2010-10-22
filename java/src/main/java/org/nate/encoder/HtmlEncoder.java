@@ -19,7 +19,12 @@ public class HtmlEncoder implements Encoder {
 		return "todo";
 	}
 
-	public TransformResult transformWith(Object template, Object data) {
-		return null;
+	public TransformResult transformWith(final Object template, Object data) {
+		return new TransformResult() {
+			@Override
+			public String toHtml() {
+				return (String) template;
+			}
+		};
 	}
 }
