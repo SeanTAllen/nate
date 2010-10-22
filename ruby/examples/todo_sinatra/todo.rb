@@ -3,6 +3,7 @@ require 'sinatra'
 require 'dm-core'
 require 'dm-validations'
 require 'dm-migrations'
+require 'sanitize'
 require 'nate'
 
 # Datamapper setup
@@ -35,7 +36,7 @@ def todo_list
   template = Nate::Engine.from_file 'templates/list.html'
   todos = ToDo.all( :complete => false )
   todo_data = todos.collect do |todo|
-    { '.title' => todo.title, 'input[@name=id]' => { 'value' => todo.id }}
+    { '.title' => Sanitize.clean( todo.title ),  'input[@name=id]' => { 'value' => todo.id }}
   end 
   data = { '.todo' => todo_data }
   template.inject_with( { '.todolist' => data } )

@@ -23,6 +23,7 @@ begin
     s.add_development_dependency 'rails' '>- 3.0.0'
     s.add_development_dependency 'rake', '>= 0.8.7'
     s.add_development_dependency 'sinatra', '>= 1.0'
+    s.add_development_dependency 'sanitize', '>= 1.2.1'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install jeweler --version '>= 0.11.0'"
