@@ -13,7 +13,6 @@ end
 When /(.*) is injected$/ do |data|
   nate = @nate_states.last
   @nate_states.push( nate.inject_with eval(data) )
-  @transformed_html = @nate_states.last.to_html
 end
 
 And /(.*) is injected sometime later$/ do |data|
@@ -21,5 +20,6 @@ And /(.*) is injected sometime later$/ do |data|
 end
 
 Then /^the HTML fragment is (.*)$/ do |expected_html|
-  Lorax::Signature.new( Nokogiri::HTML(@transformed_html).root ).signature.should == Lorax::Signature.new( Nokogiri::HTML(expected_html).root ).signature
+  transformed_html = @nate_states.last.to_html
+  Lorax::Signature.new( Nokogiri::HTML(transformed_html).root ).signature.should == Lorax::Signature.new( Nokogiri::HTML(expected_html).root ).signature
 end
