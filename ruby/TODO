@@ -16,3 +16,7 @@ Needs some more testing to figure out what happens if we match multiple items in
 Might want to limit to ids only.
 
 Refactor/rework features. Maybe break up into smaller features? Certainly, reword.
+
+Split sintra example into one that does 'raw' template include ( current ) and one
+that uses composition using full rather than partials for templates and uses select
+to combine.
