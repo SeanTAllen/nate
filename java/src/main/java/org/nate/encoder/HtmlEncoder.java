@@ -2,24 +2,13 @@ package org.nate.encoder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.nate.Encoder;
 import org.nate.TransformResult;
@@ -71,30 +60,12 @@ public class HtmlEncoder implements Encoder {
 			assertType("key", key, String.class);
 			processMapEntry((String) key, value, document);
 		}
-		return new TransformResult() {
-			@Override
-			public String toHtml() {
-		        try {
-					Source source = new DOMSource((Node) document);
-					Writer stringWriter = new StringWriter();
-					Result result = new StreamResult(stringWriter);
-					Transformer xformer = TransformerFactory.newInstance().newTransformer();
-					xformer.transform(source, result);
-					return stringWriter.toString();
-				} catch (TransformerConfigurationException e) {
-					throw new RuntimeException(e);
-				} catch (TransformerFactoryConfigurationError e) {
-					throw new RuntimeException(e);
-				} catch (TransformerException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
+		return new HtmlTransformResult(document);
 	}
 
 	@SuppressWarnings("unchecked")
 	private void processMapEntry(String key, Object value, Document document) {
-		if (value == null || value instanceof Map) {
+		if (value == null) {
 			return;
 		}
 		NodeSelector selector = new DOMNodeSelector(document);
@@ -112,7 +83,7 @@ public class HtmlEncoder implements Encoder {
 	private void assertType(String description, Object object, Class expectedClass) {
 		String actualClassName = object == null ? null : object.getClass().getName();
 		if (object == null || !(expectedClass.isAssignableFrom(object.getClass()))) {
-			throw new IllegalArgumentException("Expected " + description + " to be a " + Map.class.getName()
+			throw new IllegalArgumentException("Expected " + description + " to be a " + expectedClass
 					+ ", but got " + actualClassName);
 		}
 	}

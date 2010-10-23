@@ -1,10 +1,14 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="nate" default="cucumber" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="nate" default="tests" basedir=".">
 
   <property name="jruby.home" value="${basedir}/lib/.jruby"/>
+  <property name="reports.tests" value="target/junit-report"/>
 	
   <!-- By default, cucumber skips Work In Progess (@wip) -->
   <property name="cucumber.tags" value="--tags ~@wip" />
 
+  <target name="tests" depends="unit-tests,cucumber" description="Unit and acceptance tests">
+  </target>
+	
   <target name="configure" description="Configure the project (download libs and install gems)">
     <property name="ivy" value="true"/>
     <property name="gems" value="true"/>
@@ -19,16 +23,34 @@
 	
   <target name="cucumber" depends="-compile-steps,-install-gems" 
   		description="Run Cucumber. Use -Dcucumber.tags='' to also run Work In Progess (@wip) scenarios.">
-    <mkdir dir="target/junit-report"/>
+    <mkdir dir="${reports.tests}"/>
     <taskdef name="cucumber" classname="cuke4duke.ant.CucumberTask" classpathref="compile.classpath"/>
     <cucumber
-            args="${cucumber.tags} --verbose --require target/classes --require src/test/ruby --color --format pretty --format junit --out target/junit-report features"
+            args="${cucumber.tags} --verbose --require target/classes --require src/test/ruby --color --format pretty --format junit --out ${reports.tests} features"
             objectFactory="pico">
       <classpath>
         <pathelement location="target/classes"/>
       	<path refid="compile.classpath"/>
       </classpath>
     </cucumber>
+  </target>
+	
+  <target name="unit-tests"  depends="-compile-steps"
+  		description="Run the unit tests.">
+    <mkdir dir="${reports.tests}"/>
+ 	<junit haltonfailure="true" printsummary="true" showoutput="true" >
+ 	      <classpath>
+ 	        <pathelement location="target/classes"/>
+ 	      	<path refid="compile.classpath"/>
+ 	      </classpath>
+ 		<formatter type="xml"/>
+		<batchtest fork="yes" todir="${reports.tests}">
+			
+			<fileset dir="src/test/java">
+				<include name="**/*Test.java"/>
+			</fileset>
+		</batchtest>
+ 	</junit>
   </target>
 
   <target name="-download-jars" if="ivy">
