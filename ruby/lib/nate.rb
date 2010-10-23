@@ -46,6 +46,10 @@ module Nate
     def to_html
       encode_template()
     end
+    
+    def to_s
+      to_html
+    end
 
     private    
     def transform( node, values )
@@ -89,7 +93,7 @@ module Nate
     end
 
     def transform_node( node, value )
-      node.inner_html = value unless value.nil?
+      node.inner_html = value.to_s unless value.nil?
     end
 
     def transform_attribute( node, attribute, value )

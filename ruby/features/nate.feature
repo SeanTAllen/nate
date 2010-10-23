@@ -134,4 +134,9 @@ Feature:
     Given the HTML fragment "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>"
       When "#content" is selected
       Then the HTML fragment is <h1>Content</h1>
+ 
+   Scenario: should be able to use a nate template as a value when injecting
+     Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"
+       When { '#content' => Nate::Engine.from_string( '<h1>Hello</h1>' ) } is injected
+       Then the HTML fragment is <div id='header'>Header</div><div id='content'><h1>Hello</h1></div>
       

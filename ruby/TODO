@@ -14,3 +14,5 @@ to_html call should have a less ruby specific name
 
 Needs some more testing to figure out what happens if we match multiple items in select.
 Might want to limit to ids only.
+
+Refactor/rework features. Maybe break up into smaller features? Certainly, reword.
