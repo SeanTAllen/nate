@@ -15,6 +15,11 @@ When /(.*) is injected$/ do |data|
   @nate_states.push( nate.inject_with eval(data) )
 end
 
+When /^"([^"].*)" is selected$/ do |selector|
+  nate = @nate_states.last
+  @nate_states.push ( nate.select( selector ) )
+end
+
 And /(.*) is injected sometime later$/ do |data|
   When %{#{data} is injected}
 end

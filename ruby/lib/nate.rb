@@ -37,6 +37,11 @@ module Nate
       fragment = transform( Hpricot( encode_template() ), data )
       Nate::Engine.from_string fragment.to_html
     end
+
+    def select selector
+      selection = Hpricot( encode_template() ).search( selector.to_s ).inner_html
+      Nate::Engine.from_string selection
+    end
     
     def to_html
       encode_template()
