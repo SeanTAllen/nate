@@ -1,3 +1,5 @@
+Review new features w/ James. See if we can improve the wording.
+
 Added larger scale examples rather than just the simple ones we have on github wiki
 
 Refactor transform_list in Nate::Engine
