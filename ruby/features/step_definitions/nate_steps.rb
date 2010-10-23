@@ -23,3 +23,8 @@ Then /^the HTML fragment is (.*)$/ do |expected_html|
   transformed_html = @nate_states.last.to_html
   Lorax::Signature.new( Nokogiri::HTML(transformed_html).root ).signature.should == Lorax::Signature.new( Nokogiri::HTML(expected_html).root ).signature
 end
+
+Then /^the original HTML fragment is (.*)$/ do |expected_html|
+  transformed_html = @nate_states.first.to_html
+  Lorax::Signature.new( Nokogiri::HTML(transformed_html).root ).signature.should == Lorax::Signature.new( Nokogiri::HTML(expected_html).root ).signature
+end

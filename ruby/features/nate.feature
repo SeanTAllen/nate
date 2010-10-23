@@ -111,8 +111,8 @@ Feature:
       
   Scenario: embed additional html in my injected data
     Given the HTML fragment "<div></div>"
-    When { 'div' => '<strong>Hi</strong>'} is injected
-    Then the HTML fragment is <div><strong>Hi</strong></div>
+      When { 'div' => '<strong>Hi</strong>'} is injected
+      Then the HTML fragment is <div><strong>Hi</strong></div>
     
   Scenario: use a file rather than a string as source input
     Given the file "features/support/file.html"
@@ -124,4 +124,9 @@ Feature:
       When { '#data' => '<span></span>' } is injected
       And { 'span' => 'hello' } is injected sometime later
       Then the HTML fragment is <div id='data'><span>hello</span></div>
+      
+  Scenario: injection shouldn't modify the original template, only create a new version with changes
+    Given the HTML fragment "<h1>Hi</h1>"
+      When { 'h1' => 'Bye' } is injected
+      Then the original HTML fragment is <h1>Hi</h1>
       
