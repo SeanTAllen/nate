@@ -118,3 +118,10 @@ Feature:
     Given the file "features/support/file.html"
       When { 'h1' => 'Monkey in a file' } is injected
       Then the HTML fragment is <h1>Monkey in a file</h1>
+      
+  Scenario: should be able inject in multiple steps
+    Given the HTML fragment "<div id='data'></div>"
+      When { '#data' => '<span></span>' } is injected
+      And { 'span' => 'hello' } is injected sometime later
+      Then the HTML fragment is <div id='data'><span>hello</span></div>
+      

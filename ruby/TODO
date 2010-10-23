@@ -11,3 +11,5 @@ Add specs once we are a bit more settled.
 Figure out why the hpricot hacks I used to get tests passing ( see attribute check code )
 
 Look for hpricot gotchas
+
+to_html call should have a less ruby specific name

@@ -35,10 +35,14 @@ module Nate
 
     def inject_with data
       fragment = transform( Hpricot( encode_template() ), data )
-      fragment.to_html
+      Nate::Engine.from_string fragment.to_html
+    end
+    
+    def to_html
+      encode_template()
     end
 
-    private
+    private    
     def transform( node, values )
       if ( values.kind_of?( Hash ) )
         transform_hash( node, values )
