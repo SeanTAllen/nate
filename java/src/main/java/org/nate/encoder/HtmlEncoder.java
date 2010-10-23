@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,8 +23,13 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.nate.Encoder;
 import org.nate.TransformResult;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
+import se.fishtank.css.selectors.NodeSelector;
+import se.fishtank.css.selectors.NodeSelectorException;
+import se.fishtank.css.selectors.dom.DOMNodeSelector;
 
 public class HtmlEncoder implements Encoder {
 
@@ -53,12 +60,22 @@ public class HtmlEncoder implements Encoder {
 		}
 	}
 
-	public TransformResult transformWith(final Object template, Object data) {
+	@SuppressWarnings("unchecked")
+	public TransformResult transformWith(Object template, Object data) {
+		assertType("data", data, Map.class);
+		Set<Map.Entry> entrySet = ((Map) data).entrySet();
+		final Document document = (Document) template;
+		for (Map.Entry entry : entrySet) {
+			Object key = entry.getKey();
+			Object value = entry.getValue();
+			assertType("key", key, String.class);
+			processMapEntry((String) key, value, document);
+		}
 		return new TransformResult() {
 			@Override
 			public String toHtml() {
 		        try {
-					Source source = new DOMSource((Node) template);
+					Source source = new DOMSource((Node) document);
 					Writer stringWriter = new StringWriter();
 					Result result = new StreamResult(stringWriter);
 					Transformer xformer = TransformerFactory.newInstance().newTransformer();
@@ -74,4 +91,30 @@ public class HtmlEncoder implements Encoder {
 			}
 		};
 	}
+
+	@SuppressWarnings("unchecked")
+	private void processMapEntry(String key, Object value, Document document) {
+		if (value == null || value instanceof Map) {
+			return;
+		}
+		NodeSelector selector = new DOMNodeSelector(document);
+		try {
+			Set<Node> nodes = selector.querySelectorAll(key);
+			for (Node node : nodes) {
+				node.setTextContent((String) value);
+			}
+		} catch (NodeSelectorException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void assertType(String description, Object object, Class expectedClass) {
+		String actualClassName = object == null ? null : object.getClass().getName();
+		if (object == null || !(expectedClass.isAssignableFrom(object.getClass()))) {
+			throw new IllegalArgumentException("Expected " + description + " to be a " + Map.class.getName()
+					+ ", but got " + actualClassName);
+		}
+	}
+
 }

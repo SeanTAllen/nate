@@ -19,7 +19,6 @@ Feature:
       When { 'h2' => 'Monkey' } is injected
       Then the HTML fragment is <h1>Header</h1>
             
-  @wip
   Scenario Outline: match and inject a single data value
     Given the HTML fragment "<div class='section'><span class='content'></span></div>"
      When <data> is injected
@@ -125,7 +124,6 @@ Feature:
     When { 'div' => '<strong>Hi</strong>'} is injected
     Then the HTML fragment is <div><strong>Hi</strong></div>
     
-  @wip
   Scenario: use a file rather than a string as source input
     Given the file "features/support/file.html"
       When { 'h1' => 'Monkey in a file' } is injected

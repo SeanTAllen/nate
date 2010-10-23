@@ -26,6 +26,7 @@
             objectFactory="pico">
       <classpath>
         <pathelement location="target/classes"/>
+      	<path refid="compile.classpath"/>
       </classpath>
     </cucumber>
   </target>
@@ -47,9 +48,12 @@
     </path>
 
     <path id="compile.classpath">
-      <fileset dir="lib">
-        <include name="**/*.jar"/>
-      </fileset>
+        <fileset dir="lib">
+          <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="lib2">
+          <include name="**/*.jar"/>
+        </fileset>
     </path>
   </target>
 
