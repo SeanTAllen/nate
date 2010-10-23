@@ -10,8 +10,6 @@ Figure out why the hpricot hacks I used to get tests passing ( see attribute che
 
 Look for hpricot gotchas
 
-to_html call should have a less ruby specific name
-
 Needs some more testing to figure out what happens if we match multiple items in select.
 Might want to limit to ids only.
 

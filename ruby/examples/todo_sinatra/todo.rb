@@ -33,7 +33,7 @@ List   = Nate::Engine.from_file 'templates/list.html'
 # helpers
 
 def layout content
-  Layout.inject_with( { '#content' => content } ).to_html
+  Layout.inject_with( { '#content' => content } ).render
 end
 
 def todo_list
@@ -43,7 +43,7 @@ def todo_list
     { '.title' => todo.title,  'input[@name=id]' => { 'value' => todo.id }}
   end 
   data = { '.todo' => todo_data }
-  List.inject_with( { '.todolist' => data } ).to_html
+  List.inject_with( { '.todolist' => data } ).render
 end
 
 def form

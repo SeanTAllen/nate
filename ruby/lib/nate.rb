@@ -4,7 +4,7 @@ require 'hpricot'
 module Nate
   class Engine
     CONTENT_ATTRIBUTE = '*content*'
-
+    
     def self.from_string source, encoder_type = :html
       self.new source, encoder_type
     end
@@ -43,14 +43,13 @@ module Nate
       Nate::Engine.from_string selection
     end
     
-    def to_html
+    def render
       encode_template()
     end
-    
-    def to_s
-      to_html
-    end
 
+    alias :to_html :render
+    alias :to_s :render
+    
     private    
     def transform( node, values )
       if ( values.kind_of?( Hash ) )
