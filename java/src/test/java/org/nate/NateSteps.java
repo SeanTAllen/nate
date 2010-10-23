@@ -1,5 +1,7 @@
 package org.nate;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import cuke4duke.annotation.I18n.EN.Given;
 import cuke4duke.annotation.I18n.EN.Then;
 import cuke4duke.annotation.I18n.EN.When;
@@ -50,17 +52,18 @@ public class NateSteps {
 
 	@Then("^the HTML fragment is (.*)$")
 	public void test(String expectedHtml) {
-		transformedHtml.equals(expectedHtml);
+		assertThat(transformedHtml, is(expectedHtml));
 	}
 
+	// This method is needed because the features express the data used to fill in the templates using ruby syntax like:
+	// { 'h2' => 'Monkey' } 
 	private Object parseRubyExpression(String rubyString) throws ScriptException {
 		ScriptEngine rubyEngine = new ScriptEngineManager().getEngineByName("jruby");
 		Object result = rubyEngine.eval(wrapRubyConstantsInQuotes(rubyString), new SimpleScriptContext());
 		return convertToOrdinaryJavaClasses(result);
 	}
 
-	// Would actually not need to do this, except that RubyHash and RubyArray
-	// seem to have been loaded
+	// Would actually not need to do this, except that RubyHash and RubyArray seem to have been loaded
 	// in a different class loader (at least I think that is the case!)!!!!
 	private Object convertToOrdinaryJavaClasses(Object rubyObject) {
 		if (rubyObject == null || isAnAcceptableJavaType(rubyObject)) {
@@ -75,6 +78,7 @@ public class NateSteps {
 		throw new IllegalStateException("Cannot handle " + rubyObject.getClass());
 	}
 
+	@SuppressWarnings("unchecked")
 	private List convertToJavaList(RubyArray rubyArray) {
 		List result = new ArrayList();
 		for (Object object : rubyArray) {
@@ -101,8 +105,7 @@ public class NateSteps {
 	private static final Pattern rubyConstantPattern = Pattern.compile("([A-Z]\\w*::)+[A-Z]\\w*");
 
 	// We really need to figure out how to avoid doing this!!
-	// Either the features need to stop using Ruby constants (use JSON
-	// perhaps?),
+	// Either the features need to stop using Ruby constants (use JSON perhaps?),
 	// or we need independent features for each supported language.
 	static String wrapRubyConstantsInQuotes(String rubyString) {
 		return rubyConstantPattern.matcher(rubyString).replaceAll("'$0'");

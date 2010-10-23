@@ -16,7 +16,7 @@ public class HtmlEncoder implements Encoder {
 	}
 
 	public Object encode(String source) {
-		return "todo";
+		return source;
 	}
 
 	public TransformResult transformWith(final Object template, Object data) {
