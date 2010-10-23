@@ -13,7 +13,7 @@ module Nate
       case path
       when /\.htm(l)?/
         encoder_type = :html
-      when /\.hml/
+      when /\.h(a)?ml/
         encoder_type = :haml
       else
         raise "Unsupported file type"
