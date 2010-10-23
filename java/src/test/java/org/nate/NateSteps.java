@@ -1,7 +1,5 @@
 package org.nate;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import cuke4duke.annotation.I18n.EN.Given;
 import cuke4duke.annotation.I18n.EN.Then;
 import cuke4duke.annotation.I18n.EN.When;
@@ -18,6 +16,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import org.custommonkey.xmlunit.XMLAssert;
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
 
@@ -51,8 +50,8 @@ public class NateSteps {
 	}
 
 	@Then("^the HTML fragment is (.*)$")
-	public void test(String expectedHtml) {
-		assertThat(transformedHtml, is(expectedHtml));
+	public void test(String expectedHtml) throws Exception {
+		XMLAssert.assertXMLEqual(expectedHtml, transformedHtml);
 	}
 
 	// This method is needed because the features express the data used to fill in the templates using ruby syntax like:
