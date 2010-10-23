@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -28,8 +27,7 @@ public class NateSteps {
 	private String transformedHtml;
 
 	static {
-		// Needed to allow us to evaluate Ruby code without interfering with
-		// Cucumber!
+		// Needed to allow us to evaluate Ruby code without interfering with Cucumber!
 		System.setProperty("org.jruby.embed.localcontext.scope", "singlethread");
 	}
 
@@ -58,8 +56,14 @@ public class NateSteps {
 	// { 'h2' => 'Monkey' } 
 	private Object parseRubyExpression(String rubyString) throws ScriptException {
 		ScriptEngine rubyEngine = new ScriptEngineManager().getEngineByName("jruby");
-		Object result = rubyEngine.eval(wrapRubyConstantsInQuotes(rubyString), new SimpleScriptContext());
+		defineRubyConstants(rubyEngine);
+		Object result = rubyEngine.eval(rubyString, new SimpleScriptContext());
 		return convertToOrdinaryJavaClasses(result);
+	}
+
+	private void defineRubyConstants(ScriptEngine rubyEngine) throws ScriptException {
+		// This is so that the features can use Nate::Engine::CONTENT_ATTRIBUTE
+		rubyEngine.eval("module Nate\n class Engine\n CONTENT_ATTRIBUTE = '*content*'\n end\n end\n");
 	}
 
 	// Would actually not need to do this, except that RubyHash and RubyArray seem to have been loaded
@@ -99,15 +103,6 @@ public class NateSteps {
 			result.put((String) key, convertToOrdinaryJavaClasses(hash.get(key)));
 		}
 		return result;
-	}
-
-	private static final Pattern rubyConstantPattern = Pattern.compile("([A-Z]\\w*::)+[A-Z]\\w*");
-
-	// We really need to figure out how to avoid doing this!!
-	// Either the features need to stop using Ruby constants (use JSON perhaps?),
-	// or we need independent features for each supported language.
-	static String wrapRubyConstantsInQuotes(String rubyString) {
-		return rubyConstantPattern.matcher(rubyString).replaceAll("'$0'");
 	}
 
 }
