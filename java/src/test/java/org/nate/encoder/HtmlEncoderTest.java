@@ -57,6 +57,16 @@ public class HtmlEncoderTest {
 		assertXmlFragmentsEqual("<div class='section'>Section 1</div><div class='section'>Section 2</div>", transformResult.toHtml());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void shouldMatchAndInjectIntoASubselection() throws Exception {
+		Document document = (Document) htmlEncoder.encode("<div class='section'><span class='greeting'></span></div>");
+		Map data = singletonMap(".section", singletonMap(".greeting", "Hello"));
+		TransformResult transformResult = htmlEncoder.transformWith(document, data);
+		assertXmlFragmentsEqual("<div class='section'><span class='greeting'>Hello</span></div>", transformResult.toHtml());
+		
+	}
+	
 	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {
 		// Wrap in fake roots in case the xml has multiple roots, otherwise you get a parser exception
 		assertXMLEqual(wrapInFakeRoot(expected), wrapInFakeRoot(actual));

@@ -39,7 +39,6 @@ Feature:
       | {'.section' => [ 'Section 1', 'Section 2' ] } | <div class="section">Section 1</div><div class="section">Section 2</div>                                |
       | {'.content' => [ 'Content 1', 'Content 2' ]}  | <div class="section"><span class="content">Content 1</span><span class="content">Content 2</span></div> |
 
-  @wip
   Scenario Outline: match and inject values into a subselection of matched html
     Given the HTML fragment "<div class='section'><span class='greeting'></span></div>"
       When <data> is injected
@@ -61,7 +60,6 @@ Feature:
       | { '.section' => [ { '.greeting' => 'Hello' }, { '.greeting' => 'Goodbye' } ] } | <div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div> |
       | { '.section' => [ { 'span' => 'Hello' }, { 'span' => 'Goodbye' } ] }           | <div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div> |
 
-  @wip
   Scenario Outline: match and inject empty multiple value container should remove the element
     Given the HTML fragment "<div><ul><li class='character'></li></ul></div>"
       When <data> is injected

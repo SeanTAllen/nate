@@ -60,27 +60,32 @@ public class HtmlEncoder implements Encoder {
 	@SuppressWarnings("unchecked")
 	public TransformResult transformWith(Object template, Object data) {
 		assertType("data", data, Map.class);
-		Set<Map.Entry> entrySet = ((Map) data).entrySet();
-		final Document document = (Document) template;
-		for (Map.Entry entry : entrySet) {
-			Object key = entry.getKey();
-			Object value = entry.getValue();
-			assertType("key", key, String.class);
-			processMapEntry((String) key, value, document);
-		}
+		Document document = (Document) template;
+		processMapEntries((Map) data, document);
 		return new HtmlTransformResult(document);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void processMapEntry(String key, Object value, Document document) {
-		if (value == null) {
-			return;
+	private void processMapEntries(Map map, Node node) {
+		Set<Map.Entry> entrySet = map.entrySet();
+		for (Map.Entry entry : entrySet) {
+			Object key = entry.getKey();
+			Object value = entry.getValue();
+			assertType("key", key, String.class);
+			processMapEntry((String) key, value, node);
 		}
-		NodeSelector selector = new DOMNodeSelector(document);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void processMapEntry(String key, Object value, Node node) {
 		try {
-			Set<Node> nodes = selector.querySelectorAll(key);
-			for (Node node : nodes) {
-				injectValueIntoNode(value, node);
+			if (value == null) {
+				return;
+			}
+			NodeSelector selector = new DOMNodeSelector(node);
+			Set<Node> matchingNodes = selector.querySelectorAll(key);
+			for (Node matchingNode : matchingNodes) {
+				injectValueIntoNode(value, matchingNode);
 			}
 		} catch (NodeSelectorException e) {
 			throw new RuntimeException(e);
@@ -93,8 +98,13 @@ public class HtmlEncoder implements Encoder {
 			node.setTextContent((String) value);
 		} else if (value instanceof Iterable) {
 			injectValuesIntoNode((Iterable) value, node);
+		} else if (value instanceof Map) {
+			processMapEntries((Map) value, node);
 		} else {
-			throw new IllegalArgumentException("Values must be either Strings or Iterables, but got: " + value);
+			String valueClassName = value == null ? null : value.getClass().getName();
+			throw new IllegalArgumentException(
+					"Values must eithore a String, Map or Iterable, but got: " + valueClassName
+					+ ", with value: " + value);
 		}
 	}
 
@@ -114,7 +124,7 @@ public class HtmlEncoder implements Encoder {
 		String actualClassName = object == null ? null : object.getClass().getName();
 		if (object == null || !(expectedClass.isAssignableFrom(object.getClass()))) {
 			throw new IllegalArgumentException("Expected " + description + " to be a " + expectedClass
-					+ ", but got " + actualClassName);
+					+ ", but got " + actualClassName + ", with value: " + object);
 		}
 	}
 
