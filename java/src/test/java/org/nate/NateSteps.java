@@ -1,10 +1,12 @@
 package org.nate;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import cuke4duke.annotation.I18n.EN.Given;
 import cuke4duke.annotation.I18n.EN.Then;
 import cuke4duke.annotation.I18n.EN.When;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +17,9 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
-import org.custommonkey.xmlunit.XMLAssert;
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
+import org.xml.sax.SAXException;
 
 public class NateSteps {
 
@@ -49,7 +51,16 @@ public class NateSteps {
 
 	@Then("^the HTML fragment is (.*)$")
 	public void test(String expectedHtml) throws Exception {
-		XMLAssert.assertXMLEqual(expectedHtml, transformedHtml);
+		assertXmlFragmentsEqual(expectedHtml.trim(), transformedHtml.trim());
+	}
+
+	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {
+		// Wrap in fake roots in case the xml has multiple roots, otherwise you get a parser exception
+		assertXMLEqual(wrapInFakeRoot(expected), wrapInFakeRoot(actual));
+	}
+
+	private String wrapInFakeRoot(String fragment) {
+		return "<fake>" + fragment + "</fake>";
 	}
 
 	// This method is needed because the features express the data used to fill in the templates using ruby syntax like:

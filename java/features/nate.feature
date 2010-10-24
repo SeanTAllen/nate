@@ -29,7 +29,6 @@ Feature:
       | {'.section' => 'Hello Section' } | <div class="section">Hello Section</div>                              |
       | {'.content' => 'Hello Content'}  | <div class="section"><span class="content">Hello Content</span></div> |
 
-  @wip
   Scenario Outline: match and inject multiple data values 
     Given the HTML fragment "<div class='section'><span class='content'></span></div>"
       When <data> is injected
@@ -96,7 +95,6 @@ Feature:
       When { 'a' => [ { 'href' => 'x' }, 'new link' ] } is injected
       Then the HTML fragment is <a href="x">link</a><a href="#">new link</a>
       
-  @wip
   Scenario Outline: matches on multiple items should inject into all matches
     Given the HTML fragment "<h1>First Header</h1><h2>Second Header</h2><h1>Third Header</h1>"
       When <data> is injected

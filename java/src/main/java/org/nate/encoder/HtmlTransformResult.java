@@ -19,8 +19,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.nate.TransformResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-final class HtmlTransformResult implements TransformResult {
+class HtmlTransformResult implements TransformResult {
 	private final Document document;
 
 	HtmlTransformResult(Document document) {
@@ -29,13 +30,24 @@ final class HtmlTransformResult implements TransformResult {
 
 	@Override
 	public String toHtml() {
-	    try {
-			Source source = new DOMSource((Node) document);
-			Writer stringWriter = new StringWriter();
-			Result result = new StreamResult(stringWriter);
+		Writer stringWriter = new StringWriter();
+		Result result = new StreamResult(stringWriter);
+		// Need to unwap from the fakeroot node that was added in HtmlEncoder.encode(). Must be a better way!!!
+		NodeList childNodes = document.getChildNodes().item(0).getChildNodes();
+		int length = childNodes.getLength();
+		for (int i = 0; i < length; i++) {
+			convertNodeToString(childNodes.item(i), result);
+		}
+	    return stringWriter.toString();
+	}
+
+	private void convertNodeToString(Node node, Result result) {
+		try {
+			Source source = new DOMSource((Node) node);
 			Transformer xformer = TransformerFactory.newInstance().newTransformer();
+			xformer.setOutputProperty("method", "html");
+			xformer.setOutputProperty("omit-xml-declaration", "yes");
 			xformer.transform(source, result);
-			return stringWriter.toString();
 		} catch (TransformerConfigurationException e) {
 			throw new RuntimeException(e);
 		} catch (TransformerFactoryConfigurationError e) {
