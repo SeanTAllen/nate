@@ -1,3 +1,7 @@
 Add documentation about similar systems like clojure's enlive and js's pure and how nate is different.
 
 Add documentation about why nate, how nate etc.
+
+Add documentation about immutability
+
+Think on how to do html escaping and sanitizing.

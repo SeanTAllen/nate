@@ -14,3 +14,8 @@ Refactor/rework features. Maybe break up into smaller features? Certainly, rewor
 Split sintra example into one that does 'raw' template include ( current ) and one
 that uses composition using full rather than partials for templates and uses select
 to combine.
+
+Consider adding helper functions to Nate::Engine that allow you to make discrete changes
+in a more 'compact' format like set_attr( 'href', 'http://www.example.com' ) which would set
+any href attribute to http://www.example.com. It might have some value. No immediate concern.
+Just consider for now.
