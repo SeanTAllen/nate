@@ -56,15 +56,25 @@ public class HtmlEncoderTest {
 		TransformResult transformResult = htmlEncoder.transformWith(document, data);
 		assertXmlFragmentsEqual("<div class='section'>Section 1</div><div class='section'>Section 2</div>", transformResult.toHtml());
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Test
 	public void shouldMatchAndInjectIntoASubselection() throws Exception {
 		Document document = (Document) htmlEncoder.encode("<div class='section'><span class='greeting'></span></div>");
-		Map data = singletonMap(".section", singletonMap(".greeting", "Hello"));
+		Object data = singletonMap(".section", singletonMap(".greeting", "Hello"));
 		TransformResult transformResult = htmlEncoder.transformWith(document, data);
 		assertXmlFragmentsEqual("<div class='section'><span class='greeting'>Hello</span></div>", transformResult.toHtml());
-		
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void shouldMatchAndInjectMultipleDataValuesIntoSubselection() throws Exception {
+		Document document = (Document) htmlEncoder.encode("<div class='section'><span class='greeting'></span></div>");
+		Object data = singletonMap(".section", asList(singletonMap(".greeting", "Hello"), singletonMap(".greeting", "Goodbye")));
+		TransformResult transformResult = htmlEncoder.transformWith(document, data);
+		assertXmlFragmentsEqual(
+				"<div class='section'><span class='greeting'>Hello</span></div>" +
+				"<div class='section'><span class='greeting'>Goodbye</span></div>",
+				transformResult.toHtml());
 	}
 	
 	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {

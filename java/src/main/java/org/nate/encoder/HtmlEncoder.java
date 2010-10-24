@@ -114,7 +114,7 @@ public class HtmlEncoder implements Encoder {
 		parentNode.removeChild(node);
 		for (Object value : values) {
 			Node newNode = node.cloneNode(true);
-			newNode.setTextContent((String) value);
+			injectValueIntoNode(value, newNode);
 			parentNode.appendChild(newNode);
 		}
 	}

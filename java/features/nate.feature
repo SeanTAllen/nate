@@ -49,7 +49,6 @@ Feature:
       | { '.section' => { '.greeting' => 'Hello' } } | <div class="section"><span class="greeting">Hello</span></div> |
       | { '.section' => { 'span' => 'Hello' } }      | <div class="section"><span class="greeting">Hello</span></div> |
       
-  @wip
   Scenario Outline: match and inject multiple data values into a subselection of matched html
     Given the HTML fragment "<div class='section'><span class='greeting'></span></div>"
       When <data> is injected
