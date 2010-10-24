@@ -1,8 +1,6 @@
+Review new features w/ James. See if we can improve the wording.
+
 Added larger scale examples rather than just the simple ones we have on github wiki
-
-Review design for instantiating with file rather than string with James.
-
-Update Jeweler gemspec configuration to take into account required minimum version for dependencies.
 
 Refactor transform_list in Nate::Engine
 
@@ -11,3 +9,12 @@ Add specs once we are a bit more settled.
 Figure out why the hpricot hacks I used to get tests passing ( see attribute check code )
 
 Look for hpricot gotchas
+
+Needs some more testing to figure out what happens if we match multiple items in select.
+Might want to limit to ids only.
+
+Refactor/rework features. Maybe break up into smaller features? Certainly, reword.
+
+Split sintra example into one that does 'raw' template include ( current ) and one
+that uses composition using full rather than partials for templates and uses select
+to combine.

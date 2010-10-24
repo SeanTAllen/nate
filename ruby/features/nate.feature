@@ -111,10 +111,32 @@ Feature:
       
   Scenario: embed additional html in my injected data
     Given the HTML fragment "<div></div>"
-    When { 'div' => '<strong>Hi</strong>'} is injected
-    Then the HTML fragment is <div><strong>Hi</strong></div>
+      When { 'div' => '<strong>Hi</strong>'} is injected
+      Then the HTML fragment is <div><strong>Hi</strong></div>
     
   Scenario: use a file rather than a string as source input
     Given the file "features/support/file.html"
       When { 'h1' => 'Monkey in a file' } is injected
       Then the HTML fragment is <h1>Monkey in a file</h1>
+      
+  Scenario: should be able inject in multiple steps
+    Given the HTML fragment "<div id='data'></div>"
+      When { '#data' => '<span></span>' } is injected
+      And { 'span' => 'hello' } is injected sometime later
+      Then the HTML fragment is <div id='data'><span>hello</span></div>
+      
+  Scenario: injection shouldn't modify the original template, only create a new version with changes
+    Given the HTML fragment "<h1>Hi</h1>"
+      When { 'h1' => 'Bye' } is injected
+      Then the original HTML fragment is <h1>Hi</h1>
+      
+  Scenario: should be able to create a new template from content in an existing template 
+    Given the HTML fragment "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>"
+      When "#content" is selected
+      Then the HTML fragment is <h1>Content</h1>
+ 
+   Scenario: should be able to use a nate template as a value when injecting
+     Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"
+       When { '#content' => Nate::Engine.from_string( '<h1>Hello</h1>' ) } is injected
+       Then the HTML fragment is <div id='header'>Header</div><div id='content'><h1>Hello</h1></div>
+      

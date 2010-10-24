@@ -4,7 +4,7 @@ require 'hpricot'
 module Nate
   class Engine
     CONTENT_ATTRIBUTE = '*content*'
-
+    
     def self.from_string source, encoder_type = :html
       self.new source, encoder_type
     end
@@ -13,7 +13,7 @@ module Nate
       case path
       when /\.htm(l)?/
         encoder_type = :html
-      when /\.hml/
+      when /\.h(a)?ml/
         encoder_type = :haml
       else
         raise "Unsupported file type"
@@ -35,10 +35,22 @@ module Nate
 
     def inject_with data
       fragment = transform( Hpricot( encode_template() ), data )
-      fragment.to_html
+      Nate::Engine.from_string fragment.to_html
     end
 
-    private
+    def select selector
+      selection = Hpricot( encode_template() ).search( selector.to_s ).inner_html
+      Nate::Engine.from_string selection
+    end
+    
+    def render
+      encode_template()
+    end
+
+    alias :to_html :render
+    alias :to_s :render
+    
+    private    
     def transform( node, values )
       if ( values.kind_of?( Hash ) )
         transform_hash( node, values )
@@ -80,7 +92,7 @@ module Nate
     end
 
     def transform_node( node, value )
-      node.inner_html = value unless value.nil?
+      node.inner_html = value.to_s unless value.nil?
     end
 
     def transform_attribute( node, attribute, value )

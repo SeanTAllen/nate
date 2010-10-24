@@ -3,6 +3,7 @@ require 'sinatra'
 require 'dm-core'
 require 'dm-validations'
 require 'dm-migrations'
+require 'sanitize'
 require 'nate'
 
 # Datamapper setup
@@ -24,21 +25,25 @@ end
 DataMapper.finalize
 DataMapper.auto_migrate!
 
+# templates
+
+Layout = Nate::Engine.from_file 'templates/layout.html'
+List   = Nate::Engine.from_file 'templates/list.html'
+
 # helpers
 
 def layout content
-  layout = Nate::Engine.from_file 'templates/layout.html'
-  layout.inject_with( { '#content' => content } )
+  Layout.inject_with( { '#content' => content } ).render
 end
 
 def todo_list
-  template = Nate::Engine.from_file 'templates/list.html'
+  template =
   todos = ToDo.all( :complete => false )
   todo_data = todos.collect do |todo|
-    { '.title' => todo.title, 'input[@name=id]' => { 'value' => todo.id }}
+    { '.title' => todo.title,  'input[@name=id]' => { 'value' => todo.id }}
   end 
   data = { '.todo' => todo_data }
-  template.inject_with( { '.todolist' => data } )
+  List.inject_with( { '.todolist' => data } ).render
 end
 
 def form
@@ -56,7 +61,7 @@ get '/new' do
 end
 
 post '/add' do
-  ToDo.create( :title => params[:title], :created_at => Time.now )
+  ToDo.create( :title => Sanitize.clean( params[:title] ), :created_at => Time.now )
   redirect '/'
 end
 
