@@ -32,8 +32,8 @@ body.bp
 
 #content
 {
-  @include prepend-top(30);
-  @include append-bottom(30);
+  @include prepend-top(30px);
+  @include append-bottom(30px);
   @include prepend(2);
   @include append(2);
   text-align: center;
