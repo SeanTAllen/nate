@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>To Do</title>
+</head>
+<body>
+  <div id="todolist-view">
+    <div class="add-todo">
+      <a href="/new"><img src="/images/add.png" alt="Add New To Do"/></a>
+    </div>
+
+    <div class="todolist">
+      <table>
+        <tr class="todo">
+          <td class="completion">
+            <form method="post" action="/finished">
+              <fieldset>
+              <input type="hidden" name="id" value=""/>
+              <input type="image" src="/images/completed.png"/>
+              </fieldset>
+            </form>
+          </td>
+          <td class="title"></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

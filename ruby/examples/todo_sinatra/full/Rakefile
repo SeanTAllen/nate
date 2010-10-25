@@ -1,0 +1,15 @@
+desc "Run ToDo application example"
+task :run => [ :build ] do
+  system "ruby todo.rb"
+end
+
+desc "Build example"
+task :build => [ :clean ] do
+  system "compass compile"
+end
+
+desc "Cleanup example"
+task :clean do
+  system "rm -rf public/stylesheets/"
+  system "rm -rf .sass_cache/"
+end
