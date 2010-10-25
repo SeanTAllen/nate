@@ -51,6 +51,11 @@ body.bp
   @include span(18, true);
 }
 
+.todolist table tr:nth-child(2n)
+{
+  background-color: #e5ecf9;
+}
+
 .todolist .completion
 {
   text-align: center;
