@@ -1,4 +1,6 @@
-To Run The Example:
+To Run The Example(s):
+
+change into the correct example directory and run:
 
 rake run
 
