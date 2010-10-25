@@ -21,6 +21,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -119,6 +120,29 @@ public class HtmlFragment {
 			throw new RuntimeException(e);
 		} catch (TransformerException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean hasAttribute(String name) {
+		NamedNodeMap attributes = node.getAttributes();
+		if (attributes == null) {
+			return false;
+		}
+		for(int i = 0; i < attributes.getLength(); i++) {
+			if (attributes.item(i).getNodeName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setAttribute(String name, Object value) {
+		NamedNodeMap attributes = node.getAttributes();
+		for(int i = 0; i < attributes.getLength(); i++) {
+			Node attribute = attributes.item(i);
+			if (attribute.getNodeName().equals(name)) {
+				attribute.setTextContent(value.toString());
+			}
 		}
 	}
 }

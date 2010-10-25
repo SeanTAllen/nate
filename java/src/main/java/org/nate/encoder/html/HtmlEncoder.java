@@ -41,15 +41,27 @@ public class HtmlEncoder implements Encoder {
 			Object key = entry.getKey();
 			Object value = entry.getValue();
 			assertType("key", key, String.class);
-			processMapEntry((String) key, value, fragment);
+			applySelector((String) key, value, fragment);
 		}
 	}
 
-	private void processMapEntry(String key, Object value, HtmlFragment fragment) {
+	private void applySelector(String selector, Object value, HtmlFragment fragment) {
 		if (value == null) {
 			return;
 		}
-		Set<HtmlFragment> matchingNodes = fragment.selectNodes(key);
+		if (fragment.hasAttribute(selector)) {
+			applySelectorAsAttributeSelector(selector, value, fragment);
+		} else {
+			applySelectorAsCssSelector(selector, value, fragment);
+		}
+	}
+
+	private void applySelectorAsAttributeSelector(String attributeName, Object value, HtmlFragment fragment) {
+		fragment.setAttribute(attributeName, value);
+	}
+
+	private void applySelectorAsCssSelector(String selector, Object value, HtmlFragment fragment) {
+		Set<HtmlFragment> matchingNodes = fragment.selectNodes(selector);
 		for (HtmlFragment matchingNode : matchingNodes) {
 			injectValueIntoFragment(value, matchingNode);
 		}

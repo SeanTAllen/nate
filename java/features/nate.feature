@@ -69,7 +69,6 @@ Feature:
       | { 'ul' => [] }             | <div></div>          |
       | { 'ul' => { 'li' => [] } } | <div><ul></ul></div> |
                 
-  @wip
   Scenario: match and inject data into element attributes
     Given the HTML fragment "<a href='#'>my link</a>"
       When { 'a' => { 'href' => 'http://www.example.com' } } is injected
@@ -86,7 +85,6 @@ Feature:
       When { 'a' => { 'href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">example.com</a>
       
-  @wip
   Scenario: multiple value matches shouldn't leak from one value to the next
     Given the HTML fragment "<a href='#'>link</a>"
       When { 'a' => [ { 'href' => 'x' }, 'new link' ] } is injected
@@ -102,7 +100,6 @@ Feature:
       | { 'h1' => 'New Header' }         | <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1> |
       | { 'h1' => [ 'Hello', 'There' ] } | <h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1> |
       
-  @wip
   Scenario Outline: value can be anything that has a string representation
     Given the HTML fragment "<a href='#'></a>"
       When <data> is injected

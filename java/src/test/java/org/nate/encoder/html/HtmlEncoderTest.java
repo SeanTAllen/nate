@@ -77,6 +77,14 @@ public class HtmlEncoderTest {
 				transformResult.toHtml());
 	}
 	
+	@Test
+	public void shouldMatchAndInjectIntoElementAttribute() throws Exception {
+		Object document = htmlEncoder.encode("<a href='#'>my link</a>");
+		Object data = singletonMap("a", singletonMap("href", "http://www.example.com"));
+		TransformResult transformResult = htmlEncoder.transformWith(document, data);
+		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", transformResult.toHtml());
+	}
+	
 	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {
 		// Wrap in fake roots in case the xml has multiple roots, otherwise you get a parser exception
 		assertXMLEqual(wrapInFakeRoot(expected), wrapInFakeRoot(actual));
