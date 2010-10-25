@@ -1,0 +1,17 @@
+desc "Run ToDo application example"
+task :run => [ :build ] do
+  system "ruby server"
+end
+
+desc "Build example"
+task :build => [ :clean ] do
+  system "nate templates/index.html posts.yml > public/index.html"
+  system "compass compile"
+end
+
+desc "Cleanup example"
+task :clean do
+  system "rm -f public/index.html"
+  system "rm -rf public/css/"
+  system "rm -rf .sass_cache/"
+end

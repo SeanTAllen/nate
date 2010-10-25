@@ -1,0 +1,28 @@
+--- 
+"#posts li":
+  - a: 
+      href: http://www.monkeysnatchbanana.com/posts/2010/10/04/setting-up-a-monticello-repository-using-nginx.html
+      "*content*": Setting up a Monticello repository using Nginx
+    p: How to setup your own private Monticello repository using Nginx and WebDAV.     
+  - a: 
+      href: http://www.monkeysnatchbanana.com/posts/2010/09/02/in-search-of-twitter-client-nirvana.html
+      "*content*": In search of Twitter client nirvana
+    p: Wherein I ask for help finding my perfect Twitter client.      
+  - a: 
+      href: http://www.monkeysnatchbanana.com/posts/2010/08/17/using-fastcgi-with-nginx-and-seaside.html
+      "*content*": Using FastCGI with Nginx and Seaside
+    p: A bare bones Nginx configuration for using Seaside with FastCGI.  
+  - a: 
+      href: http://www.monkeysnatchbanana.com/posts/2010/06/23/reverse-proxying-to-seaside-with-nginx.html
+      "*content*": Reverse Proxying to Seaside with Nginx
+    p: (Almost) everything you wanted to know about using Nginx as a reverse proxy with Seaside.      
+  - a: 
+      href: http://www.monkeysnatchbanana.com/posts/2010/06/22/faking-a-https-client-for-glass.html
+      "*content*": Faking a https client for GLASS
+    p: How to do outgoing https connections in Gemstone's GLASS even though there isn't a https client.        
+  - a: 
+      href: http://www.monkeysnatchbanana.com/posts/2010/02/01/image-compression-script.html
+      "*content*": Compress images to speed up your website
+    p: A simple ruby script to automate compressing your website's images.
+"#footer": sean@monkeysnatchbanana.com
+"#header": <a href="/"><img src="/images/logo.png" alt="Monkey Snatch Banana" /></a>
