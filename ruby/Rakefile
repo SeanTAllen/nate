@@ -10,6 +10,8 @@ begin
     s.description = 'Description of Nate here'
     s.authors = [ 'Sean T Allen', 'James Ladd' ]
     s.homepage = 'http://github.com/jamesladd/nate/tree/master/ruby/'
+    s.bindir = 'bin'
+    s.executables = 'nate'
     s.files.exclude 'features/'
     s.files.exclude 'spec/'
     s.add_dependency 'hpricot', '>= 0.8.2'

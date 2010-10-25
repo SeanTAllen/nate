@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'nate'
+require 'yaml'
+
+data = YAML.load( File.open( ARGV[ 1] ) )
+engine = Nate::Engine.from_file ARGV[0]
+puts engine.inject_with( data ).render

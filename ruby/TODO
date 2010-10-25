@@ -15,3 +15,7 @@ Consider adding helper functions to Nate::Engine that allow you to make discrete
 in a more 'compact' format like set_attr( 'href', 'http://www.example.com' ) which would set
 any href attribute to http://www.example.com. It might have some value. No immediate concern.
 Just consider for now.
+
+Cleanup requires in the bin/nate script.
+
+Test how template composition would work with yaml in bin/nate.
