@@ -1,6 +1,6 @@
 package org.nate;
 
-import org.nate.encoder.HtmlEncoder;
+import org.nate.encoder.html.HtmlEncoder;
 import org.nate.util.HtmlFile;
 
 import java.io.File;
