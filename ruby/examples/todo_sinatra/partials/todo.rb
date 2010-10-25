@@ -37,7 +37,6 @@ def layout content
 end
 
 def todo_list
-  template =
   todos = ToDo.all( :complete => false )
   todo_data = todos.collect do |todo|
     { '.title' => todo.title,  'input[@name=id]' => { 'value' => todo.id }}
