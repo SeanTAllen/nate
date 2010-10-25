@@ -1,6 +1,11 @@
-desc "Run ToDo application example"
-task :run => [ :build ] do
-  system "ruby todo.rb"
+desc "Run ToDo application example using a layout template"
+task :run_with_layout => [ :build ] do
+  system "ruby todo-layout.rb"
+end
+
+desc "Run ToDo application example without layout template"
+task :run_without_layout => [ :build ] do
+  system "ruby todo-no-layout.rb"
 end
 
 desc "Build example"
