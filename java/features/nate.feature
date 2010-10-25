@@ -69,6 +69,7 @@ Feature:
       | { 'ul' => [] }             | <div></div>          |
       | { 'ul' => { 'li' => [] } } | <div><ul></ul></div> |
                 
+  @wip
   Scenario: match and inject data into element attributes
     Given the HTML fragment "<a href='#'>my link</a>"
       When { 'a' => { 'href' => 'http://www.example.com' } } is injected
@@ -79,11 +80,13 @@ Feature:
       When { 'a' => { 'style' => 'http://www.example.com' } } is injected
       Then the HTML fragment is <h1>Header</h1>
       
+  @wip
   Scenario: when doing an attribute match, special 'content' attribute should change the inner_html
     Given the HTML fragment "<a href='#'>my link</a>"
       When { 'a' => { 'href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">example.com</a>
       
+  @wip
   Scenario: multiple value matches shouldn't leak from one value to the next
     Given the HTML fragment "<a href='#'>link</a>"
       When { 'a' => [ { 'href' => 'x' }, 'new link' ] } is injected
@@ -99,6 +102,7 @@ Feature:
       | { 'h1' => 'New Header' }         | <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1> |
       | { 'h1' => [ 'Hello', 'There' ] } | <h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1> |
       
+  @wip
   Scenario Outline: value can be anything that has a string representation
     Given the HTML fragment "<a href='#'></a>"
       When <data> is injected
@@ -109,12 +113,39 @@ Feature:
       | { 'a' => { 'href' => 1 } } | <a href='1'></a>         |
       | { 'a' => 'click me' }      | <a href="#">click me</a> |
       
+  @wip
   Scenario: embed additional html in my injected data
     Given the HTML fragment "<div></div>"
-    When { 'div' => '<strong>Hi</strong>'} is injected
-    Then the HTML fragment is <div><strong>Hi</strong></div>
+      When { 'div' => '<strong>Hi</strong>'} is injected
+      Then the HTML fragment is <div><strong>Hi</strong></div>
     
   Scenario: use a file rather than a string as source input
     Given the file "features/support/file.html"
       When { 'h1' => 'Monkey in a file' } is injected
       Then the HTML fragment is <h1>Monkey in a file</h1>
+      
+  @wip
+  Scenario: should be able inject in multiple steps
+    Given the HTML fragment "<div id='data'></div>"
+      When { '#data' => '<span></span>' } is injected
+      And { 'span' => 'hello' } is injected sometime later
+      Then the HTML fragment is <div id='data'><span>hello</span></div>
+      
+  @wip
+  Scenario: injection shouldn't modify the original template, only create a new version with changes
+    Given the HTML fragment "<h1>Hi</h1>"
+      When { 'h1' => 'Bye' } is injected
+      Then the original HTML fragment is <h1>Hi</h1>
+      
+  @wip
+  Scenario: should be able to create a new template from content in an existing template 
+    Given the HTML fragment "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>"
+      When "#content" is selected
+      Then the HTML fragment is <h1>Content</h1>
+ 
+   @wip
+   Scenario: should be able to use a nate template as a value when injecting
+     Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"
+       When { '#content' => Nate::Engine.from_string( '<h1>Hello</h1>' ) } is injected
+       Then the HTML fragment is <div id='header'>Header</div><div id='content'><h1>Hello</h1></div>
+      
