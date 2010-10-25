@@ -38,7 +38,7 @@ public class HtmlEncoder implements Encoder {
 			// Javadoc for these says nothing about thread safety, and so we recreate every time.
 			DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = domFactory.newDocumentBuilder();
-			return builder.parse(new ByteArrayInputStream(wrappedSource.getBytes("UTF-8")));
+			return builder.parse(new ByteArrayInputStream(wrappedSource.getBytes()));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		} catch (ParserConfigurationException e) {
