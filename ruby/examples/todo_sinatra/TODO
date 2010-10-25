@@ -4,4 +4,4 @@ Description of what we are doing?
 
 Add table striping to all examples.
 
-Check layout in browsers that aren't chrome.
+Check layout in browsers not on Mac OS X. Looks good in safari, chrome and firefox on Mac OS X.
