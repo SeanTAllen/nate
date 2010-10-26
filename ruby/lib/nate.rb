@@ -64,22 +64,30 @@ module Nate
 
     def transform_hash( node, values)
       unless contains_attributes( node, values)
-        values.each do | selector, value |
-          node.search( selector.to_s).each do | subnode | 
-            transform( subnode, value ) 
-          end
-        end
+        transform_subselection_hash( node, values )
       else
-        values.each do | attribute, value |
-          unless attribute == CONTENT_ATTRIBUTE
-            transform_attribute( node, attribute, value )
-          else
-            transform_node( node, value)
-          end
-        end
+        transform_attribute_hash( node, values )
       end
     end
 
+    def transform_subselection_hash( node, values )
+      values.each do | selector, value |
+        node.search( selector.to_s).each do | subnode | 
+          transform( subnode, value ) 
+        end
+      end
+    end
+    
+    def transform_attribute_hash( node, values )
+      values.each do | attribute, value |
+        unless attribute == CONTENT_ATTRIBUTE
+          transform_attribute( node, attribute, value )
+        else
+          transform_node( node, value)
+        end
+      end
+    end
+    
     def transform_list( node, values )
       nodes = values.collect do | value |
         node_copy = Hpricot( node.to_html ).root
