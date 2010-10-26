@@ -81,11 +81,10 @@ module Nate
     end
 
     def transform_list( node, values )
-      nodes = []
-      values.each do | value |
+      nodes = values.collect do | value |
         node_copy = Hpricot( node.to_html ).root
         transform( node_copy, value )
-        nodes << node_copy.to_html
+        node_copy.to_html
       end
       node_html = nodes.empty? ? ' ' : nodes.join
       node.swap( node_html )
