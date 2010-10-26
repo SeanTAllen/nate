@@ -85,6 +85,14 @@ public class HtmlEncoderTest {
 		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", transformResult.toHtml());
 	}
 	
+	@Test
+	public void shouldAllowValuesToBeAnyObject() throws Exception {
+		Object document = htmlEncoder.encode("<div/>");
+		Object data = singletonMap("div", 42L);
+		TransformResult transformResult = htmlEncoder.transformWith(document, data);
+		assertXmlFragmentsEqual("<div>42</div>", transformResult.toHtml());
+	}
+	
 	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {
 		// Wrap in fake roots in case the xml has multiple roots, otherwise you get a parser exception
 		assertXMLEqual(wrapInFakeRoot(expected), wrapInFakeRoot(actual));

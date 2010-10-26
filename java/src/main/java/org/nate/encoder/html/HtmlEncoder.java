@@ -69,16 +69,12 @@ public class HtmlEncoder implements Encoder {
 
 	@SuppressWarnings("unchecked")
 	private void injectValueIntoFragment(Object value, HtmlFragment fragment) {
-		if (value instanceof String) {
-			fragment.setTextContent((String) value);
-		} else if (value instanceof Iterable) {
+		if (value instanceof Iterable) {
 			injectValuesIntoFragment((Iterable) value, fragment);
 		} else if (value instanceof Map) {
 			processMapEntries((Map) value, fragment);
 		} else {
-			String valueClassName = value == null ? null : value.getClass().getName();
-			throw new IllegalArgumentException("Values must eithore a String, Map or Iterable, but got: "
-					+ valueClassName + ", with value: " + value);
+			fragment.setTextContent(value.toString());
 		}
 	}
 
