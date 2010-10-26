@@ -2,6 +2,7 @@ package org.nate.encoder.html;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -23,7 +24,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import se.fishtank.css.selectors.NodeSelectorException;
@@ -31,15 +33,19 @@ import se.fishtank.css.selectors.dom.DOMNodeSelector;
 
 public class HtmlFragment {
 
+	private static final EntityResolver NULL_ENTITY_RESOLVER = new EntityResolver() {
+		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+			return new InputSource(new StringReader(""));
+		}
+	};
+
 	private final Node node;
 
 	public HtmlFragment(String source) {
-		String wrappedSource = wrapSourceToSupportMultipleFragments(source);
 		try {
 			// Javadoc for these says nothing about thread safety, and so we recreate every time.
-			DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = domFactory.newDocumentBuilder();
-			node = builder.parse(new ByteArrayInputStream(wrappedSource.getBytes()));
+			DocumentBuilder builder = createDocumentParser();
+			node = builder.parse(new ByteArrayInputStream(source.getBytes()));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		} catch (ParserConfigurationException e) {
@@ -54,12 +60,11 @@ public class HtmlFragment {
 	public HtmlFragment(Node node) {
 		this.node = node;
 	}
-
-	private String wrapSourceToSupportMultipleFragments(String source) {
-		// TODO See if there is a better way of doing this.
-		// It allows the input to not be a single full xml document, but instead be multiple fragments
-		// It also allows a transformation to transform a single fragment into multiple fragments.
-		return "<fakeroot>" + source + "</fakeroot>";
+	private DocumentBuilder createDocumentParser() throws ParserConfigurationException {
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = domFactory.newDocumentBuilder();
+		builder.setEntityResolver(NULL_ENTITY_RESOLVER);
+		return builder;
 	}
 
 	public Set<HtmlFragment> selectNodes(String selector) {
@@ -98,12 +103,7 @@ public class HtmlFragment {
 	public String toHtml() {
 		Writer stringWriter = new StringWriter();
 		Result result = new StreamResult(stringWriter);
-		// Need to unwap from the fakeroot node that was added in HtmlEncoder.encode(). Must be a better way!!!
-		NodeList childNodes = node.getChildNodes().item(0).getChildNodes();
-		int length = childNodes.getLength();
-		for (int i = 0; i < length; i++) {
-			convertNodeToString(childNodes.item(i), result);
-		}
+		convertNodeToString(node, result);
 	    return stringWriter.toString();
 	}
 

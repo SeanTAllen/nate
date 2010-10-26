@@ -30,14 +30,14 @@ Feature:
       | {'.content' => 'Hello Content'}  | <div class="section"><span class="content">Hello Content</span></div> |
 
   Scenario Outline: match and inject multiple data values 
-    Given the HTML fragment "<div class='section'><span class='content'></span></div>"
+    Given the HTML fragment "<body><div class='section'><span class='content'></span></div></body>"
       When <data> is injected
       Then the HTML fragment is <transformed>
       
     Examples:
       | data                                          | transformed                                             |
-      | {'.section' => [ 'Section 1', 'Section 2' ] } | <div class="section">Section 1</div><div class="section">Section 2</div>                                |
-      | {'.content' => [ 'Content 1', 'Content 2' ]}  | <div class="section"><span class="content">Content 1</span><span class="content">Content 2</span></div> |
+      | {'.section' => [ 'Section 1', 'Section 2' ] } | <body><div class="section">Section 1</div><div class="section">Section 2</div></body>                             |
+      | {'.content' => [ 'Content 1', 'Content 2' ]}  | <body><div class="section"><span class="content">Content 1</span><span class="content">Content 2</span></div></body> |
 
   Scenario Outline: match and inject values into a subselection of matched html
     Given the HTML fragment "<div class='section'><span class='greeting'></span></div>"
@@ -50,14 +50,14 @@ Feature:
       | { '.section' => { 'span' => 'Hello' } }      | <div class="section"><span class="greeting">Hello</span></div> |
       
   Scenario Outline: match and inject multiple data values into a subselection of matched html
-    Given the HTML fragment "<div class='section'><span class='greeting'></span></div>"
+    Given the HTML fragment "<body><div class='section'><span class='greeting'></span></div></body>"
       When <data> is injected
       Then the HTML fragment is <transformed>
       
     Examples:
       | data                                                                           | transformed |
-      | { '.section' => [ { '.greeting' => 'Hello' }, { '.greeting' => 'Goodbye' } ] } | <div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div> |
-      | { '.section' => [ { 'span' => 'Hello' }, { 'span' => 'Goodbye' } ] }           | <div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div> |
+      | { '.section' => [ { '.greeting' => 'Hello' }, { '.greeting' => 'Goodbye' } ] } | <body><div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div></body> |
+      | { '.section' => [ { 'span' => 'Hello' }, { 'span' => 'Goodbye' } ] }           | <body><div class="section"><span class="greeting">Hello</span></div><div class="section"><span class="greeting">Goodbye</span></div></body> |
 
   Scenario Outline: match and inject empty multiple value container should remove the element
     Given the HTML fragment "<div><ul><li class='character'></li></ul></div>"
@@ -86,19 +86,19 @@ Feature:
       Then the HTML fragment is <a href="http://www.example.com">example.com</a>
       
   Scenario: multiple value matches shouldn't leak from one value to the next
-    Given the HTML fragment "<a href='#'>link</a>"
+    Given the HTML fragment "<body><a href='#'>link</a></body>"
       When { 'a' => [ { 'href' => 'x' }, 'new link' ] } is injected
-      Then the HTML fragment is <a href="x">link</a><a href="#">new link</a>
+      Then the HTML fragment is <body><a href="x">link</a><a href="#">new link</a></body>
       
   Scenario Outline: matches on multiple items should inject into all matches
-    Given the HTML fragment "<h1>First Header</h1><h2>Second Header</h2><h1>Third Header</h1>"
+    Given the HTML fragment "<body><h1>First Header</h1><h2>Second Header</h2><h1>Third Header</h1></body>"
       When <data> is injected
       Then the HTML fragment is <transformed>
 
     Examples:
       | data                             | transformed |
-      | { 'h1' => 'New Header' }         | <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1> |
-      | { 'h1' => [ 'Hello', 'There' ] } | <h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1> |
+      | { 'h1' => 'New Header' }         | <body><h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1></body> |
+      | { 'h1' => [ 'Hello', 'There' ] } | <body><h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1></body> |
       
   Scenario Outline: value can be anything that has a string representation
     Given the HTML fragment "<a href='#'></a>"

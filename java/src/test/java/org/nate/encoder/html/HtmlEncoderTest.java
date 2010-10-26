@@ -51,10 +51,11 @@ public class HtmlEncoderTest {
 
 	@Test
 	public void shouldMatchAndInjectMultipleDataValues() throws Exception {
-		Object document = htmlEncoder.encode("<div class='section'><span class='content'></span></div>");
+		Object document = htmlEncoder.encode("<body><div class='section'><span class='content'></span></div></body>");
 		Map<String, List<String>> data = singletonMap(".section", asList("Section 1", "Section 2"));
 		TransformResult transformResult = htmlEncoder.transformWith(document, data);
-		assertXmlFragmentsEqual("<div class='section'>Section 1</div><div class='section'>Section 2</div>", transformResult.toHtml());
+		assertXmlFragmentsEqual("<body><div class='section'>Section 1</div><div class='section'>Section 2</div></body>",
+				transformResult.toHtml());
 	}
 	
 	@Test
@@ -68,12 +69,12 @@ public class HtmlEncoderTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldMatchAndInjectMultipleDataValuesIntoSubselection() throws Exception {
-		Object document = htmlEncoder.encode("<div class='section'><span class='greeting'></span></div>");
+		Object document = htmlEncoder.encode("<body><div class='section'><span class='greeting'></span></div></body>");
 		Object data = singletonMap(".section", asList(singletonMap(".greeting", "Hello"), singletonMap(".greeting", "Goodbye")));
 		TransformResult transformResult = htmlEncoder.transformWith(document, data);
 		assertXmlFragmentsEqual(
-				"<div class='section'><span class='greeting'>Hello</span></div>" +
-				"<div class='section'><span class='greeting'>Goodbye</span></div>",
+				"<body><div class='section'><span class='greeting'>Hello</span></div>" +
+				"<div class='section'><span class='greeting'>Goodbye</span></div></body>",
 				transformResult.toHtml());
 	}
 	
@@ -91,6 +92,16 @@ public class HtmlEncoderTest {
 		Object data = singletonMap("div", 42L);
 		TransformResult transformResult = htmlEncoder.transformWith(document, data);
 		assertXmlFragmentsEqual("<div>42</div>", transformResult.toHtml());
+	}
+	
+	@Test
+	public void shouldAllowHtmlWithDoctype() throws Exception {
+		Object document = htmlEncoder.encode(
+				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
+				"<html><body><div/></body></html>");
+		Object data = singletonMap("div", "hello");
+		TransformResult transformResult = htmlEncoder.transformWith(document, data);
+		assertXmlFragmentsEqual("<html><body><div>hello</div></body></html>", transformResult.toHtml());
 	}
 	
 	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {
