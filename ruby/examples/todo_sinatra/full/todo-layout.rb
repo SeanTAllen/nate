@@ -8,7 +8,7 @@ require 'nate'
 
 # Datamapper setup
 db_temp_file = Tempfile.new( "nate_todo_db" )
-DataMapper.setup( :default, "sqlite://#{db_temp_file.path}")
+DataMapper.setup( :default, "sqlite://#{db_temp_file.path}" )
 
 class ToDo
   include DataMapper::Resource
@@ -16,7 +16,7 @@ class ToDo
   property :id,         Serial
   property :title,      String
   property :created_at, DateTime
-  property :complete,   Boolean, :default=>false
+  property :complete,   Boolean, :default => false
 
   validates_presence_of :title
 end

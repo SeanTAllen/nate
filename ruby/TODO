@@ -1,7 +1,5 @@
 Added larger scale examples rather than just the simple ones we have on github wiki
 
-Refactor transform_list in Nate::Engine
-
 Add specs once we are a bit more settled.
 
 Look for hpricot gotchas
