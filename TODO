@@ -34,3 +34,6 @@ desired behavior.
 The above wasn't the intended behavior but makes sense when you look at the 
 rules. We need to investigate what the ramifications of changing this to
 only do children of a current selection would be.
+
+Add contributing file with notes about all contributions requiring tests
+and copyright assignment.
