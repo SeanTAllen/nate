@@ -74,7 +74,6 @@ Feature:
       When { 'a' => { 'href' => 'http://www.example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">my link</a>
   
-  @single
   Scenario Outline: non-existent attributes on an element should be ignored
     Given the HTML fragment "<h1 class='glory'>Header</h1>"
       When <data> is injected
