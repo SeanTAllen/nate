@@ -73,11 +73,17 @@ Feature:
     Given the HTML fragment "<a href='#'>my link</a>"
       When { 'a' => { 'href' => 'http://www.example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">my link</a>
-
-  Scenario: non-existent attributes on an element should be ignored
-    Given the HTML fragment "<h1>Header</h1>"
-      When { 'a' => { 'style' => 'http://www.example.com' } } is injected
-      Then the HTML fragment is <h1>Header</h1>
+  
+  @single
+  Scenario Outline: non-existent attributes on an element should be ignored
+    Given the HTML fragment "<h1 class='glory'>Header</h1>"
+      When <data> is injected
+      Then the HTML fragment is <transformed>
+    
+    Examples:
+      | data | transformed |
+      | { 'h1' => { 'style' => 'http://www.example.com' } }                        | <h1 class='glory'>Header</h1>    |
+      | { 'h1' => { 'style' => 'http://www.example.com', 'class' => 'glorious' } } | <h1 class='glorious'>Header</h1> |
       
   Scenario: when doing an attribute match, special 'content' attribute should change the inner_html
     Given the HTML fragment "<a href='#'>my link</a>"

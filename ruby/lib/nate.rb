@@ -103,16 +103,20 @@ module Nate
     end
 
     def transform_attribute( node, attribute, value )
-      node.attributes[ attribute ] = value.to_s
+      if has_attribute?( node, attribute )
+        node.attributes[ attribute ] = value.to_s
+      end
     end
 
     def contains_attributes( node, values )
-      values.keys.any? do | key | 
-        begin
-          node.has_attribute?( key )
-        rescue
-          false 
-        end
+      values.keys.any? { | key | has_attribute?( node, key ) }
+    end
+    
+    def has_attribute?( node, attribute )
+      begin
+        node.has_attribute?( attribute )
+      rescue
+        false 
       end
     end
   end
