@@ -1,6 +1,6 @@
 desc "Run ToDo application example"
 task :run => [ :build ] do
-  system "ruby server"
+  system "ruby server.rb"
 end
 
 desc "Build example"

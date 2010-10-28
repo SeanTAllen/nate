@@ -1,1 +1,3 @@
-Details about nate ruby examples go here.
+msb_index:
+
+  Creation of a 1 page static website using the nate command line tool.

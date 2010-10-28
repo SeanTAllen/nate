@@ -5,3 +5,32 @@ Add documentation about why nate, how nate etc.
 Add documentation about immutability
 
 Think on how to do html escaping and sanitizing.
+
+Add tests in all versions to assure immutability and thread safety are working.
+
+From David:
+----
+I am not sure if this was intended, but the following feature passes
+in the ruby version of nate and should probably be added to
+nate.feature as a form of documentation.
+
+   Given the HTML fragment "<div class='section'><span
+class='greeting'></span></div>"
+     When { '.section' => { '.section' => 'Hello' } } is injected
+     Then the HTML fragment is <div class="section">Hello</div>
+
+In other words, sub-selects can match the current selection.
+
+This makes sense in a way.  The engine initially points at the root
+node(s) and is able to select root nodes.  After a selection, the
+engine points to the selected nodes and so, logically, is able to
+select them again.  Users may find it a little surprising at first
+though.
+
+The Java implementation does not behave this way but, before I start
+modifying it, I thought I had better double check that this is the
+desired behavior.
+---
+The above wasn't the intended behavior but makes sense when you look at the 
+rules. We need to investigate what the ramifications of changing this to
+only do children of a current selection would be.
