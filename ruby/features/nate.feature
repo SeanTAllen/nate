@@ -48,7 +48,7 @@ Feature:
       | data                                         | transformed |
       | { '.section' => { '.greeting' => 'Hello' } } | <div class="section"><span class="greeting">Hello</span></div> |
       | { '.section' => { 'span' => 'Hello' } }      | <div class="section"><span class="greeting">Hello</span></div> |
-      
+  
   Scenario Outline: match and inject multiple data values into a subselection of matched html
     Given the HTML fragment "<div class='section'><span class='greeting'></span></div>"
       When <data> is injected
@@ -68,7 +68,7 @@ Feature:
       | data                       | transformed          |
       | { 'ul' => [] }             | <div></div>          |
       | { 'ul' => { 'li' => [] } } | <div><ul></ul></div> |
-                
+  
   Scenario: match and inject data into element attributes
     Given the HTML fragment "<a href='#'>my link</a>"
       When { 'a' => { 'href' => 'http://www.example.com' } } is injected
@@ -103,7 +103,7 @@ Feature:
       | data                             | transformed |
       | { 'h1' => 'New Header' }         | <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1> |
       | { 'h1' => [ 'Hello', 'There' ] } | <h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1> |
-      
+       
   Scenario Outline: value can be anything that has a string representation
     Given the HTML fragment "<a href='#'></a>"
       When <data> is injected
@@ -123,7 +123,7 @@ Feature:
     Given the file "features/support/file.html"
       When { 'h1' => 'Monkey in a file' } is injected
       Then the HTML fragment is <h1>Monkey in a file</h1>
-      
+  
   Scenario: should be able inject in multiple steps
     Given the HTML fragment "<div id='data'></div>"
       When { '#data' => '<span></span>' } is injected
@@ -135,7 +135,7 @@ Feature:
       When { 'h1' => 'Bye' } is injected
       Then the original HTML fragment is <h1>Hi</h1>
   
-  @single    
+  @single
   Scenario Outline: should be able to create a new template from content in an existing template 
     Given the HTML fragment "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>"
       When <data> is selected
@@ -147,9 +147,19 @@ Feature:
       | "#content"     | <div id='content'><h1>Content</h1></div>                              |
       | "div"          | <div id='header'>Header</div><div id='content'><h1>Content</h1></div> |
       
- 
    Scenario: should be able to use a nate template as a value when injecting
      Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"
        When { '#content' => Nate::Engine.from_string( '<h1>Hello</h1>' ) } is injected
        Then the HTML fragment is <div id='header'>Header</div><div id='content'><h1>Hello</h1></div>
+       
+  Scenario: matches should work on self closing tags
+    Given the HTML fragment "<div/>"
+      When { 'div' => 'hi' } is injected
+      Then the HTML fragment is <div>hi</div>
+      
+  Scenario: matches on multiple items should inject into all matches when using self closing tags
+    Given the HTML fragment "<div/><div/>"
+      When { 'div' => 'hi' } is injected
+      Then the HTML fragment is <div>hi</div><div>hi</div>
+
       

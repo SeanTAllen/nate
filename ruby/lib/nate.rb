@@ -1,5 +1,6 @@
 require 'rubygems'
-require 'hpricot'
+require 'nokogiri'
+require 'lorax'
 
 module Nate
   class Engine
@@ -22,7 +23,7 @@ module Nate
     end
 
     def initialize source, encoder_type = :html
-      @template = source
+      @template = source.sub( /<\?xml version="1.0"\?>\n?/, '')
       case encoder_type
       when :html
         require 'nate/encoder/html'
@@ -34,12 +35,22 @@ module Nate
     end
 
     def inject_with data
-      fragment = transform( Hpricot( encode_template() ), data )
-      Nate::Engine.from_string fragment.to_html
+      template = encode_template()
+      if is_document_fragment?( template )
+        fragment = transform( Nokogiri::XML.fragment( template ), data )
+      else
+        fragment = transform( Nokogiri::XML.parse( template ), data )        
+      end
+      Nate::Engine.from_string fragment.to_xml
     end
 
     def select selector
-      selection = Hpricot( encode_template() ).search( selector.to_s ).to_html
+      template = encode_template()
+      if is_document_fragment?( template )
+        selection = Nokogiri::XML.fragment( template ).css( selector.to_s ).to_xml
+      else
+        selection = Nokogiri::XML.parse( template).css( selector.to_s ).to_xml
+      end
       Nate::Engine.from_string selection
     end
     
@@ -72,7 +83,7 @@ module Nate
 
     def transform_subselection_hash( node, values )
       values.each do | selector, value |
-        node.search( selector.to_s).each do | subnode | 
+        node.css( selector.to_s).each do | subnode | 
           transform( subnode, value ) 
         end
       end
@@ -89,22 +100,22 @@ module Nate
     end
     
     def transform_list( node, values )
-      nodes = values.collect do | value |
-        node_copy = Hpricot( node.to_html ).root
+      nodes = []
+      values.each do | value |
+        node_copy = node.clone
         transform( node_copy, value )
-        node_copy.to_html
+        nodes << node_copy
       end
-      node_html = nodes.empty? ? ' ' : nodes.join
-      node.swap( node_html )
+      node.replace( string_to_fragment( nodes.join ) )
     end
 
     def transform_node( node, value )
-      node.inner_html = value.to_s unless value.nil?
+      node.inner_html = string_to_fragment( value.to_s ) unless value.nil?
     end
 
     def transform_attribute( node, attribute, value )
       if has_attribute?( node, attribute )
-        node.attributes[ attribute ] = value.to_s
+        node[ attribute ] = value.to_s
       end
     end
 
@@ -113,11 +124,20 @@ module Nate
     end
     
     def has_attribute?( node, attribute )
-      begin
-        node.has_attribute?( attribute )
-      rescue
-        false 
+      node[ attribute ].nil? == false 
+    end
+    
+    def string_to_fragment( string )
+      if is_document_fragment?( string )
+        Nokogiri::XML.fragment( string )
+      else
+        Nokogiri::XML.parse( string )
       end
+    end
+    
+    def is_document_fragment?( string )
+      return true if string == ''
+      Lorax::Signature.new( Nokogiri::HTML.parse( Nokogiri::HTML.fragment(string).to_xml ).root ).signature == Lorax::Signature.new( Nokogiri::HTML.parse(string).root).signature
     end
   end
 end
