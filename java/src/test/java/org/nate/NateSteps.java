@@ -1,9 +1,6 @@
 package org.nate;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import cuke4duke.annotation.I18n.EN.Given;
-import cuke4duke.annotation.I18n.EN.Then;
-import cuke4duke.annotation.I18n.EN.When;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +17,11 @@ import javax.script.SimpleScriptContext;
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
 import org.xml.sax.SAXException;
+
+import cuke4duke.annotation.Pending;
+import cuke4duke.annotation.I18n.EN.Given;
+import cuke4duke.annotation.I18n.EN.Then;
+import cuke4duke.annotation.I18n.EN.When;
 
 public class NateSteps {
 
@@ -44,18 +46,33 @@ public class NateSteps {
 	}
 
 	@When("^([^\"]*) is injected$")
-	public void inject(String data) throws ScriptException {
+	public void inject(String data) throws Exception {
 		nateStates.add(currentNateEngine().inject(parseRubyExpression(data)));
 	}
 
 	@Then("^the HTML fragment is (.*)$")
 	public void test(String expectedHtml) throws Exception {
-		assertXmlFragmentsEqual(expectedHtml.trim(), currentNateEngine().render().trim());
+		assertXmlFragmentsEqual(expectedHtml, currentNateEngine().render());
 	}
 
-	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {
+	@When("^(.*) is injected sometime later$")
+	public void isInjectedSometimeLater(String data) throws Exception {
+		inject(data);
+	}
+
+	@Then("^the original HTML fragment is(.*)$")
+	public void theOriginalHTMLFragmentIs(String expectedHtml) throws Exception {
+		assertXmlFragmentsEqual(expectedHtml, nateStates.get(0).render());
+	}
+
+	@When("^\"([^\"]*)\" is selected$")
+	@Pending
+	public void isSelected(String selector) {
+	}
+	
+	private void assertXmlFragmentsEqual(String expected, String actual) throws Exception {
 		// Wrap in fake roots in case the xml has multiple roots, otherwise you get a parser exception
-		assertXMLEqual(wrapInFakeRoot(expected), wrapInFakeRoot(actual));
+		assertXMLEqual(wrapInFakeRoot(expected.trim()), wrapInFakeRoot(actual));
 	}
 
 	private String wrapInFakeRoot(String fragment) {

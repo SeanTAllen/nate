@@ -125,7 +125,8 @@ Feature:
     Given the file "features/support/file.html"
       When { 'h1' => 'Monkey in a file' } is injected
       Then the HTML fragment is <h1>Monkey in a file</h1>
-      
+  
+  @wip    
   Scenario: should be able inject in multiple steps
     Given the HTML fragment "<div id='data'></div>"
       When { '#data' => '<span></span>' } is injected
@@ -137,7 +138,6 @@ Feature:
       When { 'h1' => 'Bye' } is injected
       Then the original HTML fragment is <h1>Hi</h1>
   
-  @single    
   Scenario Outline: should be able to create a new template from content in an existing template 
     Given the HTML fragment "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>"
       When <data> is selected

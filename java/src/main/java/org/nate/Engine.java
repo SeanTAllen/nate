@@ -95,7 +95,6 @@ public class Engine {
 
 	@SuppressWarnings("unchecked")
 	private void injectValuesIntoFragment(Iterable values, Html fragment) {
-		// TODO: THIS IS BROKEN. Rearranges with respect to siblings :-(
 		Html parentNode = fragment.getParentNode();
 		parentNode.removeChild(fragment);
 		for (Object value : values) {
