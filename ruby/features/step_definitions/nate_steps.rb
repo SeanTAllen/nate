@@ -25,6 +25,7 @@ And /(.*) is injected sometime later$/ do |data|
 end
 
 Then /^the HTML fragment is (.*)$/ do |expected_html|
+  #@nate_states.last.render.should == expected_html
   transformed_html = @nate_states.last.render
   Lorax::Signature.new( Nokogiri::HTML(transformed_html).root ).signature.should == Lorax::Signature.new( Nokogiri::HTML(expected_html).root ).signature
 end

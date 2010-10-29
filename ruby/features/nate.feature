@@ -134,11 +134,19 @@ Feature:
     Given the HTML fragment "<h1>Hi</h1>"
       When { 'h1' => 'Bye' } is injected
       Then the original HTML fragment is <h1>Hi</h1>
-      
-  Scenario: should be able to create a new template from content in an existing template 
+  
+  @single    
+  Scenario Outline: should be able to create a new template from content in an existing template 
     Given the HTML fragment "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>"
-      When "#content" is selected
-      Then the HTML fragment is <h1>Content</h1>
+      When <data> is selected
+      Then the HTML fragment is <transformed>
+    
+    Examples:
+      | data           | transformed                                                           |
+      | "#content > *" | <h1>Content</h1>                                                      |
+      | "#content"     | <div id='content'><h1>Content</h1></div>                              |
+      | "div"          | <div id='header'>Header</div><div id='content'><h1>Content</h1></div> |
+      
  
    Scenario: should be able to use a nate template as a value when injecting
      Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"

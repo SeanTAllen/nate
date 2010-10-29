@@ -39,7 +39,7 @@ module Nate
     end
 
     def select selector
-      selection = Hpricot( encode_template() ).search( selector.to_s ).inner_html
+      selection = Hpricot( encode_template() ).search( selector.to_s ).to_html
       Nate::Engine.from_string selection
     end
     
