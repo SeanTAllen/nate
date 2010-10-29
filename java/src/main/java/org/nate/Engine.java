@@ -115,7 +115,7 @@ public class Engine {
 	}
 
 	private void injectEngine(Engine value, Html fragment) {
-		fragment.replaceChildren(value.template);
+		fragment.replaceChildren(value.template.cloneFragment(true));
 	}
 
 	@SuppressWarnings("unchecked")

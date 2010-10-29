@@ -126,6 +126,26 @@ public class EngineTest {
 		assertXmlFragmentsEqual("<div id='header'>Header</div><div id='content'><p>one</p><p>two</p></div>", result.render());
 	}
 	
+	@Test
+	public void shouldNotModifyAnInjectedEngine() throws Exception {
+		Engine source = encodeHtmlFragment("<div><p>hello</p></div>");
+		Engine selection = source.select("p");
+		Engine destination = encodeHtmlFragment("<div class='content'/>");
+		Engine result = destination.inject(singletonMap(".content", selection));
+		assertXmlFragmentsEqual("<div class='content'><p>hello</p></div>", result.render());
+		assertXmlFragmentsEqual("<p>hello</p>", selection.render());
+		
+	}
+	
+	@Test
+	public void shouldBeAbleToInjectASelectionMultipleTimes() throws Exception {
+		Engine source = encodeHtmlFragment("<div><p>hello</p></div>");
+		Engine selection = source.select("p");
+		Engine destination = encodeHtmlFragment("<div class='content'/><div class='content'/>");
+		Engine result = destination.inject(singletonMap(".content", selection));
+		assertXmlFragmentsEqual("<div class='content'><p>hello</p></div><div class='content'><p>hello</p></div>", result.render());
+	}
+	
 	private Engine encodeHtmlFragment(String html) {
 		return Engine.newWith(html, Engine.encoders().encoderFor("HTMLF"));
 	}
