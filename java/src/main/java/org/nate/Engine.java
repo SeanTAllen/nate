@@ -1,6 +1,7 @@
 package org.nate;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.Set;
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
 import org.nate.html.Html;
+import org.nate.html.XmlParserBackedHtml;
 import org.nate.util.HtmlFile;
 
 public class Engine {
@@ -47,6 +49,19 @@ public class Engine {
 		Html fragment = template.cloneFragment(true);
 		processMapEntries((Map) data, fragment);
 		return new Engine(fragment);
+	}
+
+	public Engine select(String selector) {
+		List<Html> selectedNodes = clone(template.selectNodes(selector));
+		return new Engine(new XmlParserBackedHtml(selectedNodes));
+	}
+
+	private List<Html> clone(List<Html> nodes) {
+		List<Html> clones = new ArrayList<Html>(nodes.size());
+		for (Html node : nodes) {
+			clones.add(node.cloneFragment(true));
+		}
+		return clones;
 	}
 
 	@SuppressWarnings("unchecked")

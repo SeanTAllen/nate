@@ -39,11 +39,11 @@ public class XmlParserBackedHtml implements Html {
 
 	private static final String FAKEROOT = "fakeroot";
 
-	public static Html fromDocument(String source) {
+	public static XmlParserBackedHtml fromDocument(String source) {
 		return new XmlParserBackedHtml(source);
 	}
 	
-	public static Html fromFragment(String source) {
+	public static XmlParserBackedHtml fromFragment(String source) {
 		Element fakeNode = wrapInFakeRootElement(source);
 		assert fakeNode.getNodeName().equals(FAKEROOT) : "Expected fakeroot but got " + fakeNode.getNodeName();
 		return new XmlParserBackedHtml(fakeNode);
@@ -61,7 +61,20 @@ public class XmlParserBackedHtml implements Html {
 	public XmlParserBackedHtml(Node node) {
 		this.node = node;
 	}
-	
+
+	public XmlParserBackedHtml(List<Html> htmlFragments) {
+		this.node = fromFragment("").node;
+		for (Html fragment : htmlFragments) {
+			Node newNode = ((XmlParserBackedHtml)fragment).node;
+			adopt(newNode);
+			this.node.appendChild(newNode);
+		}
+	}
+
+	private void adopt(Node newNode) {
+		node.getOwnerDocument().adoptNode(newNode);
+	}
+
 	private XmlParserBackedHtml(String source) {
 		try {
 			// Javadoc for these says nothing about thread safety, and so we recreate every time.
@@ -122,7 +135,6 @@ public class XmlParserBackedHtml implements Html {
 		return hasFakeRoot() ? fakeRootToString() : documentToString();
 	}
 	
-
 	private boolean hasFakeRoot() {
 		return node.getNodeName().equals(FAKEROOT);
 	}

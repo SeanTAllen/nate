@@ -102,6 +102,13 @@ public class EngineTest {
 		assertXmlFragmentsEqual("<html><body><div>hello</div></body></html>", result.render());
 	}
 	
+	@Test
+	public void shouldBeAbleToExtractClippings() throws Exception {
+		Engine engine = encodeHtmlFragment("<div id='header'>Header</div><div id='content'><h1>Content</h1></div>");
+		Engine header = engine.select("#header");
+		assertXmlFragmentsEqual("<div id='header'>Header</div>", header.render());
+	}
+	
 	private Engine encodeHtmlFragment(String html) {
 		return Engine.newWith(html, Engine.encoders().encoderFor("HTMLF"));
 	}
