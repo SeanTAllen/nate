@@ -126,10 +126,9 @@ Feature:
       When { 'h1' => 'Monkey in a file' } is injected
       Then the HTML fragment is <h1>Monkey in a file</h1>
   
-  @wip    
   Scenario: should be able inject in multiple steps
     Given the HTML fragment "<div id='data'></div>"
-      When { '#data' => '<span></span>' } is injected
+      When { '#data' => Nate::Engine.from_string('<span></span>') } is injected
       And { 'span' => 'hello' } is injected sometime later
       Then the HTML fragment is <div id='data'><span>hello</span></div>
       
@@ -150,7 +149,6 @@ Feature:
       | "div"          | <div id='header'>Header</div><div id='content'><h1>Content</h1></div> |
       
  
-   @wip
    Scenario: should be able to use a nate template as a value when injecting
      Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"
        When { '#content' => Nate::Engine.from_string( '<h1>Hello</h1>' ) } is injected

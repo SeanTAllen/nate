@@ -35,6 +35,8 @@ import org.xml.sax.SAXException;
 import se.fishtank.css.selectors.NodeSelectorException;
 import se.fishtank.css.selectors.dom.DOMNodeSelector;
 
+import static java.util.Collections.*;
+
 public class XmlParserBackedHtml implements Html {
 
 	private static final String FAKEROOT = "fakeroot";
@@ -65,6 +67,7 @@ public class XmlParserBackedHtml implements Html {
 	public XmlParserBackedHtml(List<Html> htmlFragments) {
 		this.node = fromFragment("").node;
 		for (Html fragment : htmlFragments) {
+			// TODO: Nice if we could avoid this casting.
 			Node newNode = ((XmlParserBackedHtml)fragment).node;
 			adopt(newNode);
 			this.node.appendChild(newNode);
@@ -120,19 +123,38 @@ public class XmlParserBackedHtml implements Html {
 	}
 
 	public void removeChild(Html child) {
+		// TODO: Nice if we could avoid this casting.
 		node.removeChild(((XmlParserBackedHtml)child).node);
 	}
 
 	public Html cloneFragment(boolean deep) {
+		// TODO: Nice if we could avoid this casting.
 		return new XmlParserBackedHtml(node.cloneNode(deep));
 	}
 
-	public void appendChild(Html newNode) {
-		node.appendChild(((XmlParserBackedHtml)newNode).node);
+	public void appendChild(Html newFragment) {
+		// TODO: Nice if we could avoid this casting.
+		node.appendChild(((XmlParserBackedHtml)newFragment).node);
+	}
+
+	public void replaceChildren(Html newFragment) {
+		removeChildren();
+		// TODO: Nice if we could avoid this casting.
+		List<Node> newNodes = ((XmlParserBackedHtml)newFragment).getChildNodes();
+		for (Node newNode : newNodes) {
+			adopt(newNode);
+			node.appendChild(newNode);
+		}
 	}
 
 	public String toHtml() {
 		return hasFakeRoot() ? fakeRootToString() : documentToString();
+	}
+
+	private void removeChildren() {
+		for (Node node : getChildNodes()) {
+			node.removeChild(node);
+		}
 	}
 	
 	private boolean hasFakeRoot() {
@@ -147,15 +169,10 @@ public class XmlParserBackedHtml implements Html {
 	}
 
 	private String fakeRootToString() {
-		NodeList childNodes = node.getChildNodes();
-		if (childNodes == null) {
-			return "";
-		}
 		Writer stringWriter = new StringWriter();
 		Result result = new StreamResult(stringWriter);
-		int length = childNodes.getLength();
-		for(int i = 0; i < length; i++) {
-			convertNodeToString(childNodes.item(i), result);
+		for (Node childNode : getChildNodes()) {
+			convertNodeToString(childNode, result);
 		}
 		return stringWriter.toString();
 	}
@@ -197,6 +214,18 @@ public class XmlParserBackedHtml implements Html {
 				attribute.setTextContent(value.toString());
 			}
 		}
+	}
+	private List<Node> getChildNodes() {
+		NodeList nodeList = node.getChildNodes();
+		if (nodeList == null) {
+			return emptyList();
+		}
+		List<Node> result = new ArrayList<Node>();
+		int length = nodeList.getLength();
+		for (int i = 0; i < length; i++) {
+			result.add(nodeList.item(i));
+		}
+		return result;
 	}
 
 	private static final EntityResolver NULL_ENTITY_RESOLVER = new EntityResolver() {

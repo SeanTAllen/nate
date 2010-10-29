@@ -104,6 +104,10 @@ public class Encoders {
 		public String toHtml() {
 			return source;
 		}
+
+		@Override
+		public void replaceChildren(Html template) {
+		}
 		
 	}
 }

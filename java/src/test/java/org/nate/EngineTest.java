@@ -109,6 +109,23 @@ public class EngineTest {
 		assertXmlFragmentsEqual("<div id='header'>Header</div>", header.render());
 	}
 	
+	@Test
+	public void shouldBeAbleToInjectNateEnginesIntoNateEngines() throws Exception {
+		Engine engine1 = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
+		Engine engine2 = encodeHtmlFragment("<h1>Hello</h1>");
+		Engine result = engine1.inject(singletonMap("#content", engine2));
+		assertXmlFragmentsEqual("<div id='header'>Header</div><div id='content'><h1>Hello</h1></div>", result.render());
+	}
+	
+	@Test
+	public void shouldBeAbleToInjectASeletionFromOneDocumentToAnother() throws Exception {
+		Engine source = encodeHtmlFragment("<div> <p>one</p> and <p>two</p> </div>");
+		Engine selection = source.select("p");
+		Engine destination = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
+		Engine result = destination.inject(singletonMap("#content", selection));
+		assertXmlFragmentsEqual("<div id='header'>Header</div><div id='content'><p>one</p><p>two</p></div>", result.render());
+	}
+	
 	private Engine encodeHtmlFragment(String html) {
 		return Engine.newWith(html, Engine.encoders().encoderFor("HTMLF"));
 	}

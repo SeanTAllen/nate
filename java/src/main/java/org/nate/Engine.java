@@ -34,6 +34,10 @@ public class Engine {
 		this.template = fragment;
 	}
 
+	public static Engine newWith(String source) {
+		return new Engine(source, encoders.encoderFor("HTMLF"));
+	}
+
 	public static Engine newWith(String source, Encoder encoder) {
 		return new Engine(source, encoder);
 	}
@@ -103,9 +107,15 @@ public class Engine {
 			injectValuesIntoFragment((Iterable) value, fragment);
 		} else if (value instanceof Map) {
 			processMapEntries((Map) value, fragment);
+		} else if (value instanceof Engine) {
+			injectEngine((Engine)value, fragment);
 		} else {
 			fragment.setTextContent(value.toString());
 		}
+	}
+
+	private void injectEngine(Engine value, Html fragment) {
+		fragment.replaceChildren(value.template);
 	}
 
 	@SuppressWarnings("unchecked")

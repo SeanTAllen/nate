@@ -80,14 +80,21 @@ public class NateSteps {
 	// { 'h2' => 'Monkey' } 
 	private Object parseRubyExpression(String rubyString) throws ScriptException {
 		ScriptEngine rubyEngine = new ScriptEngineManager().getEngineByName("jruby");
-		defineRubyConstants(rubyEngine);
+		defineRubyConstantsAndMethods(rubyEngine);
 		Object result = rubyEngine.eval(rubyString, new SimpleScriptContext());
 		return convertToOrdinaryJavaClasses(result);
 	}
 
-	private void defineRubyConstants(ScriptEngine rubyEngine) throws ScriptException {
+	private void defineRubyConstantsAndMethods(ScriptEngine rubyEngine) throws ScriptException {
 		// This is so that the features can use Nate::Engine::CONTENT_ATTRIBUTE
-		rubyEngine.eval("module Nate\n class Engine\n CONTENT_ATTRIBUTE = '*content*'\n end\n end\n");
+		rubyEngine.eval(
+				"require 'java'\n" +
+				"module Nate\n class Engine\n" +
+				" CONTENT_ATTRIBUTE = '*content*'\n" +
+				" def self.from_string source\n" +
+				"     org.nate.Engine.newWith(source)\n" +
+				" end\n" +
+				" end\n end\n");
 	}
 
 	// Would actually not need to do this, except that RubyHash and RubyArray seem to have been loaded
@@ -115,7 +122,7 @@ public class NateSteps {
 	}
 
 	private boolean isAnAcceptableJavaType(Object rubyObject) {
-		return rubyObject instanceof String || rubyObject instanceof Number;
+		return rubyObject instanceof String || rubyObject instanceof Number || rubyObject instanceof Engine;
 	}
 
 	private Map<String, Object> convertToJavaMap(RubyHash hash) {

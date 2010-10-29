@@ -22,4 +22,6 @@ public interface Html {
 
 	void setAttribute(String name, Object value);
 
+	void replaceChildren(Html template);
+
 }
