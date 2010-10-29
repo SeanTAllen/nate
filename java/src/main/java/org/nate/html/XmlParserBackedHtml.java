@@ -1,4 +1,4 @@
-package org.nate.encoder.html;
+package org.nate.html;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -6,7 +6,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -22,8 +23,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -31,17 +35,34 @@ import org.xml.sax.SAXException;
 import se.fishtank.css.selectors.NodeSelectorException;
 import se.fishtank.css.selectors.dom.DOMNodeSelector;
 
-public class HtmlFragment {
+public class XmlParserBackedHtml implements Html {
 
-	private static final EntityResolver NULL_ENTITY_RESOLVER = new EntityResolver() {
-		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-			return new InputSource(new StringReader(""));
-		}
-	};
+	private static final String FAKEROOT = "fakeroot";
 
+	public static Html fromDocument(String source) {
+		return new XmlParserBackedHtml(source);
+	}
+	
+	public static Html fromFragment(String source) {
+		Element fakeNode = wrapInFakeRootElement(source);
+		assert fakeNode.getNodeName().equals(FAKEROOT) : "Expected fakeroot but got " + fakeNode.getNodeName();
+		return new XmlParserBackedHtml(fakeNode);
+	}
+
+	private static Element wrapInFakeRootElement(String source) {
+		String wrappedSource = String.format("<%s>%s</%s>", FAKEROOT, source, FAKEROOT); 
+		XmlParserBackedHtml document = new XmlParserBackedHtml(wrappedSource);
+		return ((Document)(document.node)).getDocumentElement();
+	}
+
+	// This node is the fakeroot element when this is a fragment, otherwise it is the Document node.
 	private final Node node;
 
-	public HtmlFragment(String source) {
+	public XmlParserBackedHtml(Node node) {
+		this.node = node;
+	}
+	
+	private XmlParserBackedHtml(String source) {
 		try {
 			// Javadoc for these says nothing about thread safety, and so we recreate every time.
 			DocumentBuilder builder = createDocumentParser();
@@ -57,9 +78,6 @@ public class HtmlFragment {
 		}
 	}
 
-	public HtmlFragment(Node node) {
-		this.node = node;
-	}
 	private DocumentBuilder createDocumentParser() throws ParserConfigurationException {
 		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
@@ -67,12 +85,12 @@ public class HtmlFragment {
 		return builder;
 	}
 
-	public Set<HtmlFragment> selectNodes(String selector) {
+	public List<Html> selectNodes(String selector) {
 		try {
 			Set<Node> matchingNodes = new DOMNodeSelector(node).querySelectorAll(selector);
-			Set<HtmlFragment> result = new HashSet<HtmlFragment>(matchingNodes.size());
+			List<Html> result = new ArrayList<Html>(matchingNodes.size());
 			for (Node matchingNode : matchingNodes) {
-				result.add(new HtmlFragment(matchingNode));
+				result.add(new XmlParserBackedHtml(matchingNode));
 			}
 			return result;
 		} catch (NodeSelectorException e) {
@@ -84,27 +102,50 @@ public class HtmlFragment {
 		node.setTextContent(value);
 	}
 
-	public HtmlFragment getParentNode() {
-		return new HtmlFragment(node.getParentNode());
+	public Html getParentNode() {
+		return new XmlParserBackedHtml(node.getParentNode());
 	}
 
-	public void removeChild(HtmlFragment child) {
-		node.removeChild(child.node);
+	public void removeChild(Html child) {
+		node.removeChild(((XmlParserBackedHtml)child).node);
 	}
 
-	public HtmlFragment cloneFragment(boolean deep) {
-		return new HtmlFragment(node.cloneNode(deep));
+	public Html cloneFragment(boolean deep) {
+		return new XmlParserBackedHtml(node.cloneNode(deep));
 	}
 
-	public void appendChild(HtmlFragment newNode) {
-		node.appendChild(newNode.node);
+	public void appendChild(Html newNode) {
+		node.appendChild(((XmlParserBackedHtml)newNode).node);
 	}
 
 	public String toHtml() {
+		return hasFakeRoot() ? fakeRootToString() : documentToString();
+	}
+	
+
+	private boolean hasFakeRoot() {
+		return node.getNodeName().equals(FAKEROOT);
+	}
+	
+	private String documentToString() {
 		Writer stringWriter = new StringWriter();
 		Result result = new StreamResult(stringWriter);
 		convertNodeToString(node, result);
 	    return stringWriter.toString();
+	}
+
+	private String fakeRootToString() {
+		NodeList childNodes = node.getChildNodes();
+		if (childNodes == null) {
+			return "";
+		}
+		Writer stringWriter = new StringWriter();
+		Result result = new StreamResult(stringWriter);
+		int length = childNodes.getLength();
+		for(int i = 0; i < length; i++) {
+			convertNodeToString(childNodes.item(i), result);
+		}
+		return stringWriter.toString();
 	}
 
 	private void convertNodeToString(Node node, Result result) {
@@ -145,4 +186,11 @@ public class HtmlFragment {
 			}
 		}
 	}
+
+	private static final EntityResolver NULL_ENTITY_RESOLVER = new EntityResolver() {
+		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+			return new InputSource(new StringReader(""));
+		}
+	};
+
 }

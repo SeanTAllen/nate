@@ -1,13 +1,16 @@
 package org.nate;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.nate.html.Html;
 
 public class Encoders {
 
 	private static final Encoder NULL_ENCODER = new NullEncoder();
-	private static final TransformResult NULL_TRANSFORM_RESULT = new NullTransformResult();
 
 	private Map<String, Encoder> encoders = new HashMap<String, Encoder>();
 
@@ -27,8 +30,9 @@ public class Encoders {
 	}
 
 	private Encoder encoderForType(String type) {
-		if (encoders.containsKey(type))
+		if (encoders.containsKey(type)) {
 			return encoders.get(type);
+		}
 		return NULL_ENCODER;
 	}
 
@@ -46,12 +50,60 @@ public class Encoders {
 
 	private static class NullEncoder implements Encoder {
 		public String type() { return "null"; }
-		public Object encode(String source) { return null; }
-		public TransformResult transformWith(Object template, Object data) { return NULL_TRANSFORM_RESULT; }
+		public Html encode(String source) { return new NullHtml(source); }
 		public boolean isNullEncoder() { return true; }
 	}
+	
+	private static class NullHtml implements Html {
 
-	private static class NullTransformResult implements TransformResult {
-		public String toHtml() { return ""; }
+		private final String source;
+
+		public NullHtml(String source) {
+			this.source = source;
+		}
+
+		@Override
+		public void appendChild(Html newNode) {
+			
+		}
+
+		@Override
+		public Html cloneFragment(boolean deep) {
+			return new NullHtml(source);
+		}
+
+		@Override
+		public Html getParentNode() {
+			return this;
+		}
+
+		@Override
+		public boolean hasAttribute(String name) {
+			return false;
+		}
+
+		@Override
+		public void removeChild(Html child) {
+			
+		}
+
+		@Override
+		public List<Html> selectNodes(String selector) {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public void setAttribute(String name, Object value) {
+		}
+
+		@Override
+		public void setTextContent(String value) {
+		}
+
+		@Override
+		public String toHtml() {
+			return source;
+		}
+		
 	}
 }

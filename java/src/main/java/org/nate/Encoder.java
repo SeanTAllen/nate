@@ -1,8 +1,9 @@
 package org.nate;
 
+import org.nate.html.Html;
+
 public interface Encoder {
 	boolean isNullEncoder();
 	String type();
-	Object encode(String source);
-	TransformResult transformWith(Object template, Object data);
+	Html encode(String source);
 }

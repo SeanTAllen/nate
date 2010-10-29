@@ -24,9 +24,7 @@ import org.xml.sax.SAXException;
 public class NateSteps {
 
 
-	private Engine nate;
-	private Encoder encoder;
-	private String transformedHtml;
+	private List<Engine> nateStates = new ArrayList<Engine>();
 
 	static {
 		// Needed to allow us to evaluate Ruby code without interfering with Cucumber!
@@ -35,23 +33,24 @@ public class NateSteps {
 
 	@Given("^the HTML fragment \"([^\"]*)\"$")
 	public void setHtml(String html) {
-		encoder = Engine.encoders().encoderFor("HTML");
-		nate = Engine.newWith(html, encoder);
+		Engine nate = Engine.newWith(html, Engine.encoders().encoderFor("HTMLF"));
+		nateStates.add(nate);
 	}
 
 	@Given("^the file \"([^\"]*)\"$")
 	public void theFile(String filename) {
-		nate = Engine.newWith(new File(filename));
+		Engine nate = Engine.newWith(new File(filename));
+		nateStates.add(nate);
 	}
 
 	@When("^([^\"]*) is injected$")
 	public void inject(String data) throws ScriptException {
-		transformedHtml = nate.inject(parseRubyExpression(data));
+		nateStates.add(currentNateEngine().inject(parseRubyExpression(data)));
 	}
 
 	@Then("^the HTML fragment is (.*)$")
 	public void test(String expectedHtml) throws Exception {
-		assertXmlFragmentsEqual(expectedHtml.trim(), transformedHtml.trim());
+		assertXmlFragmentsEqual(expectedHtml.trim(), currentNateEngine().render().trim());
 	}
 
 	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {
@@ -114,6 +113,11 @@ public class NateSteps {
 			result.put((String) key, convertToOrdinaryJavaClasses(hash.get(key)));
 		}
 		return result;
+	}
+
+
+	private Engine currentNateEngine() {
+		return nateStates.get(nateStates.size() - 1);
 	}
 
 }
