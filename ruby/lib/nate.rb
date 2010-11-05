@@ -182,6 +182,12 @@ module Nate
   end
 end
 
+# work around for missing nokogiri feature ( search working correctly on document fragments )
+# and bug fix that said feature exposed. these will go into nokogiri eventually but first,
+# xpath issues have to be addressed. this monkeypatch will break xpath support using 'search'
+# on document fragments w/ nokogiri but, those dont function properly in most cases right now
+# anyway.
+
 module Nokogiri
   module XML
     class DocumentFragment
