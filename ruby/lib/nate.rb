@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'nokogiri'
-require 'lorax'
 
 module Nate
   class Engine
