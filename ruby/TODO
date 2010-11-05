@@ -17,3 +17,11 @@ Just consider for now.
 Cleanup requires in the bin/nate script.
 
 Test how template composition would work with yaml in bin/nate.
+
+check case sensitivity of tags
+
+deal with mangled DOCTYPE string that comes from passing it through Nokogiri::XML.fragment
+
+xml probably doesnt work due to namespaces
+
+feature to test namespace handling

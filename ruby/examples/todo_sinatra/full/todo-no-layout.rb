@@ -36,11 +36,11 @@ get '/' do
   end 
   data = { '.todo' => todo_data }
   
-  List.inject_with( '.todolist' => data ).render
+  List.inject_with( '.todolist' => data ).to_xhtml
 end
 
 get '/new' do
-  AddToDo.render
+  AddToDo.to_xhtml
 end
 
 post '/add' do

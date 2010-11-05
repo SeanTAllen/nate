@@ -135,7 +135,6 @@ Feature:
       When { 'h1' => 'Bye' } is injected
       Then the original HTML fragment is <h1>Hi</h1>
   
-  @single
   Scenario Outline: should be able to create a new template from content in an existing template 
     Given the HTML fragment "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>"
       When <data> is selected
@@ -161,5 +160,23 @@ Feature:
     Given the HTML fragment "<div/><div/>"
       When { 'div' => 'hi' } is injected
       Then the HTML fragment is <div>hi</div><div>hi</div>
-
       
+  Scenario Outline: should match in namespaces
+    Given the HTML fragment "<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>"
+      When <data> is selected
+      Then the HTML fragment is <transformed>
+      
+    Examples:
+      | data | transformed |
+      | "body" | <body><div id='header'>header</div></body> |
+      | "#header" | <div id='header'>header</div> |
+    
+  Scenario Outline: should inject with namespaces
+    Given the HTML fragment "<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>"
+      When <data> is inject
+      Then the HTML fragment is <transformed>  
+    
+      | data                 | transformed |
+      | { 'body' => 'hi' }   | <html xmls='http://www.w3.org/1999/xhtml'><body>hi</body></html> |
+      | { '#header' => 'bye' | <html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>bye</div></body></html> |
+
