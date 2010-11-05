@@ -1,5 +1,6 @@
 require 'rubygems'
-require 'hpricot'
+require 'nokogiri'
+require 'lorax'
 
 module Nate
   class Engine
@@ -11,7 +12,7 @@ module Nate
 
     def self.from_file path
       case path
-      when /\.htm(l)?/
+      when /\.(x)?htm(l)?/
         encoder_type = :html
       when /\.h(a)?ml/
         encoder_type = :haml
@@ -34,21 +35,41 @@ module Nate
     end
 
     def inject_with data
-      fragment = transform( Hpricot( encode_template() ), data )
-      Nate::Engine.from_string fragment.to_html
+      template = encode_template()
+      fragment = transform( Nokogiri::XML.fragment( template ), data )
+      Nate::Engine.from_string fragment.to_xml
     end
 
     def select selector
-      selection = Hpricot( encode_template() ).search( selector.to_s ).to_html
-      Nate::Engine.from_string selection
+      fragment = Nokogiri::XML.fragment( encode_template() )
+      if selector =~ /^content:/
+        selector.gsub! /^content:/, ''
+        selection = select_all( fragment, selector )
+      else
+        selection = select_elements( fragment, selector )
+      end
+      Nate::Engine.from_string selection.to_xml
     end
     
-    def render
-      encode_template()
+    def render encode_as = :html
+      template = encode_template()
+      to_method = string_to_fragment( template ).method( "to_#{encode_as}")
+      to_method.call
     end
 
-    alias :to_html :render
-    alias :to_s :render
+    def to_html
+      render :html
+    end
+    
+    def to_xhtml
+      render :xhtml
+    end
+    
+    def to_xml
+      render :xml
+    end
+    
+    alias :to_s :to_xml
     
     private    
     def transform( node, values )
@@ -72,7 +93,7 @@ module Nate
 
     def transform_subselection_hash( node, values )
       values.each do | selector, value |
-        node.search( selector.to_s).each do | subnode | 
+        search( node, selector ).each do | subnode | 
           transform( subnode, value ) 
         end
       end
@@ -89,22 +110,22 @@ module Nate
     end
     
     def transform_list( node, values )
-      nodes = values.collect do | value |
-        node_copy = Hpricot( node.to_html ).root
+      nodes = []
+      values.each do | value |
+        node_copy = node.clone
         transform( node_copy, value )
-        node_copy.to_html
+        nodes << node_copy
       end
-      node_html = nodes.empty? ? ' ' : nodes.join
-      node.swap( node_html )
+      node.replace( string_to_fragment( nodes.join ) )
     end
 
     def transform_node( node, value )
-      node.inner_html = value.to_s unless value.nil?
+      node.inner_html = string_to_fragment( value.to_s ) unless value.nil?
     end
 
     def transform_attribute( node, attribute, value )
       if has_attribute?( node, attribute )
-        node.attributes[ attribute ] = value.to_s
+        node[ attribute ] = value.to_s
       end
     end
 
@@ -113,10 +134,92 @@ module Nate
     end
     
     def has_attribute?( node, attribute )
-      begin
-        node.has_attribute?( attribute )
-      rescue
-        false 
+      node[ attribute ].nil? == false 
+    end
+    
+    def string_to_fragment( string )
+      Nokogiri::XML.fragment( string )
+    end
+    
+    def search( fragment_or_node, selector )
+      ns = namespace( fragment_or_node )
+      args = [ selector.to_s ]
+      args.push ns if has_namespace?( fragment_or_node )
+      fragment_or_node.search( *args )
+    end
+    
+    def select_elements( fragment, selector )
+      selection = search( fragment, selector )
+    end
+    
+    def select_all( fragment, selector )
+      all = select_elements( fragment, selector ).inner_html
+      string_to_fragment( all )
+    end
+    
+    def has_namespace? fragment
+      fragment.children().each() do | node |
+        begin
+          return true if node.namespace.href
+        rescue
+          ''
+        end
+      end   
+      return false   
+    end
+    
+    def namespace( fragment )
+      fragment.children().each() do | node |
+        begin
+          if node.namespace.href
+            ns = node.namespace.prefix ? "xmlns:#{node.namespace.prefix}" : 'xmlns'
+            return { ns => node.namespace.href}
+          end
+        rescue
+          ''
+        end
+      end
+    end
+  end
+end
+
+module Nokogiri
+  module XML
+    class DocumentFragment
+      def search( *args )
+        if children.any?
+          children.search(*args)
+        else
+          NodeSet.new(document)
+        end
+      end
+    end
+    
+    class NodeSet
+      def css *paths
+        handler = ![
+          Hash, String, Symbol
+        ].include?(paths.last.class) ? paths.pop : nil
+
+        ns = paths.last.is_a?(Hash) ? paths.pop : nil
+
+        sub_set = NodeSet.new(document)
+
+        each do |node|
+          doc = node.document
+          search_ns = ns || (doc.root ? doc.root.namespaces : {})
+
+          xpaths = paths.map { |rule|
+            [
+              CSS.xpath_for(rule.to_s, :prefix => ".//", :ns => search_ns),
+              CSS.xpath_for(rule.to_s, :prefix => "self::", :ns => search_ns)
+            ].join(' | ')
+          }
+
+          sub_set += node.xpath(*(xpaths + [search_ns, handler].compact))
+        end
+        document.decorate(sub_set)
+        sub_set
       end
     end
   end
