@@ -51,7 +51,7 @@ module Nate
     
     def render render_as = :html
       doc_fragment = template_to_fragment()
-      render_method = doc_frag.method( "to_#{render_as}")
+      render_method = doc_fragment.method( "to_#{render_as}")
       render_method.call
     end
 
