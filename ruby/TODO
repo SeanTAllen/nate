@@ -6,6 +6,7 @@ Look for nokogiri gotchas
 
 Needs some more testing to figure out what happens if we match multiple items in select.
 Might want to limit to ids only.
+This is underway with the content: tests. Need to beef up other plain select tests to match.
 
 Refactor/rework features. Maybe break up into smaller features? Certainly, reword.
 
@@ -25,3 +26,5 @@ deal with mangled DOCTYPE string that comes from passing it through Nokogiri::XM
 xml probably doesnt work due to namespaces
 
 feature to test namespace handling
+
+xpaths are totally broken in nokogiri right now. add xpaths support and tests once that is fixed.

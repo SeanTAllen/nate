@@ -41,8 +41,13 @@ module Nate
     end
 
     def select selector
-      template = encode_template()
-      selection = search( Nokogiri::XML.fragment( template ), selector )
+      fragment = Nokogiri::XML.fragment( encode_template() )
+      if selector =~ /^content:/
+        selector.gsub! /^content:/, ''
+        selection = select_all( fragment, selector )
+      else
+        selection = select_elements( fragment, selector )
+      end
       Nate::Engine.from_string selection.to_xml
     end
     
@@ -141,6 +146,15 @@ module Nate
       args = [ selector.to_s ]
       args.push ns if has_namespace?( fragment_or_node )
       fragment_or_node.search( *args )
+    end
+    
+    def select_elements( fragment, selector )
+      selection = search( fragment, selector )
+    end
+    
+    def select_all( fragment, selector )
+      all = select_elements( fragment, selector ).inner_html
+      string_to_fragment( all )
     end
     
     def has_namespace? fragment

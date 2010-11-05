@@ -146,6 +146,16 @@ Feature:
       | "#content"     | <div id='content'><h1>Content</h1></div>                              |
       | "div"          | <div id='header'>Header</div><div id='content'><h1>Content</h1></div> |
       
+  Scenario Outline: should be able to select all content including text nodes when doing a select
+    Given the HTML fragment "<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>"
+      When <data> is selected
+      Then the HTML fragment is <transformed>
+      
+    Examples:
+      | data | transformed |
+      | "content:#header" | header text |
+      | "content:div" | header textcontent text<h1>footer</h1> |
+      
    Scenario: should be able to use a nate template as a value when injecting
      Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"
        When { '#content' => Nate::Engine.from_string( '<h1>Hello</h1>' ) } is injected
@@ -178,5 +188,6 @@ Feature:
     
       | data                 | transformed |
       | { 'body' => 'hi' }   | <html xmls='http://www.w3.org/1999/xhtml'><body>hi</body></html> |
-      | { '#header' => 'bye' | <html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>bye</div></body></html> |
+      | { '#header' => 'bye' | <html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>bye</div></body></html> |      
+
 

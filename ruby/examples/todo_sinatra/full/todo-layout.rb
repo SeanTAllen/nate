@@ -37,12 +37,12 @@ get '/' do
   end 
   data = { '.todo' => todo_data }
   
-  list = List.inject_with( '.todolist' => data ).select( '#content > *' )
+  list = List.inject_with( '.todolist' => data ).select( 'content:#content' )
   Layout.inject_with( { '#content' => list } ).to_xml
 end
 
 get '/new' do
-  Layout.inject_with( { '#content' => AddToDo.select( '#content > *' ) } ).to_xml
+  Layout.inject_with( { '#content' => AddToDo.select( 'content:#content' ) } ).to_xml
 end
 
 post '/add' do
