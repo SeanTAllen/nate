@@ -52,7 +52,7 @@ module Nate
     
     def render encode_as = :html
       template = encode_template()
-      to_method = string_to_fragment( template ).method( "to_#{encode_as}")
+      to_method = Nokogiri::XML.fragment( template ).method( "to_#{encode_as}")
       to_method.call
     end
 
@@ -115,11 +115,11 @@ module Nate
         transform( node_copy, value )
         nodes << node_copy
       end
-      node.replace( string_to_fragment( nodes.join ) )
+      node.replace( Nokogiri::XML.fragment( nodes.join ) )
     end
 
     def transform_node( node, value )
-      node.inner_html = string_to_fragment( value.to_s ) unless value.nil?
+      node.inner_html = Nokogiri::XML.fragment( value.to_s ) unless value.nil?
     end
 
     def transform_attribute( node, attribute, value )
@@ -136,10 +136,6 @@ module Nate
       node[ attribute ].nil? == false 
     end
     
-    def string_to_fragment( string )
-      Nokogiri::XML.fragment( string )
-    end
-    
     def search( fragment_or_node, selector )
       ns = namespace( fragment_or_node )
       args = [ selector.to_s ]
@@ -153,7 +149,7 @@ module Nate
     
     def select_all( fragment, selector )
       all = select_elements( fragment, selector ).inner_html
-      string_to_fragment( all )
+      Nokogiri::XML.fragment( all )
     end
     
     def has_namespace? fragment
