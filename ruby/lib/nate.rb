@@ -34,13 +34,12 @@ module Nate
     end
 
     def inject_with data
-      template = encode_template()
-      fragment = transform( Nokogiri::XML.fragment( template ), data )
+      fragment = transform( template_to_fragment(), data )
       Nate::Engine.from_string fragment.to_xml
     end
 
     def select selector
-      fragment = Nokogiri::XML.fragment( encode_template() )
+      fragment = template_to_fragment()
       if selector =~ /^content:/
         selector.gsub! /^content:/, ''
         selection = select_all( fragment, selector )
@@ -50,10 +49,10 @@ module Nate
       Nate::Engine.from_string selection.to_xml
     end
     
-    def render encode_as = :html
-      template = encode_template()
-      to_method = Nokogiri::XML.fragment( template ).method( "to_#{encode_as}")
-      to_method.call
+    def render render_as = :html
+      doc_fragment = template_to_fragment()
+      render_method = doc_frag.method( "to_#{render_as}")
+      render_method.call
     end
 
     def to_html
@@ -115,11 +114,11 @@ module Nate
         transform( node_copy, value )
         nodes << node_copy
       end
-      node.replace( Nokogiri::XML.fragment( nodes.join ) )
+      node.replace( string_to_fragment( nodes.join ) )
     end
 
     def transform_node( node, value )
-      node.inner_html = Nokogiri::XML.fragment( value.to_s ) unless value.nil?
+      node.inner_html = string_to_fragment( value.to_s ) unless value.nil?
     end
 
     def transform_attribute( node, attribute, value )
@@ -149,7 +148,7 @@ module Nate
     
     def select_all( fragment, selector )
       all = select_elements( fragment, selector ).inner_html
-      Nokogiri::XML.fragment( all )
+      string_to_fragment( all )
     end
     
     def has_namespace? fragment
@@ -175,6 +174,14 @@ module Nate
         end
       end
     end
+    
+    def string_to_fragment( string )
+      Nokogiri::XML.fragment( string )
+    end
+    
+    def template_to_fragment
+      string_to_fragment( encode_template() )
+    end 
   end
 end
 
