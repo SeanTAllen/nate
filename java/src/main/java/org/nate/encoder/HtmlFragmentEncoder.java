@@ -4,20 +4,21 @@ import org.nate.Encoder;
 import org.nate.html.Html;
 import org.nate.html.XmlParserBackedHtml;
 
-public class HtmlEncoder implements Encoder {
+public class HtmlFragmentEncoder implements Encoder {
 
-	private static final String TYPE = "HTML";
+	@Override
+	public Html encode(String source) {
+		return XmlParserBackedHtml.fromFragment(source);
+	}
 
+	@Override
 	public boolean isNullEncoder() {
 		return false;
 	}
 
+	@Override
 	public String type() {
-		return TYPE;
-	}
-
-	public Html encode(String source) {
-		return XmlParserBackedHtml.fromDocument(source);
+		return "HTMLF";
 	}
 
 }

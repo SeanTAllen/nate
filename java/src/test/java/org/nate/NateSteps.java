@@ -1,12 +1,8 @@
 package org.nate;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import cuke4duke.annotation.I18n.EN.Given;
-import cuke4duke.annotation.I18n.EN.Then;
-import cuke4duke.annotation.I18n.EN.When;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,14 +15,15 @@ import javax.script.SimpleScriptContext;
 
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
-import org.xml.sax.SAXException;
+
+import cuke4duke.annotation.I18n.EN.Given;
+import cuke4duke.annotation.I18n.EN.Then;
+import cuke4duke.annotation.I18n.EN.When;
 
 public class NateSteps {
 
 
-	private Engine nate;
-	private Encoder encoder;
-	private String transformedHtml;
+	private List<Engine> nateStates = new ArrayList<Engine>();
 
 	static {
 		// Needed to allow us to evaluate Ruby code without interfering with Cucumber!
@@ -35,28 +32,44 @@ public class NateSteps {
 
 	@Given("^the HTML fragment \"([^\"]*)\"$")
 	public void setHtml(String html) {
-		encoder = Engine.encoders().encoderFor("HTML");
-		nate = Engine.newWith(html, encoder);
+		Engine nate = Engine.newWith(html, Engine.encoders().encoderFor("HTMLF"));
+		nateStates.add(nate);
 	}
 
 	@Given("^the file \"([^\"]*)\"$")
 	public void theFile(String filename) {
-		nate = Engine.newWith(new File(filename));
+		Engine nate = Engine.newWith(new File(filename));
+		nateStates.add(nate);
 	}
 
 	@When("^([^\"]*) is injected$")
-	public void inject(String data) throws ScriptException {
-		transformedHtml = nate.inject(parseRubyExpression(data));
+	public void inject(String data) throws Exception {
+		nateStates.add(currentNateEngine().inject(parseRubyExpression(data)));
 	}
 
 	@Then("^the HTML fragment is (.*)$")
 	public void test(String expectedHtml) throws Exception {
-		assertXmlFragmentsEqual(expectedHtml.trim(), transformedHtml.trim());
+		assertXmlFragmentsEqual(expectedHtml, currentNateEngine().render());
 	}
 
-	private void assertXmlFragmentsEqual(String expected, String actual) throws SAXException, IOException {
+	@When("^(.*) is injected sometime later$")
+	public void isInjectedSometimeLater(String data) throws Exception {
+		inject(data);
+	}
+
+	@Then("^the original HTML fragment is(.*)$")
+	public void theOriginalHTMLFragmentIs(String expectedHtml) throws Exception {
+		assertXmlFragmentsEqual(expectedHtml, nateStates.get(0).render());
+	}
+
+	@When("^\"([^\"]*)\" is selected$")
+	public void isSelected(String selector) {
+		nateStates.add(currentNateEngine().select(selector));
+	}
+	
+	private void assertXmlFragmentsEqual(String expected, String actual) throws Exception {
 		// Wrap in fake roots in case the xml has multiple roots, otherwise you get a parser exception
-		assertXMLEqual(wrapInFakeRoot(expected), wrapInFakeRoot(actual));
+		assertXMLEqual(wrapInFakeRoot(expected.trim()), wrapInFakeRoot(actual));
 	}
 
 	private String wrapInFakeRoot(String fragment) {
@@ -67,14 +80,21 @@ public class NateSteps {
 	// { 'h2' => 'Monkey' } 
 	private Object parseRubyExpression(String rubyString) throws ScriptException {
 		ScriptEngine rubyEngine = new ScriptEngineManager().getEngineByName("jruby");
-		defineRubyConstants(rubyEngine);
+		defineRubyConstantsAndMethods(rubyEngine);
 		Object result = rubyEngine.eval(rubyString, new SimpleScriptContext());
 		return convertToOrdinaryJavaClasses(result);
 	}
 
-	private void defineRubyConstants(ScriptEngine rubyEngine) throws ScriptException {
+	private void defineRubyConstantsAndMethods(ScriptEngine rubyEngine) throws ScriptException {
 		// This is so that the features can use Nate::Engine::CONTENT_ATTRIBUTE
-		rubyEngine.eval("module Nate\n class Engine\n CONTENT_ATTRIBUTE = '*content*'\n end\n end\n");
+		rubyEngine.eval(
+				"require 'java'\n" +
+				"module Nate\n class Engine\n" +
+				" CONTENT_ATTRIBUTE = '*content*'\n" +
+				" def self.from_string source\n" +
+				"     org.nate.Engine.newWith(source)\n" +
+				" end\n" +
+				" end\n end\n");
 	}
 
 	// Would actually not need to do this, except that RubyHash and RubyArray seem to have been loaded
@@ -102,7 +122,7 @@ public class NateSteps {
 	}
 
 	private boolean isAnAcceptableJavaType(Object rubyObject) {
-		return rubyObject instanceof String || rubyObject instanceof Number;
+		return rubyObject instanceof String || rubyObject instanceof Number || rubyObject instanceof Engine;
 	}
 
 	private Map<String, Object> convertToJavaMap(RubyHash hash) {
@@ -114,6 +134,11 @@ public class NateSteps {
 			result.put((String) key, convertToOrdinaryJavaClasses(hash.get(key)));
 		}
 		return result;
+	}
+
+
+	private Engine currentNateEngine() {
+		return nateStates.get(nateStates.size() - 1);
 	}
 
 }
