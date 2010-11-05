@@ -14,7 +14,7 @@ begin
     s.executables = 'nate'
     s.files.exclude 'features/'
     s.files.exclude 'spec/'
-    s.add_dependency 'hpricot', '>= 0.8.2'
+    s.add_dependency 'nokogiri', '>= 1.4.3.1'
     s.add_development_dependency 'compass', '>= 0.10.5'
     s.add_development_dependency 'cucumber', '>= 0.9.0'
     s.add_development_dependency 'datamapper', '>= 1.0.0'

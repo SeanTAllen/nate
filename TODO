@@ -1,4 +1,5 @@
 Add documentation about similar systems like clojure's enlive and js's pure and how nate is different.
+And perl's Template::Semantic that James found yesterday.
 
 Add documentation about why nate, how nate etc.
 
@@ -37,3 +38,15 @@ only do children of a current selection would be.
 
 Add contributing file with notes about all contributions requiring tests
 and copyright assignment.
+
+Consider the following from David:
+-----
+I know we should probably use Nate a bit before adding too many more enhancements, but I would interested in what you two have in mind. Here are a couple that come to mind while thinking about how I might want to use it:
+
+* the ability to modify an attribute instead of replacing it. Eg. to add a new class to an element that already has classes that you want to keep (perhaps to add a red border to an input that has an error).  Could be as simple as an append, or as complex as a regex substitution. May want to handle class manipulation as a special case.
+
+* the ability to add to the content of an element instead of replacing it. Maybe allow insertion after the n'th or n'th-last node of an element.
+
+* subtly different to (or instead of) the previous point would be the ability to add content after a selected element.  Eg. to add an error message after a specified input element.
+-----
+
