@@ -136,7 +136,7 @@ module Nate
     end
     
     def search( fragment_or_node, selector )
-      ns = namespace( fragment_or_node )
+      ns = namespace_for( fragment_or_node )
       args = [ selector.to_s ]
       args.push ns if has_namespace?( fragment_or_node )
       fragment_or_node.search( *args )
@@ -162,7 +162,7 @@ module Nate
       return false   
     end
     
-    def namespace( fragment )
+    def namespace_for( fragment )
       fragment.children().each() do | node |
         begin
           if node.namespace.href
