@@ -6,13 +6,14 @@ There is additional information in the README's of each language specific subpro
 
 ** In a Nutshell **
 
-If you think your HTML/ERB/RHTML should NOT be peppered with <%= %> or <% %> statements
-then Nate is for you. If it frustrates you when a small change in the presentation requires
-lots of moving of <%= %> and <% %> statements then Nate is for you.
+If you think:
 
-In short, we think this:
+* HTML/ERB/RHTML should NOT be peppered with <%= %> or <% %> statements,
+* Moving <%= %> and <% %> statements when the presentation changes is frustrating,
 
-<ul><li class="actor-character"></li></ul>
+Then Nate is for you.
+
+In short we think this: <ul><li class="actor-character"></li></ul>
 
 is preferrable to this:
 
