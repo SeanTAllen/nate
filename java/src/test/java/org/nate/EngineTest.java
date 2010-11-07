@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -157,6 +158,26 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>");
 		Engine result = engine.inject(singletonMap("body", "hi"));
 		assertXMLEqual("<html xmls='http://www.w3.org/1999/xhtml'><body>hi</body></html>", result.render());
+	}
+	
+	@Test
+	public void shouldReplaceContentWhenSubselectIsTheSpecialContentPseudoSelector() throws Exception {
+		Engine engine = encodeHtmlFragment("<a href='#'>my link</a>");
+		Map<String, Object> anchorData = new HashMap<String, Object>();
+		anchorData.put("href", "http://www.example.com");
+		anchorData.put(Engine.CONTENT, "example.com");
+		Engine result = engine.inject(singletonMap("a", anchorData));
+		assertXMLEqual("<a href='http://www.example.com'>example.com</a>", result.render());
+	}
+	
+	@Test
+	public void shouldRecursivelyApplyTransformsWhenSubselectIsTheSpecialContentPseudoSelector() throws Exception {
+		Engine engine = encodeHtmlFragment("<div class=''><span/></div>");
+		Map<String, Object> anchorData = new HashMap<String, Object>();
+		anchorData.put("class", "show");
+		anchorData.put(Engine.CONTENT, singletonMap("span", "hello"));
+		Engine result = engine.inject(singletonMap("div", anchorData));
+		assertXMLEqual("<div class='show'><span>hello</span></div>", result.render());
 	}
 	
 	private Engine encodeHtmlFragment(String html) {

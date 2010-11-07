@@ -84,7 +84,6 @@ Feature:
       | { 'h1' => { 'style' => 'http://www.example.com' } }                        | <h1 class='glory'>Header</h1>    |
       | { 'h1' => { 'style' => 'http://www.example.com', 'class' => 'glorious' } } | <h1 class='glorious'>Header</h1> |
       
-  @wip
   Scenario: when doing an attribute match, special 'content' attribute should change the inner_html
     Given the HTML fragment "<a href='#'>my link</a>"
       When { 'a' => { 'href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected

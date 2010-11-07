@@ -1,5 +1,8 @@
 package org.nate.html;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -24,6 +27,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.nate.Engine;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -35,8 +39,6 @@ import org.xml.sax.SAXException;
 
 import se.fishtank.css.selectors.NodeSelectorException;
 import se.fishtank.css.selectors.dom.DOMNodeSelector;
-
-import static java.util.Collections.*;
 
 public class XmlParserBackedHtml implements Html {
 
@@ -79,6 +81,9 @@ public class XmlParserBackedHtml implements Html {
 	}
 
 	public List<Html> selectNodes(String selector) {
+		if (Engine.CONTENT.equals(selector)) {
+			return singletonList((Html)this);
+		}
 		boolean selectContent = false;
 		if (selector.startsWith(CONTENT_SELECTION_FLAG)) {
 			selectContent = true;

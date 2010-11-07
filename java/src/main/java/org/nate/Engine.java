@@ -14,6 +14,8 @@ import org.nate.util.HtmlFile;
 
 public class Engine {
 
+	public static final String CONTENT = "*content*";
+	
 	private static Encoders encoders = new Encoders();
 	static {
 		encoders.register(new HtmlEncoder());
@@ -75,7 +77,7 @@ public class Engine {
 			Object key = entry.getKey();
 			Object value = entry.getValue();
 			assertType("key", key, String.class);
-			applySelector((String) key, value, fragment);
+			applySelector(((String) key).trim(), value, fragment);
 		}
 	}
 

@@ -1,4 +1,6 @@
 Things left to do for Java Nate:
+ * Remove the need for clients to distinguish between html docs and html fragments.
+ * Make sure exceptions include useful information.
  * Implement the '*content*' pseudo-selector.
  * Try some real HTML parsers.
  * Allow option of not having injected text HTML escaped.
