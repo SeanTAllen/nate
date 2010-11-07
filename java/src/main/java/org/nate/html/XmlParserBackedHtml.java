@@ -59,6 +59,7 @@ public class XmlParserBackedHtml implements Html {
 		return new XmlParserBackedHtml(nodes);
 	}
 
+	// True if the html/xml is all wrapped in a <fakeroot> element to allow for multiple roots.
 	private final boolean hasFakeRoot;
 	// This node can be one of: the document root, an element, or a fake root.
 	private final Node node;
@@ -70,7 +71,7 @@ public class XmlParserBackedHtml implements Html {
 
 	private XmlParserBackedHtml(List<Node> nodes) {
 		this.hasFakeRoot = true;
-		this.node = fromFragment("").node;
+		this.node = wrapInFakeRootElement("");
 		for (Node newNode : nodes) {
 			adopt(newNode);
 			this.node.appendChild(newNode);
@@ -111,8 +112,8 @@ public class XmlParserBackedHtml implements Html {
 		node.removeChild(((XmlParserBackedHtml)child).node);
 	}
 
-	public Html cloneFragment(boolean deep) {
-		return new XmlParserBackedHtml(node.cloneNode(deep));
+	public Html cloneFragment() {
+		return new XmlParserBackedHtml(node.cloneNode(true));
 	}
 
 	public void appendChild(Html newFragment) {
@@ -213,6 +214,7 @@ public class XmlParserBackedHtml implements Html {
 	}
 
 	private static Element wrapInFakeRootElement(String source) {
+		// Wrap source in a fake root to allow it to have multiple roots.
 		String wrappedSource = String.format("<%s>%s</%s>", FAKEROOT, source, FAKEROOT);
 		return parseXml(wrappedSource).getDocumentElement();
 	}

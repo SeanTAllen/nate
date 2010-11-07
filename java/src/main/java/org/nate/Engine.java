@@ -50,7 +50,7 @@ public class Engine {
 	@SuppressWarnings("unchecked")
 	public Engine inject(Object data) {
 		assertType("data", data, Map.class);
-		Html fragment = template.cloneFragment(true);
+		Html fragment = template.cloneFragment();
 		processMapEntries((Map) data, fragment);
 		return new Engine(fragment);
 	}
@@ -63,7 +63,7 @@ public class Engine {
 	private List<Html> clone(List<Html> nodes) {
 		List<Html> clones = new ArrayList<Html>(nodes.size());
 		for (Html node : nodes) {
-			clones.add(node.cloneFragment(true));
+			clones.add(node.cloneFragment());
 		}
 		return clones;
 	}
@@ -115,7 +115,7 @@ public class Engine {
 	}
 
 	private void injectEngine(Engine value, Html fragment) {
-		fragment.replaceChildren(value.template.cloneFragment(true));
+		fragment.replaceChildren(value.template.cloneFragment());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -123,7 +123,7 @@ public class Engine {
 		Html parentNode = fragment.getParentNode();
 		parentNode.removeChild(fragment);
 		for (Object value : values) {
-			Html newFragment = fragment.cloneFragment(true);
+			Html newFragment = fragment.cloneFragment();
 			injectValueIntoFragment(value, newFragment);
 			parentNode.appendChild(newFragment);
 		}

@@ -12,7 +12,7 @@ public interface Html {
 
 	void removeChild(Html child);
 
-	Html cloneFragment(boolean deep);
+	Html cloneFragment();
 
 	void appendChild(Html newNode);
 

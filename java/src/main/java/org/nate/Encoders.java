@@ -68,7 +68,7 @@ public class Encoders {
 		}
 
 		@Override
-		public Html cloneFragment(boolean deep) {
+		public Html cloneFragment() {
 			return new NullHtml(source);
 		}
 

@@ -1,0 +1,9 @@
+Things left to do for Java Nate:
+ * Implement the '*content*' pseudo-selector.
+ * Try some real HTML parsers.
+ * Allow option of not having injected text HTML escaped.
+ * Implement samples.
+ * Convince css-selectors library author to upload a release to a maven repo or do it ourselves.
+ * Allow input and output to be via InputStream.
+ * Revisit character encoding issues.
+ * Allow rendered output to (optionally) have an xml declaration tag.
