@@ -5,6 +5,8 @@ import java.util.List;
 public interface Html {
 
 	List<Html> selectNodes(String selector);
+	
+	List<Html> selectContentOfNodes(String selector);
 
 	void setTextContent(String value);
 

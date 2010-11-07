@@ -165,7 +165,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<a href='#'>my link</a>");
 		Map<String, Object> anchorData = new HashMap<String, Object>();
 		anchorData.put("href", "http://www.example.com");
-		anchorData.put(Engine.CONTENT, "example.com");
+		anchorData.put(Engine.CONTENT_ATTRIBUTE, "example.com");
 		Engine result = engine.inject(singletonMap("a", anchorData));
 		assertXMLEqual("<a href='http://www.example.com'>example.com</a>", result.render());
 	}
@@ -175,7 +175,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<div class=''><span/></div>");
 		Map<String, Object> anchorData = new HashMap<String, Object>();
 		anchorData.put("class", "show");
-		anchorData.put(Engine.CONTENT, singletonMap("span", "hello"));
+		anchorData.put(Engine.CONTENT_ATTRIBUTE, singletonMap("span", "hello"));
 		Engine result = engine.inject(singletonMap("div", anchorData));
 		assertXMLEqual("<div class='show'><span>hello</span></div>", result.render());
 	}

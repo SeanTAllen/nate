@@ -27,7 +27,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.nate.Engine;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -41,8 +40,6 @@ import se.fishtank.css.selectors.NodeSelectorException;
 import se.fishtank.css.selectors.dom.DOMNodeSelector;
 
 public class XmlParserBackedHtml implements Html {
-
-	private static final String CONTENT_SELECTION_FLAG = "content:";
 	private static final String FAKEROOT = "fakeroot";
 
 	public static XmlParserBackedHtml fromDocument(String source) {
@@ -80,31 +77,16 @@ public class XmlParserBackedHtml implements Html {
 		}
 	}
 
+	@Override
 	public List<Html> selectNodes(String selector) {
-		if (Engine.CONTENT.equals(selector)) {
-			return singletonList((Html)this);
-		}
-		boolean selectContent = false;
-		if (selector.startsWith(CONTENT_SELECTION_FLAG)) {
-			selectContent = true;
-			selector = selector.substring(CONTENT_SELECTION_FLAG.length());
-		}
-		try {
-			Set<Node> matchingNodes = new DOMNodeSelector(node).querySelectorAll(selector);
-			List<Html> result = new ArrayList<Html>(matchingNodes.size());
-			for (Node matchingNode : matchingNodes) {
-				if (selectContent) {
-					result.add(new XmlParserBackedHtml(asList(matchingNode.getChildNodes())));
-				} else {
-					result.add(new XmlParserBackedHtml(matchingNode));
-				}
-			}
-			return result;
-		} catch (NodeSelectorException e) {
-			throw new RuntimeException(e);
-		}
+		return selectNodes(selector, false);
 	}
-
+	
+	@Override
+	public List<Html> selectContentOfNodes(String selector) {
+		return selectNodes(selector, true);
+	}
+	
 	public void setTextContent(String value) {
 		node.setTextContent(value);
 	}
@@ -158,6 +140,23 @@ public class XmlParserBackedHtml implements Html {
 			if (attribute.getNodeName().equals(name)) {
 				attribute.setTextContent(value.toString());
 			}
+		}
+	}
+
+	private List<Html> selectNodes(String selector, boolean selectContent) {
+		try {
+			Set<Node> matchingNodes = new DOMNodeSelector(node).querySelectorAll(selector);
+			List<Html> result = new ArrayList<Html>(matchingNodes.size());
+			for (Node matchingNode : matchingNodes) {
+				if (selectContent) {
+					result.add(new XmlParserBackedHtml(asList(matchingNode.getChildNodes())));
+				} else {
+					result.add(new XmlParserBackedHtml(matchingNode));
+				}
+			}
+			return result;
+		} catch (NodeSelectorException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

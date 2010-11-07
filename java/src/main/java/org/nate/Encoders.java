@@ -91,6 +91,11 @@ public class Encoders {
 		public List<Html> selectNodes(String selector) {
 			return Collections.emptyList();
 		}
+		
+		@Override
+		public List<Html> selectContentOfNodes(String selector) {
+			return Collections.emptyList();
+		}
 
 		@Override
 		public void setAttribute(String name, Object value) {

@@ -14,8 +14,23 @@ import org.nate.util.HtmlFile;
 
 public class Engine {
 
-	public static final String CONTENT = "*content*";
-	
+	/**
+	 * Pseudo-selector that matches the currently selected node.
+	 * To be used in sub-selects when there is a need to replace the content of the currently selected node
+	 * as well as one or more of its attributes.
+	 * For example: <br /> 
+	 * Given the HTML fragment "&lt;a href='#'&gt;my link&lt;/a&gt;" <br /> 
+	 * When { 'a' => { 'href' => 'http://www.example.com', Engine.CONTENT_ATTRIBUTE => 'example.com' } } is injected<br /> 
+	 * Then the HTML fragment is &lt;a href="http://www.example.com"&gt;example.com&lt;/a&gt; 
+	 */
+	public static final String CONTENT_ATTRIBUTE = "*content*";
+
+	/**
+	 * Prefix to use with the parameter to {@link Engine#select(String)} to indicate when the content of the selected
+	 * nodes is desired instead of the nodes themselves.
+	 */
+	public static final String CONTENT_SELECTION_FLAG = "content:";
+
 	private static Encoders encoders = new Encoders();
 	static {
 		encoders.register(new HtmlEncoder());
@@ -58,8 +73,15 @@ public class Engine {
 	}
 
 	public Engine select(String selector) {
-		List<Html> selectedNodes = clone(template.selectNodes(selector.trim()));
+		List<Html> selectedNodes = findHtmlElementsMatchingSelector(selector.trim());
 		return new Engine(XmlParserBackedHtml.fromFragments(selectedNodes));
+	}
+
+	private List<Html> findHtmlElementsMatchingSelector(String selector) {
+		if (selector.startsWith(CONTENT_SELECTION_FLAG)) {
+			return clone(template.selectContentOfNodes(selector.substring(CONTENT_SELECTION_FLAG.length())));
+		}
+		return clone(template.selectNodes(selector));
 	}
 
 	private List<Html> clone(List<Html> nodes) {
@@ -97,9 +119,12 @@ public class Engine {
 	}
 
 	private void applySelectorAsCssSelector(String selector, Object value, Html fragment) {
-		List<Html> matchingNodes = fragment.selectNodes(selector);
-		for (Html matchingNode : matchingNodes) {
-			injectValueIntoFragment(value, matchingNode);
+		if (CONTENT_ATTRIBUTE.equals(selector)) {
+			injectValueIntoFragment(value, fragment);
+		} else {
+			for (Html matchingNode : fragment.selectNodes(selector)) {
+				injectValueIntoFragment(value, matchingNode);
+			}
 		}
 	}
 
