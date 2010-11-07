@@ -1,3 +1,26 @@
 NATE - Not Another Template Engine
 This project helps keep your html free of program code and your code free of html.
 
+For more details on NATE you should visit the wiki https://github.com/jamesladd/nate/wiki
+There is additional information in the README's of each language specific subproject.
+
+** In a Nutshell **
+
+If you think:
+
+* HTML/ERB/RHTML should NOT be peppered with <%= %> or <% %> statements,
+* Moving <%= %> and <% %> statements when the presentation changes is frustrating,
+
+Then Nate is for you.
+
+In short we think this: <ul><li class="actor-character"></li></ul>
+
+is preferrable to this:
+
+<ul>
+  <% for actor in @cast %>
+    <li><%= actor.character %></li>
+  <% end %>
+</ul>
+
+
