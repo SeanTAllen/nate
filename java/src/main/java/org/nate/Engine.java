@@ -56,8 +56,8 @@ public class Engine {
 	}
 
 	public Engine select(String selector) {
-		List<Html> selectedNodes = clone(template.selectNodes(selector));
-		return new Engine(new XmlParserBackedHtml(selectedNodes));
+		List<Html> selectedNodes = clone(template.selectNodes(selector.trim()));
+		return new Engine(XmlParserBackedHtml.fromFragments(selectedNodes));
 	}
 
 	private List<Html> clone(List<Html> nodes) {

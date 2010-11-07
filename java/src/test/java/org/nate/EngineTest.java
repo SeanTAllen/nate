@@ -1,7 +1,7 @@
 package org.nate;
 
-import static java.util.Collections.*;
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 import java.util.List;
@@ -110,6 +110,13 @@ public class EngineTest {
 	}
 	
 	@Test
+	public void shouldBeAbleToSelectAllContent() throws Exception {
+		Engine engine = encodeHtmlFragment("<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>");
+		Engine header = engine.select(" content:div");
+		assertXmlFragmentsEqual("header textcontent text<h1>footer</h1>", header.render());
+	}
+	
+	@Test
 	public void shouldBeAbleToInjectNateEnginesIntoNateEngines() throws Exception {
 		Engine engine1 = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
 		Engine engine2 = encodeHtmlFragment("<h1>Hello</h1>");
@@ -160,7 +167,7 @@ public class EngineTest {
 	}
 	
 	private String wrapInFakeRoot(String fragment) {
-		return "<fake>" + fragment + "</fake>";
+		return "<fragment>" + fragment + "</fragment>";
 	}
 
 }

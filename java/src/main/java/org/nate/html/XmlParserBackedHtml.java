@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -39,10 +40,11 @@ import static java.util.Collections.*;
 
 public class XmlParserBackedHtml implements Html {
 
+	private static final String CONTENT_SELECTION_FLAG = "content:";
 	private static final String FAKEROOT = "fakeroot";
 
 	public static XmlParserBackedHtml fromDocument(String source) {
-		return new XmlParserBackedHtml(source);
+		return new XmlParserBackedHtml(source, false);
 	}
 	
 	public static XmlParserBackedHtml fromFragment(String source) {
@@ -50,35 +52,41 @@ public class XmlParserBackedHtml implements Html {
 		assert fakeNode.getNodeName().equals(FAKEROOT) : "Expected fakeroot but got " + fakeNode.getNodeName();
 		return new XmlParserBackedHtml(fakeNode);
 	}
+	
+	public static XmlParserBackedHtml fromFragments(List<Html> htmlFragments) {
+		List<Node> nodes = new ArrayList<Node>();
+		for (Html fragment : htmlFragments) {
+			nodes.addAll(((XmlParserBackedHtml) fragment).getRootNodes());
+		}
+		return new XmlParserBackedHtml(nodes);
+	}
 
 	private static Element wrapInFakeRootElement(String source) {
 		String wrappedSource = String.format("<%s>%s</%s>", FAKEROOT, source, FAKEROOT); 
-		XmlParserBackedHtml document = new XmlParserBackedHtml(wrappedSource);
+		XmlParserBackedHtml document = new XmlParserBackedHtml(wrappedSource, true);
 		return ((Document)(document.node)).getDocumentElement();
 	}
 
-	// This node is the fakeroot element when this is a fragment, otherwise it is the Document node.
+	private final boolean hasFakeRoot;
+	// This node can be one of: the document root, an element, or a fake root.
 	private final Node node;
 
-	public XmlParserBackedHtml(Node node) {
+	private XmlParserBackedHtml(Node node) {
+		this.hasFakeRoot = node.getNodeName().equals(FAKEROOT);
 		this.node = node;
 	}
 
-	public XmlParserBackedHtml(List<Html> htmlFragments) {
+	private XmlParserBackedHtml(List<Node> nodes) {
+		this.hasFakeRoot = true;
 		this.node = fromFragment("").node;
-		for (Html fragment : htmlFragments) {
-			// TODO: Nice if we could avoid this casting.
-			Node newNode = ((XmlParserBackedHtml)fragment).node;
+		for (Node newNode : nodes) {
 			adopt(newNode);
 			this.node.appendChild(newNode);
 		}
 	}
 
-	private void adopt(Node newNode) {
-		node.getOwnerDocument().adoptNode(newNode);
-	}
-
-	private XmlParserBackedHtml(String source) {
+	private XmlParserBackedHtml(String source, boolean hasFakeRoot) {
+		this.hasFakeRoot = hasFakeRoot;
 		try {
 			// Javadoc for these says nothing about thread safety, and so we recreate every time.
 			DocumentBuilder builder = createDocumentParser();
@@ -94,6 +102,10 @@ public class XmlParserBackedHtml implements Html {
 		}
 	}
 
+	private void adopt(Node newNode) {
+		node.getOwnerDocument().adoptNode(newNode);
+	}
+
 	private DocumentBuilder createDocumentParser() throws ParserConfigurationException {
 		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
@@ -102,11 +114,20 @@ public class XmlParserBackedHtml implements Html {
 	}
 
 	public List<Html> selectNodes(String selector) {
+		boolean selectContent = false;
+		if (selector.startsWith(CONTENT_SELECTION_FLAG)) {
+			selectContent = true;
+			selector = selector.substring(CONTENT_SELECTION_FLAG.length());
+		}
 		try {
 			Set<Node> matchingNodes = new DOMNodeSelector(node).querySelectorAll(selector);
 			List<Html> result = new ArrayList<Html>(matchingNodes.size());
 			for (Node matchingNode : matchingNodes) {
-				result.add(new XmlParserBackedHtml(matchingNode));
+				if (selectContent) {
+					result.add(new XmlParserBackedHtml(asList(matchingNode.getChildNodes())));
+				} else {
+					result.add(new XmlParserBackedHtml(matchingNode));
+				}
 			}
 			return result;
 		} catch (NodeSelectorException e) {
@@ -123,23 +144,19 @@ public class XmlParserBackedHtml implements Html {
 	}
 
 	public void removeChild(Html child) {
-		// TODO: Nice if we could avoid this casting.
 		node.removeChild(((XmlParserBackedHtml)child).node);
 	}
 
 	public Html cloneFragment(boolean deep) {
-		// TODO: Nice if we could avoid this casting.
 		return new XmlParserBackedHtml(node.cloneNode(deep));
 	}
 
 	public void appendChild(Html newFragment) {
-		// TODO: Nice if we could avoid this casting.
 		node.appendChild(((XmlParserBackedHtml)newFragment).node);
 	}
 
 	public void replaceChildren(Html newFragment) {
 		removeChildren();
-		// TODO: Nice if we could avoid this casting.
 		List<Node> newNodes = ((XmlParserBackedHtml)newFragment).getChildNodes();
 		for (Node newNode : newNodes) {
 			adopt(newNode);
@@ -148,7 +165,7 @@ public class XmlParserBackedHtml implements Html {
 	}
 
 	public String toHtml() {
-		return hasFakeRoot() ? fakeRootToString() : documentToString();
+		return hasFakeRoot ? contentToString() : nodeToString();
 	}
 
 	private void removeChildren() {
@@ -157,18 +174,14 @@ public class XmlParserBackedHtml implements Html {
 		}
 	}
 	
-	private boolean hasFakeRoot() {
-		return node.getNodeName().equals(FAKEROOT);
-	}
-	
-	private String documentToString() {
+	private String nodeToString() {
 		Writer stringWriter = new StringWriter();
 		Result result = new StreamResult(stringWriter);
 		convertNodeToString(node, result);
 	    return stringWriter.toString();
 	}
 
-	private String fakeRootToString() {
+	private String contentToString() {
 		Writer stringWriter = new StringWriter();
 		Result result = new StreamResult(stringWriter);
 		for (Node childNode : getChildNodes()) {
@@ -215,8 +228,16 @@ public class XmlParserBackedHtml implements Html {
 			}
 		}
 	}
+	
 	private List<Node> getChildNodes() {
-		NodeList nodeList = node.getChildNodes();
+		return asList(node.getChildNodes());
+	}
+
+	private Collection<Node> getRootNodes() {
+		return hasFakeRoot ? getChildNodes() : singletonList(this.node);
+	}
+
+	private static List<Node> asList(NodeList nodeList) {
 		if (nodeList == null) {
 			return emptyList();
 		}

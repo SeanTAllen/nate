@@ -148,9 +148,48 @@ Feature:
       | "#content"     | <div id='content'><h1>Content</h1></div>                              |
       | "div"          | <div id='header'>Header</div><div id='content'><h1>Content</h1></div> |
       
- 
+  Scenario Outline: should be able to select all content including text nodes when doing a select
+    Given the HTML fragment "<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>"
+      When <data> is selected
+      Then the HTML fragment is <transformed>
+      
+    Examples:
+      | data | transformed |
+      | "content:#header" | header text |
+      | "content:div" | header textcontent text<h1>footer</h1> |
+      
    Scenario: should be able to use a nate template as a value when injecting
      Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"
        When { '#content' => Nate::Engine.from_string( '<h1>Hello</h1>' ) } is injected
        Then the HTML fragment is <div id='header'>Header</div><div id='content'><h1>Hello</h1></div>
+       
+  Scenario: matches should work on self closing tags
+    Given the HTML fragment "<div/>"
+      When { 'div' => 'hi' } is injected
+      Then the HTML fragment is <div>hi</div>
       
+  Scenario: matches on multiple items should inject into all matches when using self closing tags
+    Given the HTML fragment "<div/><div/>"
+      When { 'div' => 'hi' } is injected
+      Then the HTML fragment is <div>hi</div><div>hi</div>
+      
+  Scenario Outline: should match in namespaces
+    Given the HTML fragment "<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>"
+      When <data> is selected
+      Then the HTML fragment is <transformed>
+      
+    Examples:
+      | data | transformed |
+      | "body" | <body><div id='header'>header</div></body> |
+      | "#header" | <div id='header'>header</div> |
+    
+  Scenario Outline: should inject with namespaces
+    Given the HTML fragment "<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>"
+      When <data> is inject
+      Then the HTML fragment is <transformed>  
+    
+      | data                 | transformed |
+      | { 'body' => 'hi' }   | <html xmls='http://www.w3.org/1999/xhtml'><body>hi</body></html> |
+      | { '#header' => 'bye' | <html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>bye</div></body></html> |      
+
+
