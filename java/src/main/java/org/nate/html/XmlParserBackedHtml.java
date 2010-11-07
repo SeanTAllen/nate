@@ -44,13 +44,11 @@ public class XmlParserBackedHtml implements Html {
 	private static final String FAKEROOT = "fakeroot";
 
 	public static XmlParserBackedHtml fromDocument(String source) {
-		return new XmlParserBackedHtml(source, false);
+		return new XmlParserBackedHtml(parseXml(source));
 	}
 	
 	public static XmlParserBackedHtml fromFragment(String source) {
-		Element fakeNode = wrapInFakeRootElement(source);
-		assert fakeNode.getNodeName().equals(FAKEROOT) : "Expected fakeroot but got " + fakeNode.getNodeName();
-		return new XmlParserBackedHtml(fakeNode);
+		return new XmlParserBackedHtml(wrapInFakeRootElement(source));
 	}
 	
 	public static XmlParserBackedHtml fromFragments(List<Html> htmlFragments) {
@@ -59,12 +57,6 @@ public class XmlParserBackedHtml implements Html {
 			nodes.addAll(((XmlParserBackedHtml) fragment).getRootNodes());
 		}
 		return new XmlParserBackedHtml(nodes);
-	}
-
-	private static Element wrapInFakeRootElement(String source) {
-		String wrappedSource = String.format("<%s>%s</%s>", FAKEROOT, source, FAKEROOT); 
-		XmlParserBackedHtml document = new XmlParserBackedHtml(wrappedSource, true);
-		return ((Document)(document.node)).getDocumentElement();
 	}
 
 	private final boolean hasFakeRoot;
@@ -83,34 +75,6 @@ public class XmlParserBackedHtml implements Html {
 			adopt(newNode);
 			this.node.appendChild(newNode);
 		}
-	}
-
-	private XmlParserBackedHtml(String source, boolean hasFakeRoot) {
-		this.hasFakeRoot = hasFakeRoot;
-		try {
-			// Javadoc for these says nothing about thread safety, and so we recreate every time.
-			DocumentBuilder builder = createDocumentParser();
-			node = builder.parse(new ByteArrayInputStream(source.getBytes()));
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		} catch (SAXException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void adopt(Node newNode) {
-		node.getOwnerDocument().adoptNode(newNode);
-	}
-
-	private DocumentBuilder createDocumentParser() throws ParserConfigurationException {
-		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = domFactory.newDocumentBuilder();
-		builder.setEntityResolver(NULL_ENTITY_RESOLVER);
-		return builder;
 	}
 
 	public List<Html> selectNodes(String selector) {
@@ -168,6 +132,33 @@ public class XmlParserBackedHtml implements Html {
 		return hasFakeRoot ? contentToString() : nodeToString();
 	}
 
+	public boolean hasAttribute(String name) {
+		NamedNodeMap attributes = node.getAttributes();
+		if (attributes == null) {
+			return false;
+		}
+		for(int i = 0; i < attributes.getLength(); i++) {
+			if (attributes.item(i).getNodeName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setAttribute(String name, Object value) {
+		NamedNodeMap attributes = node.getAttributes();
+		for(int i = 0; i < attributes.getLength(); i++) {
+			Node attribute = attributes.item(i);
+			if (attribute.getNodeName().equals(name)) {
+				attribute.setTextContent(value.toString());
+			}
+		}
+	}
+
+	private void adopt(Node newNode) {
+		node.getOwnerDocument().adoptNode(newNode);
+	}
+
 	private void removeChildren() {
 		for (Node node : getChildNodes()) {
 			node.removeChild(node);
@@ -206,35 +197,38 @@ public class XmlParserBackedHtml implements Html {
 		}
 	}
 
-	public boolean hasAttribute(String name) {
-		NamedNodeMap attributes = node.getAttributes();
-		if (attributes == null) {
-			return false;
-		}
-		for(int i = 0; i < attributes.getLength(); i++) {
-			if (attributes.item(i).getNodeName().equals(name)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void setAttribute(String name, Object value) {
-		NamedNodeMap attributes = node.getAttributes();
-		for(int i = 0; i < attributes.getLength(); i++) {
-			Node attribute = attributes.item(i);
-			if (attribute.getNodeName().equals(name)) {
-				attribute.setTextContent(value.toString());
-			}
-		}
-	}
-	
 	private List<Node> getChildNodes() {
 		return asList(node.getChildNodes());
 	}
 
 	private Collection<Node> getRootNodes() {
 		return hasFakeRoot ? getChildNodes() : singletonList(this.node);
+	}
+
+	private static DocumentBuilder createDocumentParser() throws ParserConfigurationException {
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = domFactory.newDocumentBuilder();
+		builder.setEntityResolver(NULL_ENTITY_RESOLVER);
+		return builder;
+	}
+
+	private static Element wrapInFakeRootElement(String source) {
+		String wrappedSource = String.format("<%s>%s</%s>", FAKEROOT, source, FAKEROOT);
+		return parseXml(wrappedSource).getDocumentElement();
+	}
+
+	private static Document parseXml(String source) {
+		try {
+			return createDocumentParser().parse(new ByteArrayInputStream(source.getBytes()));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private static List<Node> asList(NodeList nodeList) {

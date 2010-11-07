@@ -141,7 +141,6 @@ public class EngineTest {
 		Engine result = destination.inject(singletonMap(".content", selection));
 		assertXmlFragmentsEqual("<div class='content'><p>hello</p></div>", result.render());
 		assertXmlFragmentsEqual("<p>hello</p>", selection.render());
-		
 	}
 	
 	@Test
@@ -151,6 +150,13 @@ public class EngineTest {
 		Engine destination = encodeHtmlFragment("<div class='content'/><div class='content'/>");
 		Engine result = destination.inject(singletonMap(".content", selection));
 		assertXmlFragmentsEqual("<div class='content'><p>hello</p></div><div class='content'><p>hello</p></div>", result.render());
+	}
+	
+	@Test
+	public void shouldCopeWithNameSpaces() throws Exception {
+		Engine engine = encodeHtmlFragment("<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>");
+		Engine result = engine.inject(singletonMap("body", "hi"));
+		assertXMLEqual("<html xmls='http://www.w3.org/1999/xhtml'><body>hi</body></html>", result.render());
 	}
 	
 	private Engine encodeHtmlFragment(String html) {
