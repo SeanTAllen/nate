@@ -91,10 +91,6 @@ public class XmlParserBackedHtml implements Html {
 		node.setTextContent(value);
 	}
 
-	public Html getParentNode() {
-		return new XmlParserBackedHtml(node.getParentNode());
-	}
-
 	@Override
 	public void replaceWith(List<Html> newFragments) {
 		Node parentNode = node.getParentNode();

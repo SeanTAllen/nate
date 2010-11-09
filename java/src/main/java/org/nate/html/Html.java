@@ -10,8 +10,6 @@ public interface Html {
 
 	void setTextContent(String value);
 
-	Html getParentNode();
-
 	void replaceWith(List<Html> newFragments);
 
 	Html cloneFragment();

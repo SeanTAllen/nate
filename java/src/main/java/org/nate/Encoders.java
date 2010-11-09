@@ -68,11 +68,6 @@ public class Encoders {
 		}
 
 		@Override
-		public Html getParentNode() {
-			return this;
-		}
-
-		@Override
 		public boolean hasAttribute(String name) {
 			return false;
 		}
