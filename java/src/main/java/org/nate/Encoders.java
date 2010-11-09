@@ -63,11 +63,6 @@ public class Encoders {
 		}
 
 		@Override
-		public void appendChild(Html newNode) {
-			
-		}
-
-		@Override
 		public Html cloneFragment() {
 			return new NullHtml(source);
 		}
@@ -83,8 +78,7 @@ public class Encoders {
 		}
 
 		@Override
-		public void removeChild(Html child) {
-			
+		public void replaceWith(List<Html> newFragments) {
 		}
 
 		@Override

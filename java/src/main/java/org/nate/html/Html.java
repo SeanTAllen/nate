@@ -12,11 +12,9 @@ public interface Html {
 
 	Html getParentNode();
 
-	void removeChild(Html child);
+	void replaceWith(List<Html> newFragments);
 
 	Html cloneFragment();
-
-	void appendChild(Html newNode);
 
 	String toHtml();
 

@@ -3,13 +3,13 @@ package org.nate;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-
 
 public class EngineTest {
 	
@@ -50,10 +50,10 @@ public class EngineTest {
 
 	@Test
 	public void shouldMatchAndInjectMultipleDataValues() throws Exception {
-		Engine engine = encodeHtmlFragment("<div class='section'><span class='content'></span></div>");
+		Engine engine = encodeHtmlFragment("Before <div class='section'><span class='content'></span></div> After");
 		Map<String, List<String>> data = singletonMap(".section", asList("Section 1", "Section 2"));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<div class='section'>Section 1</div><div class='section'>Section 2</div>",
+		assertXmlFragmentsEqual("Before <div class='section'>Section 1</div><div class='section'>Section 2</div> After",
 				result.render());
 	}
 
@@ -68,12 +68,13 @@ public class EngineTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldMatchAndInjectMultipleDataValuesIntoSubselection() throws Exception {
-		Engine engine = encodeHtmlFragment("<body><div class='section'><span class='greeting'></span></div></body>");
+		Engine engine = encodeHtmlFragment(
+				"<body>This is before <div class='section'><span class='greeting'></span></div> and after</body>");
 		Object data = singletonMap(".section", asList(singletonMap(".greeting", "Hello"), singletonMap(".greeting", "Goodbye")));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual(
-				"<body><div class='section'><span class='greeting'>Hello</span></div>" +
-				"<div class='section'><span class='greeting'>Goodbye</span></div></body>",
+			assertXmlFragmentsEqual(
+				"<body>This is before <div class='section'><span class='greeting'>Hello</span></div>" +
+				"<div class='section'><span class='greeting'>Goodbye</span></div> and after</body>",
 				result.render());
 	}
 	
@@ -186,15 +187,6 @@ public class EngineTest {
 	
 	private Engine encodeHtmlDocument(String html) {
 		return Engine.newWith(html, Engine.encoders().encoderFor("HTML"));
-	}
-	
-	private void assertXmlFragmentsEqual(String expected, String actual) throws Exception {
-		// Wrap in fake roots in case the xml has multiple roots, otherwise you get a parser exception
-		assertXMLEqual(wrapInFakeRoot(expected), wrapInFakeRoot(actual));
-	}
-	
-	private String wrapInFakeRoot(String fragment) {
-		return "<fragment>" + fragment + "</fragment>";
 	}
 
 }

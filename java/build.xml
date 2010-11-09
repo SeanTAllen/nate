@@ -22,7 +22,7 @@
   </target>
 	
   <target name="cucumber" depends="-compile-steps,-install-gems" 
-  		description="Run Cucumber. Use -Dcucumber.tags='' to also run Work In Progess (@wip) scenarios.">
+  		description="Run Cucumber. Use -Dcucumber.tags='' to also run Work In Progess (@wip) scenarios. To use other tags, use -Dcucumber.tags='--tags @mytag'">
     <mkdir dir="${reports.tests}"/>
     <taskdef name="cucumber" classname="cuke4duke.ant.CucumberTask" classpathref="compile.classpath"/>
     <cucumber

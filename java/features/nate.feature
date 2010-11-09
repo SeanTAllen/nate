@@ -130,7 +130,8 @@ Feature:
       When { '#data' => Nate::Engine.from_string('<span></span>') } is injected
       And { 'span' => 'hello' } is injected sometime later
       Then the HTML fragment is <div id='data'><span>hello</span></div>
-      
+  
+  @current
   Scenario: injection shouldn't modify the original template, only create a new version with changes
     Given the HTML fragment "<h1>Hi</h1>"
       When { 'h1' => 'Bye' } is injected

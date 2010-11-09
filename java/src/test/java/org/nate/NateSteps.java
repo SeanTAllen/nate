@@ -1,6 +1,6 @@
 package org.nate;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,15 +65,6 @@ public class NateSteps {
 	@When("^\"([^\"]*)\" is selected$")
 	public void isSelected(String selector) {
 		nateStates.add(currentNateEngine().select(selector));
-	}
-	
-	private void assertXmlFragmentsEqual(String expected, String actual) throws Exception {
-		// Wrap in fake roots in case the xml has multiple roots, otherwise you get a parser exception
-		assertXMLEqual(wrapInFakeRoot(expected.trim()), wrapInFakeRoot(actual));
-	}
-
-	private String wrapInFakeRoot(String fragment) {
-		return "<fake>" + fragment + "</fake>";
 	}
 
 	// This method is needed because the features express the data used to fill in the templates using ruby syntax like:

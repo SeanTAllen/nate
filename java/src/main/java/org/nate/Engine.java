@@ -147,13 +147,14 @@ public class Engine {
 
 	@SuppressWarnings("unchecked")
 	private void injectValuesIntoFragment(Iterable values, Html fragment) {
-		Html parentNode = fragment.getParentNode();
-		parentNode.removeChild(fragment);
+		List<Html> newFragments = new ArrayList<Html>();
 		for (Object value : values) {
 			Html newFragment = fragment.cloneFragment();
 			injectValueIntoFragment(value, newFragment);
-			parentNode.appendChild(newFragment);
+			newFragments.add(newFragment);
 		}
+		fragment.replaceWith(newFragments);
+
 	}
 
 	public String render() {

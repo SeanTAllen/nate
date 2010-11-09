@@ -95,16 +95,17 @@ public class XmlParserBackedHtml implements Html {
 		return new XmlParserBackedHtml(node.getParentNode());
 	}
 
-	public void removeChild(Html child) {
-		node.removeChild(((XmlParserBackedHtml)child).node);
+	@Override
+	public void replaceWith(List<Html> newFragments) {
+		Node parentNode = node.getParentNode();
+		for (Html newNode : newFragments) {
+			parentNode.insertBefore(((XmlParserBackedHtml)newNode).node, node);
+		}
+		parentNode.removeChild(node);
 	}
-
+	
 	public Html cloneFragment() {
 		return new XmlParserBackedHtml(node.cloneNode(true));
-	}
-
-	public void appendChild(Html newFragment) {
-		node.appendChild(((XmlParserBackedHtml)newFragment).node);
 	}
 
 	public void replaceChildren(Html newFragment) {
