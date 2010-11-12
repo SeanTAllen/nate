@@ -1,5 +1,5 @@
 <ivy-module version="2.0">
-  <info organisation="cukes.info" module="java-example"/>
+  <info organisation="org.nate" module="nate"/>
   <dependencies>
     <dependency org="cuke4duke" name="cuke4duke" rev="0.4.2"/>
     <dependency org="org.jruby" name="jruby-complete" rev="1.5.3" transitive="false"/>

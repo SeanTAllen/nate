@@ -1,5 +1,7 @@
 package org.nate.encoder;
 
+import java.io.InputStream;
+
 import org.nate.Encoder;
 import org.nate.html.Html;
 import org.nate.html.XmlParserBackedHtml;
@@ -17,6 +19,11 @@ public class HtmlEncoder implements Encoder {
 	}
 
 	public Html encode(String source) {
+		return XmlParserBackedHtml.fromDocument(source);
+	}
+
+	@Override
+	public Html encode(InputStream source) {
 		return XmlParserBackedHtml.fromDocument(source);
 	}
 

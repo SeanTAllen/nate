@@ -1,6 +1,7 @@
 package org.nate;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,10 @@ public class Encoders {
 		public String type() { return "null"; }
 		public Html encode(String source) { return new NullHtml(source); }
 		public boolean isNullEncoder() { return true; }
+
+		public Html encode(InputStream source) {
+			return new NullHtml(source);
+		}
 	}
 	
 	private static class NullHtml implements Html {
@@ -60,6 +65,10 @@ public class Encoders {
 
 		public NullHtml(String source) {
 			this.source = source;
+		}
+
+		public NullHtml(InputStream source) {
+			throw new UnsupportedOperationException();
 		}
 
 		@Override

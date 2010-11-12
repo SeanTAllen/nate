@@ -8,3 +8,4 @@ Things left to do for Java Nate:
  * Allow input and output to be via InputStream.
  * Revisit character encoding issues.
  * Allow rendered output to (optionally) have an xml declaration tag.
+ * Fix terms used for internal code: i.e. fragment, html, node, template...

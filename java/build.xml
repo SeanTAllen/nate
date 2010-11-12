@@ -1,4 +1,4 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="nate" default="tests" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="nate" default="publish" basedir=".">
 
   <property name="jruby.home" value="${basedir}/lib/.jruby"/>
   <property name="reports.tests" value="target/junit-report"/>
@@ -6,8 +6,9 @@
   <!-- By default, cucumber skips Work In Progess (@wip) -->
   <property name="cucumber.tags" value="--tags ~@wip" />
 
-  <target name="tests" depends="unit-tests,cucumber" description="Unit and acceptance tests">
-  </target>
+  <target name="publish" depends="tests, jar" description="Build, run tests, and create jar" />
+	
+  <target name="tests" depends="unit-tests,cucumber" description="Unit and acceptance tests" />
 	
   <target name="configure" description="Configure the project (download libs and install gems)">
     <property name="ivy" value="true"/>
@@ -51,6 +52,10 @@
 			</fileset>
 		</batchtest>
  	</junit>
+  </target>
+	
+  <target name="jar" depends="-compile-steps" description="Compile and create jar">
+  	<jar destfile="target/nate.jar" basedir="target/classes" />
   </target>
 
   <target name="-download-jars" if="ivy">

@@ -5,6 +5,7 @@ import static java.util.Collections.singletonList;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -45,7 +46,11 @@ public class XmlParserBackedHtml implements Html {
 	public static XmlParserBackedHtml fromDocument(String source) {
 		return new XmlParserBackedHtml(parseXml(source));
 	}
-	
+
+	public static Html fromDocument(InputStream source) {
+		return new XmlParserBackedHtml(parseXml(source));
+	}
+
 	public static XmlParserBackedHtml fromFragment(String source) {
 		return new XmlParserBackedHtml(wrapInFakeRootElement(source));
 	}
@@ -221,8 +226,12 @@ public class XmlParserBackedHtml implements Html {
 	}
 
 	private static Document parseXml(String source) {
+		return parseXml(new ByteArrayInputStream(source.getBytes()));
+	}
+
+	private static Document parseXml(InputStream inputStream) {
 		try {
-			return createDocumentParser().parse(new ByteArrayInputStream(source.getBytes()));
+			return createDocumentParser().parse(inputStream);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		} catch (ParserConfigurationException e) {

@@ -1,6 +1,7 @@
 package org.nate;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +48,16 @@ public class Engine {
 		this.template = encoder.encode(source);
 	}
 	
+	private Engine(InputStream source, Encoder encoder) {
+		this.template = encoder.encode(source);
+	}
+	
 	private Engine(Html fragment) {
 		this.template = fragment;
+	}
+
+	public static Engine newWith(InputStream source, Encoder encoder) {
+		return new Engine(source, encoder);
 	}
 
 	public static Engine newWith(String source) {
