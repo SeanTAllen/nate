@@ -7,6 +7,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,35 +30,84 @@ public class ToDoServlet extends HttpServlet {
 	private Engine ADD;
 	private Engine LIST;
 	
+	private ToDoRepository toDoRepository = new ToDoRepository();
+	
+	private enum Action {GetTodos, NewTodo, AddTodo, DeleteTodo};
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		LAYOUT = createEngineFor(config, "/WEB-INF/templates/layout.html");
-		ADD = createEngineFor(config, "/WEB-INF/templates/add.html");
-		LIST = createEngineFor(config, "/WEB-INF/templates/list.html");
+		ADD = createEngineFor(config, "/WEB-INF/templates/add.html").select("content:#content");
+		LIST = createEngineFor(config, "/WEB-INF/templates/list.html").select("content:#content");
 	}
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/html;charset=utf-8");
 		resp.setStatus(HttpServletResponse.SC_OK);
-		resp.getWriter().println(get());
+		Action action = extractAction(req);
+		if (action == Action.GetTodos) {
+			resp.getWriter().println(getToDos());
+		} else {
+			resp.getWriter().println(newToDo());
+		}
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		resp.setContentType("text/html;charset=utf-8");
+		Action action = extractAction(req);
+		if (action == Action.AddTodo) {
+			addToDo(req);
+		} else {
+			removeToDo(req);
+		}
+		resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+		resp.setHeader("Location", "/todo");
+	}
+
+	private void removeToDo(HttpServletRequest req) {
+		long id = Long.valueOf(req.getParameter("id"));
+		toDoRepository.delete(id);
+	}
+
+	private void addToDo(HttpServletRequest req) {
+		String title = req.getParameter("title");
+		toDoRepository.add(new ToDo(title));
+	}
+
+	private String newToDo() {
+		return LAYOUT.inject(singletonMap("#content", ADD)).render();
+	}
+
+	private String getToDos() {
+		List<ToDo> toDos = toDoRepository.all();
+		List<Map<String, Object>> todoData = new ArrayList<Map<String,Object>>();
+		for (ToDo toDo : toDos) {
+			Map<String, Object> todoMap = new HashMap<String, Object>();
+			todoMap.put(".title", toDo.getTitle());
+			todoMap.put("input[name=id]", singletonMap("value", toDo.getId()));
+			todoData.add(todoMap);
+		}
+		Object data = singletonMap(".todo", todoData);
+		Engine list = LIST.inject(singletonMap(".todolist", data));
+		return LAYOUT.inject(singletonMap("#content", list)).render();
 	}
 
 
-	@SuppressWarnings("unchecked")
-	private String get() {
-		Map<String, Object> todo1 = new HashMap<String, Object>();
-		todo1.put(".title", "Title1");
-		todo1.put("input[name=id]", singletonMap("value", "111"));
-		Map<String, Object> todo2 = new HashMap<String, Object>();
-		todo2.put(".title", "Title2");
-		todo2.put("input[name=id]", singletonMap("value", "222"));
-		List<Map<String, Object>> todoData = asList(todo1, todo2);
-		Object data = singletonMap(".todo", todoData);
-		Engine list = LIST.inject(singletonMap(".todolist", data)).select("content:#content");
-		return LAYOUT.inject(singletonMap("#content", list)).render();
+	private Action extractAction(HttpServletRequest req) {
+		String requestURI = req.getRequestURI();
+		if (requestURI.endsWith("new")) {
+			return Action.NewTodo;
+		}
+		if (requestURI.endsWith("add")) {
+			return Action.AddTodo;
+		}
+		if (requestURI.endsWith("finished")) {
+			return Action.DeleteTodo;
+		}
+		return Action.GetTodos; 
 	}
 
 	private Engine createEngineFor(ServletConfig config, String source) {
