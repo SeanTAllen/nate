@@ -82,23 +82,16 @@ public class Engine {
 	}
 
 	public Engine select(String selector) {
-		List<Html> selectedNodes = findHtmlElementsMatchingSelector(selector.trim());
+		Html fragment = template.cloneFragment();
+		List<Html> selectedNodes = findHtmlElementsMatchingSelector(selector.trim(), fragment);
 		return new Engine(XmlParserBackedHtml.fromFragments(selectedNodes));
 	}
 
-	private List<Html> findHtmlElementsMatchingSelector(String selector) {
+	private List<Html> findHtmlElementsMatchingSelector(String selector, Html fragment) {
 		if (selector.startsWith(CONTENT_SELECTION_FLAG)) {
-			return clone(template.selectContentOfNodes(selector.substring(CONTENT_SELECTION_FLAG.length())));
+			return fragment.selectContentOfNodes(selector.substring(CONTENT_SELECTION_FLAG.length()));
 		}
-		return clone(template.selectNodes(selector));
-	}
-
-	private List<Html> clone(List<Html> nodes) {
-		List<Html> clones = new ArrayList<Html>(nodes.size());
-		for (Html node : nodes) {
-			clones.add(node.cloneFragment());
-		}
-		return clones;
+		return fragment.selectNodes(selector);
 	}
 
 	@SuppressWarnings("unchecked")

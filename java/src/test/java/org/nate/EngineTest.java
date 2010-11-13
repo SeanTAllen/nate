@@ -3,6 +3,7 @@ package org.nate;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.junit.Assert.*;
 import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
 
 import java.util.HashMap;
@@ -112,10 +113,26 @@ public class EngineTest {
 	}
 	
 	@Test
+	public void shouldNotBeModifiedByASelect() throws Exception {
+		String original = "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>";
+		Engine engine = encodeHtmlFragment(original);
+		engine.select("#header");
+		assertXmlFragmentsEqual(original, engine.render());
+	}
+	
+	@Test
 	public void shouldBeAbleToSelectAllContent() throws Exception {
 		Engine engine = encodeHtmlFragment("<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>");
 		Engine header = engine.select(" content:div");
 		assertXmlFragmentsEqual("header textcontent text<h1>footer</h1>", header.render());
+	}
+	
+	@Test
+	public void shouldNotBeModifiedByASelectContent() throws Exception {
+		String original = "<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>";
+		Engine engine = encodeHtmlFragment(original);
+		engine.select("content:div");
+		assertXmlFragmentsEqual(original, engine.render());
 	}
 	
 	@Test
