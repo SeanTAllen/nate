@@ -1,6 +1,7 @@
 To run...
 
-INSTRUCTIONS PLEASE!!!
+Just run ant.  This will start a jetty server listening on port 8080, and deploy a ToDo application at:
+http://localhost:8080/
 
 Uses icons from:
 
