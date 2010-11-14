@@ -1,7 +1,13 @@
 package org.nate;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +17,6 @@ import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
 import org.nate.html.Html;
 import org.nate.html.XmlParserBackedHtml;
-import org.nate.util.HtmlFile;
 
 public class Engine {
 
@@ -44,10 +49,6 @@ public class Engine {
 		return encoders;
 	}
 	
-	private Engine(String source, Encoder encoder) {
-		this.template = encoder.encode(source);
-	}
-	
 	private Engine(InputStream source, Encoder encoder) {
 		this.template = encoder.encode(source);
 	}
@@ -61,16 +62,36 @@ public class Engine {
 	}
 
 	public static Engine newWith(String source) {
-		return new Engine(source, encoders.encoderFor("HTMLF"));
+		return newWith(source, encoders.encoderFor("HTMLF"));
 	}
 
 	public static Engine newWith(String source, Encoder encoder) {
-		return new Engine(source, encoder);
+		try {
+			// We are using an xml parser, and so we really need to use UTF-8.
+			// TODO: Test this assumption!!!
+			return newWith(new ByteArrayInputStream(source.getBytes("UTF-8")), encoder);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static Engine newWith(File file) {
-		Encoder encoder = encoders.encoderFor(file);
-		return new Engine(HtmlFile.contentsOf(file), encoder);
+		InputStream inputStream = null;
+		try {
+			inputStream = new BufferedInputStream(new FileInputStream(file));
+			Encoder encoder = encoders.encoderFor(file);
+			return new Engine(inputStream, encoder);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")

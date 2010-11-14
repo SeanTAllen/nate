@@ -1,10 +1,8 @@
 package org.nate.examples.todo;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

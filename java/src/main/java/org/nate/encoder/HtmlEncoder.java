@@ -18,10 +18,6 @@ public class HtmlEncoder implements Encoder {
 		return TYPE;
 	}
 
-	public Html encode(String source) {
-		return XmlParserBackedHtml.fromDocument(source);
-	}
-
 	@Override
 	public Html encode(InputStream source) {
 		return XmlParserBackedHtml.fromDocument(source);

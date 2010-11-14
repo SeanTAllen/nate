@@ -6,6 +6,7 @@ import static java.util.Collections.singletonList;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -29,7 +30,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,18 +43,14 @@ import se.fishtank.css.selectors.dom.DOMNodeSelector;
 public class XmlParserBackedHtml implements Html {
 	private static final String FAKEROOT = "fakeroot";
 
-	public static XmlParserBackedHtml fromDocument(String source) {
+	public static XmlParserBackedHtml fromDocument(InputStream source) {
 		return new XmlParserBackedHtml(parseXml(source));
 	}
 
-	public static Html fromDocument(InputStream source) {
-		return new XmlParserBackedHtml(parseXml(source));
-	}
-
-	public static XmlParserBackedHtml fromFragment(String source) {
+	public static XmlParserBackedHtml fromFragment(InputStream source) {
 		return new XmlParserBackedHtml(wrapInFakeRootElement(source));
 	}
-	
+
 	public static XmlParserBackedHtml fromFragments(List<Html> htmlFragments) {
 		List<Node> nodes = new ArrayList<Node>();
 		for (Html fragment : htmlFragments) {
@@ -75,7 +71,7 @@ public class XmlParserBackedHtml implements Html {
 
 	private XmlParserBackedHtml(List<Node> nodes) {
 		this.hasFakeRoot = true;
-		this.node = wrapInFakeRootElement("");
+		this.node = wrapInFakeRootElement(emptyInputStream());
 		for (Node newNode : nodes) {
 			adopt(newNode);
 			this.node.appendChild(newNode);
@@ -219,14 +215,11 @@ public class XmlParserBackedHtml implements Html {
 		return builder;
 	}
 
-	private static Element wrapInFakeRootElement(String source) {
-		// Wrap source in a fake root to allow it to have multiple roots.
-		String wrappedSource = String.format("<%s>%s</%s>", FAKEROOT, source, FAKEROOT);
-		return parseXml(wrappedSource).getDocumentElement();
-	}
-
-	private static Document parseXml(String source) {
-		return parseXml(new ByteArrayInputStream(source.getBytes()));
+	private static Node wrapInFakeRootElement(InputStream source) {
+		InputStream startTag = new ByteArrayInputStream(("<" + FAKEROOT + ">").getBytes());
+		InputStream endTag = new ByteArrayInputStream(("</" + FAKEROOT + ">").getBytes());
+		SequenceInputStream wrappedStream = new SequenceInputStream(startTag, new SequenceInputStream(source, endTag));
+		return parseXml(wrappedStream).getDocumentElement();
 	}
 
 	private static Document parseXml(InputStream inputStream) {
@@ -255,6 +248,9 @@ public class XmlParserBackedHtml implements Html {
 		return result;
 	}
 
+	private static InputStream emptyInputStream() {
+		return new ByteArrayInputStream(new byte[0]) ;
+	}
 	private static final EntityResolver NULL_ENTITY_RESOLVER = new EntityResolver() {
 		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 			return new InputSource(new StringReader(""));

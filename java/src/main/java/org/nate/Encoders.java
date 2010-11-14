@@ -1,7 +1,11 @@
 package org.nate;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,24 +55,16 @@ public class Encoders {
 
 	private static class NullEncoder implements Encoder {
 		public String type() { return "null"; }
-		public Html encode(String source) { return new NullHtml(source); }
 		public boolean isNullEncoder() { return true; }
-
-		public Html encode(InputStream source) {
-			return new NullHtml(source);
-		}
+		public Html encode(InputStream source) {return new NullHtml(source);}
 	}
 	
 	private static class NullHtml implements Html {
 
-		private final String source;
-
-		public NullHtml(String source) {
-			this.source = source;
-		}
+		private final InputStream source;
 
 		public NullHtml(InputStream source) {
-			throw new UnsupportedOperationException();
+			this.source = source;
 		}
 
 		@Override
@@ -105,7 +101,16 @@ public class Encoders {
 
 		@Override
 		public String toHtml() {
-			return source;
+			try {
+				StringWriter result = new StringWriter();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(source));
+				for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+					result.append(line);
+				}
+				return result.toString();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		@Override

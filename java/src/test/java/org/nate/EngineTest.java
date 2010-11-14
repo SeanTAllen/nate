@@ -3,7 +3,6 @@ package org.nate;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.*;
 import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
 
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.nate.html.XmlParserBackedHtml;
 
 public class EngineTest {
 	
@@ -135,6 +135,17 @@ public class EngineTest {
 		assertXmlFragmentsEqual(original, engine.render());
 	}
 	
+	// TODO!!!!
+//	
+//	@Test
+//	public void shouldReturnSelectionsWhereNodesMatchThatAreInAncestralRelationship() throws Exception {
+//		String original = "<div id='outer'><div id='inner'>hello</div></div>";
+//		Engine engine = encodeHtmlFragment(original);
+//		String selection = engine.select("div").render();
+//		assertXmlFragmentsEqual("<div id='outer'><div id='inner'>hello</div></div><div id='inner'>hello</div>", selection);
+//		assertXmlFragmentsEqual(original, engine.render());
+//	}
+
 	@Test
 	public void shouldBeAbleToInjectNateEnginesIntoNateEngines() throws Exception {
 		Engine engine1 = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
