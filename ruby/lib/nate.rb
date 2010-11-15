@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'nokogiri'
-require 'lorax'
 
 module Nate
   class Engine
@@ -35,13 +34,12 @@ module Nate
     end
 
     def inject_with data
-      template = encode_template()
-      fragment = transform( Nokogiri::XML.fragment( template ), data )
+      fragment = transform( template_to_fragment(), data )
       Nate::Engine.from_string fragment.to_xml
     end
 
     def select selector
-      fragment = Nokogiri::XML.fragment( encode_template() )
+      fragment = template_to_fragment()
       if selector =~ /^content:/
         selector.gsub! /^content:/, ''
         selection = select_all( fragment, selector )
@@ -51,10 +49,10 @@ module Nate
       Nate::Engine.from_string selection.to_xml
     end
     
-    def render encode_as = :html
-      template = encode_template()
-      to_method = string_to_fragment( template ).method( "to_#{encode_as}")
-      to_method.call
+    def render render_as = :html
+      doc_fragment = template_to_fragment()
+      render_method = doc_fragment.method( "to_#{render_as}")
+      render_method.call
     end
 
     def to_html
@@ -104,7 +102,7 @@ module Nate
         unless attribute == CONTENT_ATTRIBUTE
           transform_attribute( node, attribute, value )
         else
-          transform_node( node, value)
+          transform( node, value)
         end
       end
     end
@@ -137,12 +135,8 @@ module Nate
       node[ attribute ].nil? == false 
     end
     
-    def string_to_fragment( string )
-      Nokogiri::XML.fragment( string )
-    end
-    
     def search( fragment_or_node, selector )
-      ns = namespace( fragment_or_node )
+      ns = namespace_for( fragment_or_node )
       args = [ selector.to_s ]
       args.push ns if has_namespace?( fragment_or_node )
       fragment_or_node.search( *args )
@@ -168,7 +162,7 @@ module Nate
       return false   
     end
     
-    def namespace( fragment )
+    def namespace_for( fragment )
       fragment.children().each() do | node |
         begin
           if node.namespace.href
@@ -180,8 +174,22 @@ module Nate
         end
       end
     end
+    
+    def string_to_fragment( string )
+      Nokogiri::XML.fragment( string )
+    end
+    
+    def template_to_fragment
+      string_to_fragment( encode_template() )
+    end 
   end
 end
+
+# work around for missing nokogiri feature ( search working correctly on document fragments )
+# and bug fix that said feature exposed. these will go into nokogiri eventually but first,
+# xpath issues have to be addressed. this monkeypatch will break xpath support using 'search'
+# on document fragments w/ nokogiri but, those dont function properly in most cases right now
+# anyway.
 
 module Nokogiri
   module XML
