@@ -102,7 +102,7 @@ module Nate
         unless attribute == CONTENT_ATTRIBUTE
           transform_attribute( node, attribute, value )
         else
-          transform_node( node, value)
+          transform( node, value)
         end
       end
     end
