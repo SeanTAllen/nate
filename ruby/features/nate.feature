@@ -89,6 +89,11 @@ Feature:
       When { 'a' => { 'href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">example.com</a>
       
+  Scenario: special 'content' attribute should be able to be transformed
+    Given the HTML fragment "<div id='x'><p>Hi</p></div>"
+      When { 'div' => { 'id' => 'y', Nate::Engine::CONTENT_ATTRIBUTE => { 'p' => 'Bye' } } } is injected
+      Then the HTML fragment is <div id='y'><p>Bye</p></div>
+      
   Scenario: multiple value matches shouldn't leak from one value to the next
     Given the HTML fragment "<a href='#'>link</a>"
       When { 'a' => [ { 'href' => 'x' }, 'new link' ] } is injected
