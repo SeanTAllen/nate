@@ -6,6 +6,7 @@ Things left to do for Java Nate:
  * Allow option of not having injected text HTML escaped.
  * Handle 'attr:' selectors.
  * Revisit this: {'div' => {'div' => 'foo'}}.  Should it be equivalent to {'div' => 'foo'} or {'div div' => 'foo'}
+ * Revisit this: {'div' => {'*content*' => {'div' => 'foo'}}}
  * Fix build and ivy config to make it clear what the nate runtime dependencies are.
  * Convince css-selectors library author to upload a release to a maven repo or do it ourselves.
  * Test NullEncoder.

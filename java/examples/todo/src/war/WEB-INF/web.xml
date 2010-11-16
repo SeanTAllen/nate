@@ -7,7 +7,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 
 	<servlet>
 		<servlet-name>main</servlet-name>
-		<servlet-class>org.nate.examples.todo.ToDoServlet</servlet-class>
+		<servlet-class>todo.ToDoServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>main</servlet-name>

@@ -1,4 +1,4 @@
-package org.nate.examples.todo;
+package todo;
 
 import java.util.ArrayList;
 import java.util.List;

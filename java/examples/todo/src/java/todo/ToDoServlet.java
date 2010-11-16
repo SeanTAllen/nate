@@ -1,4 +1,4 @@
-package org.nate.examples.todo;
+package todo;
 
 import static java.util.Collections.singletonMap;
 

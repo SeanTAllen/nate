@@ -27,7 +27,7 @@
 	</target>
 	
 	<target name="run" depends="war">
-		<java classname="org.nate.examples.todo.ToDoServer" classpathref="run.classpath"
+		<java classname="todo.ToDoServer" classpathref="run.classpath"
 			jvmargs="-Dwar.path=target/todo.war" fork="true" />
 	</target>
 	
