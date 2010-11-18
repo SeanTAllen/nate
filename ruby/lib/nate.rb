@@ -3,7 +3,9 @@ require 'nokogiri'
 
 module Nate
   class Engine
-    CONTENT_ATTRIBUTE = '*content*'
+    CONTENT_SELECTOR   = '##'
+    ATTRIBUTE_SELECTOR = '@@'
+    CONTENT_ATTRIBUTE  = "*content*"
     
     def self.from_string source, encoder_type = :html
       self.new source, encoder_type
@@ -40,8 +42,8 @@ module Nate
 
     def select selector
       fragment = template_to_fragment()
-      if selector =~ /^content:/
-        selector.gsub! /^content:/, ''
+      if selector =~ /^#{CONTENT_SELECTOR}/
+        selector.gsub! /^#{CONTENT_SELECTOR}/, ''
         selection = select_all( fragment, selector )
       else
         selection = select_elements( fragment, selector )
@@ -82,27 +84,21 @@ module Nate
     end
 
     def transform_hash( node, values)
-      unless contains_attributes( node, values)
-        transform_subselection_hash( node, values )
-      else
-        transform_attribute_hash( node, values )
-      end
-    end
-
-    def transform_subselection_hash( node, values )
-      values.each do | selector, value |
-        search( node, selector ).each do | subnode | 
-          transform( subnode, value ) 
-        end
-      end
-    end
-    
-    def transform_attribute_hash( node, values )
-      values.each do | attribute, value |
-        unless attribute == CONTENT_ATTRIBUTE
-          transform_attribute( node, attribute, value )
+      values.each do | selector, value |        
+        unless selector_contains_attributes?( selector )
+          search( node, selector ).each do | subnode | 
+            transform( subnode, value )
+          end
         else
-          transform( node, value)
+          if selector_is_for_attribute_only?( selector )
+            selectors = split_selector_on_attributes( selector )
+            transform_attribute( node, selectors, value )
+          else
+            selectors = split_selector_on_attributes( selector )
+            search( node, selectors.shift ).each do | subnode |
+              transform_attribute( subnode, selectors, value )
+            end
+          end
         end
       end
     end
@@ -121,25 +117,37 @@ module Nate
       node.inner_html = string_to_fragment( value.to_s ) unless value.nil?
     end
 
-    def transform_attribute( node, attribute, value )
-      if has_attribute?( node, attribute )
+    def transform_attribute( node, possible_attributes, value )
+      attribute = possible_attributes.detect { | item | item != "" }
+      unless attribute == CONTENT_ATTRIBUTE
         node[ attribute ] = value.to_s
+      else
+        transform( node, value )
       end
     end
 
-    def contains_attributes( node, values )
-      values.keys.any? { | key | has_attribute?( node, key ) }
-    end
-    
-    def has_attribute?( node, attribute )
-      node[ attribute ].nil? == false 
-    end
-    
     def search( fragment_or_node, selector )
       ns = namespace_for( fragment_or_node )
       args = [ selector.to_s ]
       args.push ns if has_namespace?( fragment_or_node )
-      fragment_or_node.search( *args )
+      fragment_or_node.search( *args )        
+    end
+    
+    def selector_is_for_attribute_only?( selector )
+      selectors = split_selector_on_attributes( selector)
+      if ((selectors.length > 1) && (selectors[0] == "" )) || selectors[ 0 ] == CONTENT_ATTRIBUTE
+        true
+      else
+        false
+      end
+    end
+    
+    def selector_contains_attributes?( selector )
+      split_selector_on_attributes( selector).length > 1 || selector == CONTENT_ATTRIBUTE
+    end
+    
+    def split_selector_on_attributes( selector )
+      selector.split /\s*#{ATTRIBUTE_SELECTOR}/  
     end
     
     def select_elements( fragment, selector )

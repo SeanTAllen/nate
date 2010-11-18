@@ -32,7 +32,7 @@ AddToDo = Nate::Engine.from_file 'templates/add.html'
 get '/' do
   todos = ToDo.all( :complete => false )
   todo_data = todos.collect do |todo|
-    { '.title' => todo.title,  'input[@name=id]' => { 'value' => todo.id }}
+    { '.title' => todo.title,  'input[@name=id]' => { '@@value' => todo.id }}
   end 
   data = { '.todo' => todo_data }
   

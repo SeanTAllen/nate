@@ -39,7 +39,7 @@ end
 def todo_list
   todos = ToDo.all( :complete => false )
   todo_data = todos.collect do |todo|
-    { '.title' => todo.title,  'input[@name=id]' => { 'value' => todo.id }}
+    { '.title' => todo.title,  'input[@name=id]' => { '@@value' => todo.id }}
   end 
   data = { '.todo' => todo_data }
   List.inject_with( { '.todolist' => data } ).to_xhtml
