@@ -157,9 +157,9 @@ Feature:
       Then the HTML fragment is <transformed>
       
     Examples:
-      | data | transformed |
-      | "content:#header" | header text |
-      | "content:div" | header textcontent text<h1>footer</h1> |
+      | data        | transformed                            |
+      | "###header" | header text                            |
+      | "##div"     | header textcontent text<h1>footer</h1> |
       
    Scenario: should be able to use a nate template as a value when injecting
      Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"

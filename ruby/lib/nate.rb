@@ -4,6 +4,7 @@ require 'nokogiri'
 module Nate
   class Engine
     CONTENT_ATTRIBUTE = '*content*'
+    CONTENT_SELECTOR  = '##'
     
     def self.from_string source, encoder_type = :html
       self.new source, encoder_type
@@ -40,8 +41,8 @@ module Nate
 
     def select selector
       fragment = template_to_fragment()
-      if selector =~ /^content:/
-        selector.gsub! /^content:/, ''
+      if selector =~ /^#{CONTENT_SELECTOR}/
+        selector.gsub! /^#{CONTENT_SELECTOR}/, ''
         selection = select_all( fragment, selector )
       else
         selection = select_elements( fragment, selector )
