@@ -86,19 +86,26 @@ module Nate
     def transform_hash( node, values)
       values.each do | selector, value |        
         unless selector_contains_attributes?( selector )
-          search( node, selector ).each do | subnode | 
-            transform( subnode, value )
-          end
+          transform_attributeless_hash( node, selector, value )
         else
-          if selector_is_for_attribute_only?( selector )
-            selectors = split_selector_on_attributes( selector )
-            transform_attribute( node, selectors, value )
-          else
-            selectors = split_selector_on_attributes( selector )
-            search( node, selectors.shift ).each do | subnode |
-              transform_attribute( subnode, selectors, value )
-            end
-          end
+          transform_attribute_hash( node, selector, value )
+        end
+      end
+    end
+
+    def transform_attributeless_hash( node, selector, value )
+      search( node, selector ).each do | subnode | 
+        transform( subnode, value )
+      end
+    end
+    
+    def transform_attribute_hash( node, selector, value )
+      selectors = split_selector_on_attributes( selector )
+      if selector_is_for_attribute_only?( selector )
+        transform_attribute( node, selectors, value )
+      else
+        search( node, selectors.shift ).each do | subnode |
+          transform_attribute( subnode, selectors, value )
         end
       end
     end
