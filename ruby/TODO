@@ -28,3 +28,8 @@ xml probably doesnt work due to namespaces
 feature to test namespace handling
 
 xpaths are totally broken in nokogiri right now. add xpaths support and tests once that is fixed.
+
+refactor code now that is got all messed up by the @@ for attribute addition.
+
+more tests for @@ attribute code. should handle 'that aint supposed to happen situations' like:
+'a @@href p' gracefully. right now i have no idea what happens with illogical stuff like that.

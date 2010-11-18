@@ -69,34 +69,31 @@ Feature:
       | { 'ul' => [] }             | <div></div>          |
       | { 'ul' => { 'li' => [] } } | <div><ul></ul></div> |
   
-  Scenario: match and inject data into element attributes
+  Scenario Outline: match and inject data into element attributes
     Given the HTML fragment "<a href='#'>my link</a>"
-      When { 'a' => { 'href' => 'http://www.example.com' } } is injected
-      Then the HTML fragment is <a href="http://www.example.com">my link</a>
-  
-  Scenario Outline: non-existent attributes on an element should be ignored
-    Given the HTML fragment "<h1 class='glory'>Header</h1>"
       When <data> is injected
       Then the HTML fragment is <transformed>
     
     Examples:
       | data | transformed |
-      | { 'h1' => { 'style' => 'http://www.example.com' } }                        | <h1 class='glory'>Header</h1>    |
-      | { 'h1' => { 'style' => 'http://www.example.com', 'class' => 'glorious' } } | <h1 class='glorious'>Header</h1> |
+      | { 'a' => { '@@href' => 'http://www.example.com' } } | <a href="http://www.example.com">my link</a> |
+      | { 'a' => { 'href' => 'http://www.example.com' } }   | <a href="#">my link</a>                      |
+      | { 'a' => { '@@style' => 'color:red' } }             | <a href="#" style="color:red">my link</a>    |
+      | { 'a @@href' => 'http://www.example.com' }          | <a href="http://www.example.com">my link</a> |
       
   Scenario: when doing an attribute match, special 'content' attribute should change the inner_html
     Given the HTML fragment "<a href='#'>my link</a>"
-      When { 'a' => { 'href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
+      When { 'a' => { '@@href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">example.com</a>
       
   Scenario: special 'content' attribute should be able to be transformed
     Given the HTML fragment "<div id='x'><p>Hi</p></div>"
-      When { 'div' => { 'id' => 'y', Nate::Engine::CONTENT_ATTRIBUTE => { 'p' => 'Bye' } } } is injected
+      When { 'div' => { '@@id' => 'y', Nate::Engine::CONTENT_ATTRIBUTE => { 'p' => 'Bye' } } } is injected
       Then the HTML fragment is <div id='y'><p>Bye</p></div>
       
   Scenario: multiple value matches shouldn't leak from one value to the next
     Given the HTML fragment "<a href='#'>link</a>"
-      When { 'a' => [ { 'href' => 'x' }, 'new link' ] } is injected
+      When { 'a' => [ { '@@href' => 'x' }, 'new link' ] } is injected
       Then the HTML fragment is <a href="x">link</a><a href="#">new link</a>
       
   Scenario Outline: matches on multiple items should inject into all matches
@@ -115,9 +112,9 @@ Feature:
       Then the HTML fragment is <transformed>
       
     Examples:
-      | data                       | transformed              |
-      | { 'a' => { 'href' => 1 } } | <a href='1'></a>         |
-      | { 'a' => 'click me' }      | <a href="#">click me</a> |
+      | data                         | transformed              |
+      | { 'a' => { '@@href' => 1 } } | <a href='1'></a>         |
+      | { 'a' => 'click me' }        | <a href="#">click me</a> |
       
   Scenario: embed additional html in my injected data
     Given the HTML fragment "<div></div>"
