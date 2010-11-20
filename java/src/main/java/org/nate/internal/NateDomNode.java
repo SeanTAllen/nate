@@ -12,6 +12,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import se.fishtank.css.selectors.NodeSelectorException;
 import se.fishtank.css.selectors.dom.DOMNodeSelector;
@@ -45,8 +46,8 @@ public abstract class NateDomNode {
 	public String render() {
 		Writer stringWriter = new StringWriter();
 		Result result = new StreamResult(stringWriter);
-		for (Element element : getRootElements()) {
-			convertNodeToString(element, result);
+		for (Node node : getRootNodes()) {
+			convertNodeToString(node, result);
 		}
 		return stringWriter.toString();
 	}
@@ -56,7 +57,7 @@ public abstract class NateDomNode {
 		return render();
 	}
 
-	public abstract List<Element> getRootElements();
+	public abstract List<Node> getRootNodes();
 
 	// private List<Node> getChildNodes() {
 	// return asNodeList(topElement.getChildNodes());

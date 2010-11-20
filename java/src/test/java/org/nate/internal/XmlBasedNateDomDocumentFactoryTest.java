@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 
 public class XmlBasedNateDomDocumentFactoryTest {
@@ -22,30 +22,32 @@ public class XmlBasedNateDomDocumentFactoryTest {
 				"<html><body><div/></body></html>");
 		NateDomDocument doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocument(input);
 		assertXmlFragmentsEqual("<html><body><div/></body></html>", doc.render());
-		List<Element> rootElements = doc.getRootElements();
+		List<Node> rootElements = doc.getRootNodes();
 		assertThat(rootElements.size(), is(1));
 		assertThat(rootElements.get(0).getNodeName(), is("html"));
 	}
 
 	@Test
 	public void shouldCreateNateDomDocumentFromXmlFragment() throws Exception {
-		InputStream input = inputStreamFor("<a>hello</a><b>foo</b>");
+		InputStream input = inputStreamFor("apple<a>hello</a><b>foo</b>banana");
 		NateDomDocument doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocumentFragment(input);
-		assertXmlFragmentsEqual("<a>hello</a><b>foo</b>", doc.render());
-		List<Element> rootElements = doc.getRootElements();
-		assertThat(rootElements.size(), is(2));
-		assertThat(rootElements.get(0).getNodeName(), is("a"));
-		assertThat(rootElements.get(1).getNodeName(), is("b"));
+		assertXmlFragmentsEqual("apple<a>hello</a><b>foo</b>banana", doc.render());
+		List<Node> rootNodes = doc.getRootNodes();
+		assertThat(rootNodes.size(), is(4));
+		assertThat(rootNodes.get(0).getNodeValue(), is("apple"));
+		assertThat(rootNodes.get(1).getNodeName(), is("a"));
+		assertThat(rootNodes.get(2).getNodeName(), is("b"));
+		assertThat(rootNodes.get(3).getNodeValue(), is("banana"));
 	}
 
 	@Test
 	public void shouldCreateNateDomDocumentFromW3cElements() throws Exception {
 		NateDomDocument document1 = createDocument("<a>apple</a>");
 		NateDomDocument document2 = createDocument("<a>banana</a>");
-		List<Element> nodes = new ArrayList<Element>();
-		nodes.addAll(document1.getRootElements());
-		nodes.addAll(document2.getRootElements());
-		NateDomDocument result = new XmlBasedNateDomDocumentFactory().createFromW3cElements(nodes);
+		List<Node> nodes = new ArrayList<Node>();
+		nodes.addAll(document1.getRootNodes());
+		nodes.addAll(document2.getRootNodes());
+		NateDomDocument result = new XmlBasedNateDomDocumentFactory().createFromW3cNodes(nodes);
 		assertXmlFragmentsEqual("<a>apple</a><a>banana</a>", result.render());
 		assertXmlFragmentsEqual("<a>apple</a><a>banana</a>", result.render());
 		assertXmlFragmentsEqual("<a>apple</a>", document1.render());

@@ -22,11 +22,11 @@ public final class W3cUtils {
 	private W3cUtils() {
 	}
 
-	public static List<Element> asElementList(NodeList nodes) {
+	public static List<Node> asNodeList(NodeList nodes) {
 		int length = nodes.getLength();
-		List<Element> result = new ArrayList<Element>(length);
+		List<Node> result = new ArrayList<Node>(length);
 		for(int i = 0; i < length; i++) {
-			result.add((Element) nodes.item(i));
+			result.add(nodes.item(i));
 		}
 		return result;
 	}

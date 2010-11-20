@@ -36,6 +36,16 @@ public class NateDomDocumentTest {
 		assertXmlFragmentsEqual("<div>a<div>b</div></div><div>b</div><div>c</div>", copy.render());
 		assertXmlFragmentsEqual(original, document.render());
 	}
+	
+	@Test
+	public void shouldCopyContentOfDesiredElements() throws Exception {
+		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
+		NateDomDocument document = createDocument(original);
+		NateDomDocument copy = document.copyContentOf("div");
+		assertXmlFragmentsEqual("a<div>b</div>bc", copy.render());
+		assertXmlFragmentsEqual(original, document.render());
+		
+	}
 
 	private NateDomDocument createDocument(String input) {
 		return new XmlBasedNateDomDocumentFactory()

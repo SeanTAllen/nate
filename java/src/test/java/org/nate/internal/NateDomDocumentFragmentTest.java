@@ -13,7 +13,7 @@ public class NateDomDocumentFragmentTest {
 
 	@Test
 	public void shouldFindDesiredElements() throws Exception {
-		NateDomDocument document = createDocumentFragment("<div><p>apple</p> hello <p>banana</p></div>");
+		NateDomDocument document = createDocumentFragment("apple<div><p>apple</p> hello <p>banana</p></div> ");
 		List<NateDomElement> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
 		assertXmlFragmentsEqual("<p>apple</p>", elements.get(0).render());
@@ -22,14 +22,14 @@ public class NateDomDocumentFragmentTest {
 
 	@Test
 	public void shouldFindAnEmptyListWhenNothingMatches() throws Exception {
-		NateDomDocument document = createDocumentFragment("<div></div>");
+		NateDomDocument document = createDocumentFragment("apple<div></div>");
 		List<NateDomElement> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(0));
 	}
 
 	@Test
 	public void shouldCopyDesiredElements() throws Exception {
-		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
+		String original = "apple<body><div>a<div>b</div></div>x<div>c</div></body> ";
 		NateDomDocument document = createDocumentFragment(original);
 		NateDomDocument copy = document.copy("div");
 		assertXmlFragmentsEqual("<div>a<div>b</div></div><div>b</div><div>c</div>", copy.render());

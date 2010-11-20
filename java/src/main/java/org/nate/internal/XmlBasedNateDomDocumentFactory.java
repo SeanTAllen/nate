@@ -37,7 +37,7 @@ public class XmlBasedNateDomDocumentFactory {
 	 * a document fragment -- it simplifies things.
 	 */
 	public NateDomDocument createFromXmlDocument(InputStream input) {
-		return createFromW3cElements(singletonList((parseXml(input).getDocumentElement())));
+		return createFromW3cNodes(singletonList((Node) (parseXml(input).getDocumentElement())));
 	}
 
 	/**
@@ -51,9 +51,9 @@ public class XmlBasedNateDomDocumentFactory {
 	/** 
 	 * Copy the supplied nodes into a new NateDomDocument.
 	 */
-	public NateDomDocument createFromW3cElements(Iterable<Element> elements) {
+	public NateDomDocument createFromW3cNodes(Iterable<? extends Node> nodes) {
 		Element fakeRoot = (Element) DOCUMENT_FRAGMENT_PROTOTYPE.getDocumentElement().cloneNode(true);
-		for (Element element : elements) {
+		for (Node element : nodes) {
 			Node copiedNode = DOCUMENT_FRAGMENT_PROTOTYPE.importNode(element, true);
 			fakeRoot.appendChild(copiedNode);
 		}

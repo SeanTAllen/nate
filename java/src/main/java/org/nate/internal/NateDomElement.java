@@ -5,19 +5,20 @@ import static java.util.Collections.singletonList;
 import java.util.List;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 class NateDomElement extends NateDomNode {
 
-	private List<Element> rootElements;
+	private List<Node> rootNodes;
 
 	NateDomElement(Element element) {
 		super(element);
-		rootElements = singletonList(element);
+		rootNodes = singletonList((Node) element);
 	}
 	
 	@Override
-	public List<Element> getRootElements() {
-		return rootElements;
+	public List<Node> getRootNodes() {
+		return rootNodes;
 	}
 
 }
