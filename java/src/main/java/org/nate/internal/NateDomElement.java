@@ -1,22 +1,23 @@
 package org.nate.internal;
 
-import org.nate.internal.writer.NateDomDocumentWriter;
-import org.nate.internal.writer.NateDomNodeWriter;
+import static java.util.Collections.singletonList;
+
+import java.util.List;
+
 import org.w3c.dom.Element;
-import static java.util.Collections.*;
 
 class NateDomElement extends NateDomNode {
 
-	private final NateDomNodeWriter nodeWriter;
+	private List<Element> rootElements;
 
-	NateDomElement(Element node) {
-		super(node, singletonList(node));
-		nodeWriter = new NateDomDocumentWriter(node);
+	NateDomElement(Element element) {
+		super(element);
+		rootElements = singletonList(element);
 	}
-
+	
 	@Override
-	public String render() {
-		return nodeWriter.render();
+	public List<Element> getRootElements() {
+		return rootElements;
 	}
 
 }

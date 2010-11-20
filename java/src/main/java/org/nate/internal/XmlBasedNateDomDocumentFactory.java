@@ -1,12 +1,13 @@
 package org.nate.internal;
 
+import static java.util.Collections.singletonList;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,7 +22,8 @@ import org.xml.sax.SAXException;
 
 public class XmlBasedNateDomDocumentFactory {
 	// Element wrapped around html fragments.
-	private static final String FAKEROOT = "fakeroot";
+	// Needed because the XML parser cannot cope with XML having multiple root elements.
+	static final String FAKEROOT = "fakeroot";
 
 	// Node used as a prototype for creating new empty fake root nodes for HTML fragments.
 	private static final Document DOCUMENT_FRAGMENT_PROTOTYPE;
@@ -31,9 +33,11 @@ public class XmlBasedNateDomDocumentFactory {
 
 	/**
 	 * For use when the input stream has a document type or xml declaration.
+	 * Note that we convert it to a fake-root wrapped document so we can treat it in the same way as
+	 * a document fragment -- it simplifies things.
 	 */
 	public NateDomDocument createFromXmlDocument(InputStream input) {
-		return NateDomDocument.fromDocument(parseXml(input));
+		return createFromW3cElements(singletonList((parseXml(input).getDocumentElement())));
 	}
 
 	/**
@@ -41,21 +45,19 @@ public class XmlBasedNateDomDocumentFactory {
 	 */
 	public NateDomDocument createFromXmlDocumentFragment(InputStream input) {
 		Document document = wrapInFakeRootElement(input);
-		return NateDomDocument.fromFakeRootWrapedFragment(document.getDocumentElement());
+		return NateDomDocument.fromFakeRootWrappedFragment(document.getDocumentElement());
 	}
 
-	/**
+	/** 
 	 * Copy the supplied nodes into a new NateDomDocument.
 	 */
-	public NateDomDocument createFromNateDomNodes(List<? extends NateDomNode> nateDomNodes) {
+	public NateDomDocument createFromW3cElements(Iterable<Element> elements) {
 		Element fakeRoot = (Element) DOCUMENT_FRAGMENT_PROTOTYPE.getDocumentElement().cloneNode(true);
-		for (NateDomNode nateDomNode : nateDomNodes) {
-			for (Node node : nateDomNode.getRootNodes()) {
-				Node copiedNode = DOCUMENT_FRAGMENT_PROTOTYPE.importNode(node, true);
-				fakeRoot.appendChild(copiedNode);
-			}
+		for (Element element : elements) {
+			Node copiedNode = DOCUMENT_FRAGMENT_PROTOTYPE.importNode(element, true);
+			fakeRoot.appendChild(copiedNode);
 		}
-		return NateDomDocument.fromFakeRootWrapedFragment(fakeRoot);
+		return NateDomDocument.fromFakeRootWrappedFragment(fakeRoot);
 	}
 
 	private static Document parseXml(InputStream inputStream) {

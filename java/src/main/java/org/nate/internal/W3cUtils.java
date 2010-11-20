@@ -1,6 +1,7 @@
 package org.nate.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.transform.Result;
@@ -12,6 +13,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -20,11 +22,11 @@ public final class W3cUtils {
 	private W3cUtils() {
 	}
 
-	public static List<Node> asNodeList(NodeList nodes) {
+	public static List<Element> asElementList(NodeList nodes) {
 		int length = nodes.getLength();
-		List<Node> result = new ArrayList<Node>(length);
+		List<Element> result = new ArrayList<Element>(length);
 		for(int i = 0; i < length; i++) {
-			result.add(nodes.item(i));
+			result.add((Element) nodes.item(i));
 		}
 		return result;
 	}
@@ -45,5 +47,14 @@ public final class W3cUtils {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	static List<NateDomElement> convertToNateDomElements(Collection<Element> elements) {
+		List<NateDomElement> result = new ArrayList<NateDomElement>(elements.size());
+		for (Element element : elements) {
+			result.add(new NateDomElement(element));
+		}
+		return result;
+	}
+
 
 }

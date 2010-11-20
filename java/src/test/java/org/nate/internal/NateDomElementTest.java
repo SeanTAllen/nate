@@ -12,7 +12,7 @@ import org.junit.Test;
 public class NateDomElementTest {
 
 	@Test
-	public void shouldFindDesiredNodes() throws Exception {
+	public void shouldFindDesiredElements() throws Exception {
 		NateDomElement element = elementFor("<div><p>apple</p> hello <p>banana</p></div>");
 		List<NateDomElement> elements = element.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));

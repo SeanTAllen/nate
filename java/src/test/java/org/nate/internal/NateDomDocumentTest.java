@@ -13,7 +13,7 @@ import org.junit.Test;
 public class NateDomDocumentTest {
 
 	@Test
-	public void shouldFindDesiredNodes() throws Exception {
+	public void shouldFindDesiredElements() throws Exception {
 		NateDomDocument document = createDocument("<div><p>apple</p> hello <p>banana</p></div>");
 		List<NateDomElement> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
@@ -29,7 +29,7 @@ public class NateDomDocumentTest {
 	}
 
 	@Test
-	public void shouldCopyDesiredNodes() throws Exception {
+	public void shouldCopyDesiredElements() throws Exception {
 		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
 		NateDomDocument document = createDocument(original);
 		NateDomDocument copy = document.copy("div");
