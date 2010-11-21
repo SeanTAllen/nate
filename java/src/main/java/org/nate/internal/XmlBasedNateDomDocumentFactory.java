@@ -7,12 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.nate.exception.IONateException;
+import org.nate.exception.NateParseException;
+import org.nate.exception.UnsupportedEncodingNateException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -63,14 +65,14 @@ public class XmlBasedNateDomDocumentFactory {
 	private static Document parseXml(InputStream inputStream) {
 		try {
 			return createDocumentParser().parse(inputStream);
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingNateException e) {
 			throw new RuntimeException(e);
 		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
+			throw new NateParseException(e);
 		} catch (SAXException e) {
-			throw new RuntimeException(e);
+			throw new NateParseException(e);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new IONateException(e);
 		}
 	}
 

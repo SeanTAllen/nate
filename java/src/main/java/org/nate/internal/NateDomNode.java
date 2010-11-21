@@ -11,6 +11,7 @@ import java.util.List;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
+import org.nate.exception.BadCssExpressionException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -39,7 +40,7 @@ public abstract class NateDomNode {
 		try {
 			return (Collection) new DOMNodeSelector(topElement).querySelectorAll(selector);
 		} catch (NodeSelectorException e) {
-			throw new RuntimeException(e);
+			throw new BadCssExpressionException("Invalid CSS Expression: " + selector, e);
 		}
 	}
 

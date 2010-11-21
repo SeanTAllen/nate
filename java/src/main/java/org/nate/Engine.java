@@ -15,6 +15,8 @@ import java.util.Set;
 
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
+import org.nate.exception.IONateException;
+import org.nate.exception.UnsupportedEncodingNateException;
 import org.nate.html.Html;
 import org.nate.html.XmlParserBackedHtml;
 
@@ -71,7 +73,7 @@ public class Engine {
 			// TODO: Test this assumption!!!
 			return newWith(new ByteArrayInputStream(source.getBytes("UTF-8")), encoder);
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
+			throw new UnsupportedEncodingNateException(e);
 		}
 	}
 
@@ -82,13 +84,13 @@ public class Engine {
 			Encoder encoder = encoders.encoderFor(file);
 			return new Engine(inputStream, encoder);
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+			throw new IONateException(e);
 		} finally {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
 				} catch (IOException e) {
-					throw new RuntimeException(e);
+					throw new IONateException(e);
 				}
 			}
 		}

@@ -20,6 +20,13 @@ public class NateDomElementTest {
 		assertXmlFragmentsEqual("<p>banana</p>", elements.get(1).render());
 	}
 
+	@Test
+	public void shouldFindNoElementsWhenNoneMatch() throws Exception {
+		NateDomElement element = elementFor("<div><p>apple</p> hello <p>banana</p></div>");
+		List<NateDomElement> elements = element.find("p.foo");
+		assertThat("Unexpected size for: " + elements, elements.size(), is(0));
+	}
+
 	private NateDomElement elementFor(String string) {
 		NateDomDocument document = createDocument("<wrapper>" + string + "</wrapper>");
 		return document.find("wrapper").get(0);
