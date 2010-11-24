@@ -1,5 +1,25 @@
 NATE - Not Another Template Engine
-This project helps keep your html free of program code and your code free of html.
+
+Keeping your html free of programming logic and your code free of html since 2010.
+
+What is Nate?
+
+Nate is a logic less and value less templating engine. What does that mean? Your templates are 
+plain markup. There is no special templating mini-language that is used to
+create the final output. Instead, you provide a data structure that and a template to the Nate
+engine that uses applies a set of rules to interpret the data structure and transform the template
+as needed. 
+
+Why would I use Nate?
+
+When wouldn't I want to use Nate?
+
+How is it (un)like X?
+
+
+
+
+
 
 For more details on NATE you should visit the wiki https://github.com/jamesladd/nate/wiki
 There is additional information in the README's of each language specific subproject.
