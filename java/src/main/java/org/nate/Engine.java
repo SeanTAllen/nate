@@ -12,13 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
+import org.nate.encoder.NateDocument;
+import org.nate.encoder.NateElement;
+import org.nate.encoder.NateNode;
 import org.nate.exception.IONateException;
 import org.nate.exception.UnsupportedEncodingNateException;
-import org.nate.html.Html;
-import org.nate.html.XmlParserBackedHtml;
 
 public class Engine {
 
@@ -37,26 +40,28 @@ public class Engine {
 	 * Prefix to use with the parameter to {@link Engine#select(String)} to indicate when the content of the selected
 	 * nodes is desired instead of the nodes themselves.
 	 */
-	public static final String CONTENT_SELECTION_FLAG = "content:";
+	public static final String CONTENT_SELECTION_FLAG = "##";
 
 	private static Encoders encoders = new Encoders();
 	static {
 		encoders.register(new HtmlEncoder());
 		encoders.register(new HtmlFragmentEncoder());
 	}
+	
+	private static final Pattern ATTRIBUTE_SELECTOR_PATTERN = Pattern.compile("^@@(.+)$"); 
 
-	private final Html template;
+	private final NateDocument document;
 
 	public static Encoders encoders() {
 		return encoders;
 	}
 	
 	private Engine(InputStream source, Encoder encoder) {
-		this.template = encoder.encode(source);
+		this.document = encoder.encode(source);
 	}
 	
-	private Engine(Html fragment) {
-		this.template = fragment;
+	private Engine(NateDocument newDocument) {
+		this.document = newDocument;
 	}
 
 	public static Engine newWith(InputStream source, Encoder encoder) {
@@ -99,91 +104,87 @@ public class Engine {
 	@SuppressWarnings("unchecked")
 	public Engine inject(Object data) {
 		assertType("data", data, Map.class);
-		Html fragment = template.cloneFragment();
-		processMapEntries((Map) data, fragment);
-		return new Engine(fragment);
+		NateDocument newDocument = document.copy();
+		processMapEntries((Map) data, newDocument);
+		return new Engine(newDocument);
 	}
 
 	public Engine select(String selector) {
-		Html fragment = template.cloneFragment();
-		List<Html> selectedNodes = findHtmlElementsMatchingSelector(selector.trim(), fragment);
-		return new Engine(XmlParserBackedHtml.fromFragments(selectedNodes));
-	}
-
-	private List<Html> findHtmlElementsMatchingSelector(String selector, Html fragment) {
+		selector = selector.trim();
 		if (selector.startsWith(CONTENT_SELECTION_FLAG)) {
-			return fragment.selectContentOfNodes(selector.substring(CONTENT_SELECTION_FLAG.length()));
+			return new Engine(document.copyContentOf(selector.substring(CONTENT_SELECTION_FLAG.length())));
 		}
-		return fragment.selectNodes(selector);
+		return new Engine(document.copy(selector));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void processMapEntries(Map map, Html fragment) {
+	private void processMapEntries(Map map, NateNode node) {
 		Set<Map.Entry> entrySet = map.entrySet();
 		for (Map.Entry entry : entrySet) {
 			Object key = entry.getKey();
 			Object value = entry.getValue();
 			assertType("key", key, String.class);
-			applySelector(((String) key).trim(), value, fragment);
+			applySelector(((String) key).trim(), value, node);
 		}
 	}
 
-	private void applySelector(String selector, Object value, Html fragment) {
+	private void applySelector(String selector, Object value, NateNode node) {
 		if (value == null) {
 			return;
 		}
-		if (fragment.hasAttribute(selector)) {
-			applySelectorAsAttributeSelector(selector, value, fragment);
+		Matcher attributeSelectorMatcher = ATTRIBUTE_SELECTOR_PATTERN.matcher(selector);
+		if (attributeSelectorMatcher.matches()) {
+			applySelectorAsAttributeSelector(attributeSelectorMatcher.group(1), value, node);
 		} else {
-			applySelectorAsCssSelector(selector, value, fragment);
+			applySelectorAsCssSelector(selector, value, node);
 		}
 	}
 
-	private void applySelectorAsAttributeSelector(String attributeName, Object value, Html fragment) {
-		fragment.setAttribute(attributeName, value);
+	private void applySelectorAsAttributeSelector(String attributeName, Object value, NateNode node) {
+		node.setAttribute(attributeName, value.toString());
 	}
 
-	private void applySelectorAsCssSelector(String selector, Object value, Html fragment) {
+	private void applySelectorAsCssSelector(String selector, Object value,  NateNode node) {
 		if (CONTENT_ATTRIBUTE.equals(selector)) {
-			injectValueIntoFragment(value, fragment);
+			injectValueIntoNode(value, node);
 		} else {
-			for (Html matchingNode : fragment.selectNodes(selector)) {
-				injectValueIntoFragment(value, matchingNode);
+			for (NateElement matchingNode : node.find(selector)) {
+				injectValueIntoNode(value, matchingNode);
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void injectValueIntoFragment(Object value, Html fragment) {
+	private void injectValueIntoNode(Object value, NateNode node) {
 		if (value instanceof Iterable) {
-			injectValuesIntoFragment((Iterable) value, fragment);
+			injectValuesIntoNode((Iterable) value, node);
 		} else if (value instanceof Map) {
-			processMapEntries((Map) value, fragment);
+			processMapEntries((Map) value, node);
 		} else if (value instanceof Engine) {
-			injectEngine((Engine)value, fragment);
+			injectEngine((Engine)value, node);
 		} else {
-			fragment.setTextContent(value.toString());
+			node.setTextContent(value.toString());
 		}
 	}
 
-	private void injectEngine(Engine value, Html fragment) {
-		fragment.replaceChildren(value.template.cloneFragment());
+	private void injectEngine(Engine value, NateNode node) {
+		node.replaceChildren(value.document);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void injectValuesIntoFragment(Iterable values, Html fragment) {
-		List<Html> newFragments = new ArrayList<Html>();
+	private void injectValuesIntoNode(Iterable values, NateNode node) {
+		List<NateNode> newNodes = new ArrayList<NateNode>();
 		for (Object value : values) {
-			Html newFragment = fragment.cloneFragment();
-			injectValueIntoFragment(value, newFragment);
-			newFragments.add(newFragment);
+			NateNode newNode = node.copy();
+			injectValueIntoNode(value, newNode);
+			newNodes.add(newNode);
 		}
-		fragment.replaceWith(newFragments);
+		node.replaceWith(newNodes);
 
 	}
 
 	public String render() {
-		return template.toHtml();
+		return document.render();
 	}
 	
 	@Override

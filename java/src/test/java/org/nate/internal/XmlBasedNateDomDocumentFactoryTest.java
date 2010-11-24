@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.nate.encoder.NateNode;
 import org.w3c.dom.Node;
 
 
@@ -20,7 +21,7 @@ public class XmlBasedNateDomDocumentFactoryTest {
 		InputStream input = inputStreamFor(
 				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
 				"<html><body><div/></body></html>");
-		NateDomDocument doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocument(input);
+		NateNode doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocument(input);
 		assertXmlFragmentsEqual("<html><body><div/></body></html>", doc.render());
 		List<Node> rootElements = doc.getRootNodes();
 		assertThat(rootElements.size(), is(1));
@@ -30,7 +31,7 @@ public class XmlBasedNateDomDocumentFactoryTest {
 	@Test
 	public void shouldCreateNateDomDocumentFromXmlFragment() throws Exception {
 		InputStream input = inputStreamFor("apple<a>hello</a><b>foo</b>banana");
-		NateDomDocument doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocumentFragment(input);
+		NateNode doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocumentFragment(input);
 		assertXmlFragmentsEqual("apple<a>hello</a><b>foo</b>banana", doc.render());
 		List<Node> rootNodes = doc.getRootNodes();
 		assertThat(rootNodes.size(), is(4));
@@ -42,12 +43,12 @@ public class XmlBasedNateDomDocumentFactoryTest {
 
 	@Test
 	public void shouldCreateNateDomDocumentFromW3cElements() throws Exception {
-		NateDomDocument document1 = createDocument("<a>apple</a>");
-		NateDomDocument document2 = createDocument("<a>banana</a>");
+		NateNode document1 = createDocument("<a>apple</a>");
+		NateNode document2 = createDocument("<a>banana</a>");
 		List<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(document1.getRootNodes());
 		nodes.addAll(document2.getRootNodes());
-		NateDomDocument result = new XmlBasedNateDomDocumentFactory().createFromW3cNodes(nodes);
+		NateNode result = new XmlBasedNateDomDocumentFactory().createFromW3cNodes(nodes);
 		assertXmlFragmentsEqual("<a>apple</a><a>banana</a>", result.render());
 		assertXmlFragmentsEqual("<a>apple</a><a>banana</a>", result.render());
 		assertXmlFragmentsEqual("<a>apple</a>", document1.render());
@@ -58,7 +59,7 @@ public class XmlBasedNateDomDocumentFactoryTest {
 		return new ByteArrayInputStream(string.getBytes());
 	}
 
-	private NateDomDocument createDocument(String input) {
+	private NateNode createDocument(String input) {
 		return new XmlBasedNateDomDocumentFactory().createFromXmlDocument(inputStreamFor(input));
 	}
 

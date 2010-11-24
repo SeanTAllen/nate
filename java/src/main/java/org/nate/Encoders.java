@@ -1,17 +1,22 @@
 package org.nate;
 
+import static java.util.Collections.emptyList;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nate.html.Html;
+import org.nate.encoder.NateDocument;
+import org.nate.encoder.NateElement;
+import org.nate.encoder.NateNode;
+import org.nate.exception.IONateException;
+import org.w3c.dom.Node;
 
 public class Encoders {
 
@@ -56,51 +61,18 @@ public class Encoders {
 	private static class NullEncoder implements Encoder {
 		public String type() { return "null"; }
 		public boolean isNullEncoder() { return true; }
-		public Html encode(InputStream source) {return new NullHtml(source);}
+		public NateDocument encode(InputStream source) {return new NullNateDocument(source);}
 	}
 	
-	private static class NullHtml implements Html {
+	private static class NullNateDocument implements NateDocument {
 
-		private final InputStream source;
-
-		public NullHtml(InputStream source) {
-			this.source = source;
-		}
-
-		@Override
-		public Html cloneFragment() {
-			return new NullHtml(source);
-		}
-
-		@Override
-		public boolean hasAttribute(String name) {
-			return false;
-		}
-
-		@Override
-		public void replaceWith(List<Html> newFragments) {
-		}
-
-		@Override
-		public List<Html> selectNodes(String selector) {
-			return Collections.emptyList();
+		private final String result;
+	
+		public NullNateDocument(InputStream source) {
+			this.result = generateResult(source);
 		}
 		
-		@Override
-		public List<Html> selectContentOfNodes(String selector) {
-			return Collections.emptyList();
-		}
-
-		@Override
-		public void setAttribute(String name, Object value) {
-		}
-
-		@Override
-		public void setTextContent(String value) {
-		}
-
-		@Override
-		public String toHtml() {
+		private String generateResult(InputStream source) {
 			try {
 				StringWriter result = new StringWriter();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(source));
@@ -109,13 +81,55 @@ public class Encoders {
 				}
 				return result.toString();
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new IONateException(e);
 			}
 		}
 
 		@Override
-		public void replaceChildren(Html template) {
+		public NateDocument copy() {
+			return this;
 		}
-		
+
+		@Override
+		public NateDocument copy(String selector) {
+			return this;
+		}
+
+		@Override
+		public NateDocument copyContentOf(String selector) {
+			return this;
+		}
+
+		@Override
+		public String render() {
+			return result;
+		}
+
+		@Override
+		public List<NateElement> find(String selector) {
+			return emptyList();
+		}
+
+		@Override
+		public List<Node> getRootNodes() {
+			return emptyList();
+		}
+
+		@Override
+		public void replaceChildren(NateDocument newChildren) {
+		}
+
+		@Override
+		public void replaceWith(List<NateNode> newNodes) {
+		}
+
+		@Override
+		public void setAttribute(String name, String value) {
+		}
+
+		@Override
+		public void setTextContent(String text) {
+		}	
 	}
+	
 }

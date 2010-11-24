@@ -36,8 +36,8 @@ public class ToDoServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		LAYOUT = createEngineFor(config, "/WEB-INF/templates/layout.html");
-		ADD = createEngineFor(config, "/WEB-INF/templates/add.html").select("content:#content");
-		LIST = createEngineFor(config, "/WEB-INF/templates/list.html").select("content:#content");
+		ADD = createEngineFor(config, "/WEB-INF/templates/add.html").select("## #content");
+		LIST = createEngineFor(config, "/WEB-INF/templates/list.html").select("## #content");
 	}
 	
 	@Override
@@ -85,7 +85,7 @@ public class ToDoServlet extends HttpServlet {
 		for (ToDo toDo : toDos) {
 			Map<String, Object> todoMap = new HashMap<String, Object>();
 			todoMap.put(".title", toDo.getTitle());
-			todoMap.put("input[name=id]", singletonMap("value", toDo.getId()));
+			todoMap.put("input[name=id]", singletonMap("@@value", toDo.getId()));
 			todoData.add(todoMap);
 		}
 		Object data = singletonMap(".todo", todoData);

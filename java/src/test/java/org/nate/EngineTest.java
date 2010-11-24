@@ -80,8 +80,8 @@ public class EngineTest {
 	
 	@Test
 	public void shouldMatchAndInjectIntoElementAttribute() throws Exception {
-		Engine engine = encodeHtmlFragment("<a href='#'>my link</a>");
-		Object data = singletonMap("a", singletonMap("href", "http://www.example.com"));
+		Engine engine = encodeHtmlFragment("<a>my link</a>");
+		Object data = singletonMap("a", singletonMap("@@href", "http://www.example.com"));
 		Engine result = engine.inject(data);
 		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", result.render());
 	}
@@ -122,7 +122,7 @@ public class EngineTest {
 	@Test
 	public void shouldBeAbleToSelectAllContent() throws Exception {
 		Engine engine = encodeHtmlFragment("<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>");
-		Engine header = engine.select(" content:div");
+		Engine header = engine.select("##div");
 		assertXmlFragmentsEqual("header textcontent text<h1>footer</h1>", header.render());
 	}
 	
@@ -134,16 +134,14 @@ public class EngineTest {
 		assertXmlFragmentsEqual(original, engine.render());
 	}
 	
-	// TODO!!!!
-//	
-//	@Test
-//	public void shouldReturnSelectionsWhereNodesMatchThatAreInAncestralRelationship() throws Exception {
-//		String original = "<div id='outer'><div id='inner'>hello</div></div>";
-//		Engine engine = encodeHtmlFragment(original);
-//		String selection = engine.select("div").render();
-//		assertXmlFragmentsEqual("<div id='outer'><div id='inner'>hello</div></div><div id='inner'>hello</div>", selection);
-//		assertXmlFragmentsEqual(original, engine.render());
-//	}
+	@Test
+	public void shouldReturnSelectionsWhereNodesMatchThatAreInAncestralRelationship() throws Exception {
+		String original = "<div id='outer'><div id='inner'>hello</div></div>";
+		Engine engine = encodeHtmlFragment(original);
+		String selection = engine.select("div").render();
+		assertXmlFragmentsEqual("<div id='outer'><div id='inner'>hello</div></div><div id='inner'>hello</div>", selection);
+		assertXmlFragmentsEqual(original, engine.render());
+	}
 
 	@Test
 	public void shouldBeAbleToInjectNateEnginesIntoNateEngines() throws Exception {
@@ -192,7 +190,7 @@ public class EngineTest {
 	public void shouldReplaceContentWhenSubselectIsTheSpecialContentPseudoSelector() throws Exception {
 		Engine engine = encodeHtmlFragment("<a href='#'>my link</a>");
 		Map<String, Object> anchorData = new HashMap<String, Object>();
-		anchorData.put("href", "http://www.example.com");
+		anchorData.put("@@href", "http://www.example.com");
 		anchorData.put(Engine.CONTENT_ATTRIBUTE, "example.com");
 		Engine result = engine.inject(singletonMap("a", anchorData));
 		assertXMLEqual("<a href='http://www.example.com'>example.com</a>", result.render());
@@ -202,7 +200,7 @@ public class EngineTest {
 	public void shouldRecursivelyApplyTransformsWhenSubselectIsTheSpecialContentPseudoSelector() throws Exception {
 		Engine engine = encodeHtmlFragment("<div class=''><span/></div>");
 		Map<String, Object> anchorData = new HashMap<String, Object>();
-		anchorData.put("class", "show");
+		anchorData.put("@@class", "show");
 		anchorData.put(Engine.CONTENT_ATTRIBUTE, singletonMap("span", "hello"));
 		Engine result = engine.inject(singletonMap("div", anchorData));
 		assertXMLEqual("<div class='show'><span>hello</span></div>", result.render());

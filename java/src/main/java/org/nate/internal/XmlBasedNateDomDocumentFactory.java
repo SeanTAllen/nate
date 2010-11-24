@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.nate.encoder.NateDocument;
 import org.nate.exception.IONateException;
 import org.nate.exception.NateParseException;
 import org.nate.exception.UnsupportedEncodingNateException;
@@ -38,7 +39,7 @@ public class XmlBasedNateDomDocumentFactory {
 	 * Note that we convert it to a fake-root wrapped document so we can treat it in the same way as
 	 * a document fragment -- it simplifies things.
 	 */
-	public NateDomDocument createFromXmlDocument(InputStream input) {
+	public NateDocument createFromXmlDocument(InputStream input) {
 		return createFromW3cNodes(singletonList((Node) (parseXml(input).getDocumentElement())));
 	}
 
@@ -53,7 +54,7 @@ public class XmlBasedNateDomDocumentFactory {
 	/** 
 	 * Copy the supplied nodes into a new NateDomDocument.
 	 */
-	public NateDomDocument createFromW3cNodes(Iterable<? extends Node> nodes) {
+	public NateDocument createFromW3cNodes(Iterable<? extends Node> nodes) {
 		Element fakeRoot = (Element) DOCUMENT_FRAGMENT_PROTOTYPE.getDocumentElement().cloneNode(true);
 		for (Node element : nodes) {
 			Node copiedNode = DOCUMENT_FRAGMENT_PROTOTYPE.importNode(element, true);

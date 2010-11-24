@@ -2,10 +2,10 @@ package org.nate;
 
 import java.io.InputStream;
 
-import org.nate.html.Html;
+import org.nate.encoder.NateDocument;
 
 public interface Encoder {
 	boolean isNullEncoder();
 	String type();
-	Html encode(InputStream source);
+	NateDocument encode(InputStream source);
 }

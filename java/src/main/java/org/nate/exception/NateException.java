@@ -1,5 +1,6 @@
 package org.nate.exception;
 
+@SuppressWarnings("serial")
 public class NateException extends RuntimeException {
 
 	public NateException() {

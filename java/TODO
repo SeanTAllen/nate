@@ -1,18 +1,12 @@
 Things left to do for Java Nate:
  * Make sure Engine really is thread safe!!
  * Remove the need for clients to distinguish between html docs and html fragments.
- * Make sure exceptions include useful information, especially for bad css selectors.
  * Try some real HTML parsers (eg tagsoup).
  * Allow option of not having injected text HTML escaped.
- * Handle 'attr:' selectors.
  * Revisit this: {'div' => {'div' => 'foo'}}.  Should it be equivalent to {'div' => 'foo'} or {'div div' => 'foo'}
  * Revisit this: {'div' => {'*content*' => {'div' => 'foo'}}}
  * Fix build and ivy config to make it clear what the nate runtime dependencies are.
  * Convince css-selectors library author to upload a release to a maven repo or do it ourselves.
- * Test NullEncoder.
- * Fix behaviour of select() when it matches nodes that are descendants of other matching nodes.
  * Allow output to be via InputStream.
  * Revisit character encoding issues.
  * Allow rendered output to (optionally) have an xml declaration tag.
- * Fix terms used for internal code: i.e. fragment, html, node, template...
- * More tests!!!

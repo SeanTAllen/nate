@@ -71,27 +71,22 @@ Feature:
                 
   Scenario: match and inject data into element attributes
     Given the HTML fragment "<a href='#'>my link</a>"
-      When { 'a' => { 'href' => 'http://www.example.com' } } is injected
+      When { 'a' => { '@@href' => 'http://www.example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">my link</a>
   
-  Scenario Outline: non-existent attributes on an element should be ignored
+  Scenario: non-existent attributes on an element should be created
     Given the HTML fragment "<h1 class='glory'>Header</h1>"
-      When <data> is injected
-      Then the HTML fragment is <transformed>
-    
-    Examples:
-      | data | transformed |
-      | { 'h1' => { 'style' => 'http://www.example.com' } }                        | <h1 class='glory'>Header</h1>    |
-      | { 'h1' => { 'style' => 'http://www.example.com', 'class' => 'glorious' } } | <h1 class='glorious'>Header</h1> |
-      
+      When { 'h1' => {'@@class' => 'glorious'}} is injected
+      Then the HTML fragment is <h1 class='glorious'>Header</h1>
+     
   Scenario: when doing an attribute match, special 'content' attribute should change the inner_html
     Given the HTML fragment "<a href='#'>my link</a>"
-      When { 'a' => { 'href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
+      When { 'a' => { '@@href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">example.com</a>
       
   Scenario: multiple value matches shouldn't leak from one value to the next
     Given the HTML fragment "<a href='#'>link</a>"
-      When { 'a' => [ { 'href' => 'x' }, 'new link' ] } is injected
+      When { 'a' => [ { '@@href' => 'x' }, 'new link' ] } is injected
       Then the HTML fragment is <a href="x">link</a><a href="#">new link</a>
       
   Scenario Outline: matches on multiple items should inject into all matches
@@ -111,7 +106,7 @@ Feature:
       
     Examples:
       | data                       | transformed              |
-      | { 'a' => { 'href' => 1 } } | <a href='1'></a>         |
+      | { 'a' => { '@@href' => 1 } } | <a href='1'></a>         |
       | { 'a' => 'click me' }      | <a href="#">click me</a> |
       
   @wip
@@ -131,7 +126,6 @@ Feature:
       And { 'span' => 'hello' } is injected sometime later
       Then the HTML fragment is <div id='data'><span>hello</span></div>
   
-  @current
   Scenario: injection shouldn't modify the original template, only create a new version with changes
     Given the HTML fragment "<h1>Hi</h1>"
       When { 'h1' => 'Bye' } is injected
@@ -155,8 +149,8 @@ Feature:
       
     Examples:
       | data | transformed |
-      | "content:#header" | header text |
-      | "content:div" | header textcontent text<h1>footer</h1> |
+      | "## #header" | header text |
+      | "##div" | header textcontent text<h1>footer</h1> |
       
    Scenario: should be able to use a nate template as a value when injecting
      Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"

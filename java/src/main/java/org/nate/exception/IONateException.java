@@ -1,9 +1,9 @@
 package org.nate.exception;
 
+@SuppressWarnings("serial")
 public class IONateException extends NateException {
 
 	public IONateException() {
-		super();
 	}
 
 	public IONateException(String message, Throwable cause) {

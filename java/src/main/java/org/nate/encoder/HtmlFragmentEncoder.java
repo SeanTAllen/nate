@@ -3,10 +3,11 @@ package org.nate.encoder;
 import java.io.InputStream;
 
 import org.nate.Encoder;
-import org.nate.html.Html;
-import org.nate.html.XmlParserBackedHtml;
+import org.nate.internal.XmlBasedNateDomDocumentFactory;
 
 public class HtmlFragmentEncoder implements Encoder {
+	
+	private static final XmlBasedNateDomDocumentFactory DOCUMENT_FACTORY = new XmlBasedNateDomDocumentFactory();
 
 	@Override
 	public boolean isNullEncoder() {
@@ -19,8 +20,8 @@ public class HtmlFragmentEncoder implements Encoder {
 	}
 
 	@Override
-	public Html encode(InputStream source) {
-		return XmlParserBackedHtml.fromFragment(source);
+	public NateDocument encode(InputStream source) {
+		return DOCUMENT_FACTORY.createFromXmlDocumentFragment(source);
 	}
 
 }
