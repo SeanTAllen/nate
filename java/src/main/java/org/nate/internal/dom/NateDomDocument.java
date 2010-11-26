@@ -57,7 +57,7 @@ public class NateDomDocument extends NateDomNode implements NateDocument {
 		removeChildren();
 		Document ownerDocument = wrappingElement.getOwnerDocument();
 		for (NateNode newNode: newNodes) {
-			for (Node w3cNode : newNode.getRootNodes()) {
+			for (Node w3cNode : ((NateDomNode) newNode).getRootNodes()) {
 				Node importedNode = ownerDocument.importNode(w3cNode, true);
 				wrappingElement.appendChild(importedNode);
 			}

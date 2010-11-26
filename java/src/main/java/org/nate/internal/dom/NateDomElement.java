@@ -39,7 +39,7 @@ public class NateDomElement extends NateDomNode implements NateElement {
 		Document ownerDocument = element.getOwnerDocument();
 		Node parentNode = element.getParentNode();
 		for (NateNode newNode: newNodes) {
-			for (Node w3cNode : newNode.getRootNodes()) {
+			for (Node w3cNode : ((NateDomNode) newNode).getRootNodes()) {
 				Node importedNode = ownerDocument.importNode(w3cNode, true);
 				parentNode.insertBefore(importedNode, element);
 			}

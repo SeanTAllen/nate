@@ -82,7 +82,7 @@ public abstract class NateDomNode {
 		verifyState();
 		removeChildren();
 		Document ownerDocument = topElement.getOwnerDocument();
-		for (Node newChild : newChildren.getRootNodes()) {
+		for (Node newChild : ((NateDomNode) newChildren).getRootNodes()) {
 			topElement.appendChild(ownerDocument.importNode(newChild, true));
 		}
 	}

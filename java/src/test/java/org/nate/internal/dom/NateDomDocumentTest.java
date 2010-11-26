@@ -161,7 +161,7 @@ public class NateDomDocumentTest {
 	
 	private NateNode elementFor(String string) {
 		NateDocument document = createDocument(string);
-		return new NateDomElement((Element) document.getRootNodes().get(0));
+		return new NateDomElement((Element) ((NateDomNode) document).getRootNodes().get(0));
 	}
 
 }

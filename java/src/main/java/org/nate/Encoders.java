@@ -16,7 +16,6 @@ import org.nate.encoder.NateDocument;
 import org.nate.encoder.NateElement;
 import org.nate.encoder.NateNode;
 import org.nate.exception.IONateException;
-import org.w3c.dom.Node;
 
 public class Encoders {
 
@@ -107,11 +106,6 @@ public class Encoders {
 
 		@Override
 		public List<NateElement> find(String selector) {
-			return emptyList();
-		}
-
-		@Override
-		public List<Node> getRootNodes() {
 			return emptyList();
 		}
 
