@@ -20,6 +20,7 @@ public interface NateNode {
 
 	String render();
 
+	// TODO: Figure out a way to remove this from the interface, preferably without having to use casts.
 	List<Node> getRootNodes();
 
 }

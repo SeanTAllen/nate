@@ -1,5 +1,7 @@
 package org.nate;
 
+import static org.nate.internal.Assertions.assertType;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,20 +10,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
 import org.nate.encoder.NateDocument;
-import org.nate.encoder.NateElement;
-import org.nate.encoder.NateNode;
 import org.nate.exception.IONateException;
 import org.nate.exception.UnsupportedEncodingNateException;
+import org.nate.internal.transformer.NateTransformers;
 
 public class Engine {
 
@@ -48,8 +44,6 @@ public class Engine {
 		encoders.register(new HtmlFragmentEncoder());
 	}
 	
-	private static final Pattern ATTRIBUTE_SELECTOR_PATTERN = Pattern.compile("^@@(.+)$"); 
-
 	private final NateDocument document;
 
 	public static Encoders encoders() {
@@ -101,11 +95,10 @@ public class Engine {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Engine inject(Object data) {
 		assertType("data", data, Map.class);
 		NateDocument newDocument = document.copy();
-		processMapEntries((Map) data, newDocument);
+		NateTransformers.from(data).transform(newDocument);
 		return new Engine(newDocument);
 	}
 
@@ -117,70 +110,9 @@ public class Engine {
 		return new Engine(document.copy(selector));
 	}
 
-	@SuppressWarnings("unchecked")
-	private void processMapEntries(Map map, NateNode node) {
-		Set<Map.Entry> entrySet = map.entrySet();
-		for (Map.Entry entry : entrySet) {
-			Object key = entry.getKey();
-			Object value = entry.getValue();
-			assertType("key", key, String.class);
-			applySelector(((String) key).trim(), value, node);
-		}
-	}
 
-	private void applySelector(String selector, Object value, NateNode node) {
-		if (value == null) {
-			return;
-		}
-		Matcher attributeSelectorMatcher = ATTRIBUTE_SELECTOR_PATTERN.matcher(selector);
-		if (attributeSelectorMatcher.matches()) {
-			applySelectorAsAttributeSelector(attributeSelectorMatcher.group(1), value, node);
-		} else {
-			applySelectorAsCssSelector(selector, value, node);
-		}
-	}
-
-	private void applySelectorAsAttributeSelector(String attributeName, Object value, NateNode node) {
-		node.setAttribute(attributeName, value.toString());
-	}
-
-	private void applySelectorAsCssSelector(String selector, Object value,  NateNode node) {
-		if (CONTENT_ATTRIBUTE.equals(selector)) {
-			injectValueIntoNode(value, node);
-		} else {
-			for (NateElement matchingNode : node.find(selector)) {
-				injectValueIntoNode(value, matchingNode);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void injectValueIntoNode(Object value, NateNode node) {
-		if (value instanceof Iterable) {
-			injectValuesIntoNode((Iterable) value, node);
-		} else if (value instanceof Map) {
-			processMapEntries((Map) value, node);
-		} else if (value instanceof Engine) {
-			injectEngine((Engine)value, node);
-		} else {
-			node.setTextContent(value.toString());
-		}
-	}
-
-	private void injectEngine(Engine value, NateNode node) {
-		node.replaceChildren(value.document);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void injectValuesIntoNode(Iterable values, NateNode node) {
-		List<NateNode> newNodes = new ArrayList<NateNode>();
-		for (Object value : values) {
-			NateNode newNode = node.copy();
-			injectValueIntoNode(value, newNode);
-			newNodes.add(newNode);
-		}
-		node.replaceWith(newNodes);
-
+	public NateDocument getDocument() {
+		return document;
 	}
 
 	public String render() {
@@ -190,15 +122,6 @@ public class Engine {
 	@Override
 	public String toString() {
 		return render();
-	}
-
-	@SuppressWarnings("unchecked")
-	private void assertType(String description, Object object, Class expectedClass) {
-		String actualClassName = object == null ? null : object.getClass().getName();
-		if (object == null || !(expectedClass.isAssignableFrom(object.getClass()))) {
-			throw new IllegalArgumentException("Expected " + description + " to be a " + expectedClass + ", but got "
-					+ actualClassName + ", with value: " + object);
-		}
 	}
 
 }

@@ -1,8 +1,8 @@
-package org.nate.internal;
+package org.nate.internal.dom;
 
-import static org.nate.internal.W3cUtils.asNodeList;
-import static org.nate.internal.W3cUtils.convertNodeToString;
-import static org.nate.internal.W3cUtils.convertToNateDomElements;
+import static org.nate.internal.dom.W3cUtils.asNodeList;
+import static org.nate.internal.dom.W3cUtils.convertNodeToString;
+import static org.nate.internal.dom.W3cUtils.convertToNateDomElements;
 
 import java.io.StringWriter;
 import java.io.Writer;

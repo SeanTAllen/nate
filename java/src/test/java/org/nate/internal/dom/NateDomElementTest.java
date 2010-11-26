@@ -1,4 +1,4 @@
-package org.nate.internal;
+package org.nate.internal.dom;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.nate.encoder.NateDocument;
 import org.nate.encoder.NateElement;
 import org.nate.encoder.NateNode;
+import org.nate.internal.dom.NateDomElement;
+import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 import org.w3c.dom.Element;
 
 public class NateDomElementTest {

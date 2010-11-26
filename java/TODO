@@ -1,4 +1,6 @@
 Things left to do for Java Nate:
+ * Allow combining of attribute and css selectors: eg. 'a.foo @href'
+ * Support attribute removal
  * Make sure Engine really is thread safe!!
  * Remove the need for clients to distinguish between html docs and html fragments.
  * Try some real HTML parsers (eg tagsoup).
@@ -9,4 +11,9 @@ Things left to do for Java Nate:
  * Convince css-selectors library author to upload a release to a maven repo or do it ourselves.
  * Allow output to be via InputStream.
  * Revisit character encoding issues.
+ * Add css file to ToDo example.
  * Allow rendered output to (optionally) have an xml declaration tag.
+ * Measure performance
+ * Consider improving performance by changing the the design of TransformationMap and TransformationSequence to convert
+ the maps/lists that they wrap into Transformers upon construction instead of every time they are called.
+ * Don't expose getNateDocument() on the public API for Engine. 

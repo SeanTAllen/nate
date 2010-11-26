@@ -1,4 +1,4 @@
-package org.nate.internal;
+package org.nate.internal.dom;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package org.nate.internal;
+package org.nate.internal.dom;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.nate.encoder.NateNode;
+import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 import org.w3c.dom.Node;
 
 

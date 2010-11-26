@@ -36,16 +36,16 @@ public class EngineTest {
 	
 	@Test
 	public void shouldIgnoreNullValues() throws Exception {
-		Engine engine = encodeHtmlFragment("<html/>");
+		Engine engine = encodeHtmlFragment("<a/>");
 		Engine result = engine.inject(singletonMap("a", null));
-		assertXMLEqual("<html/>", result.render());
+		assertXmlFragmentsEqual("<a/>", result.render());
 	}
 
 	@Test
 	public void shouldMatchAndInjectSingleDataValue() throws Exception {
 		Engine engine = encodeHtmlFragment("<div class='section'><span class='content'></span></div>");
 		Engine result = engine.inject(singletonMap(".section", "Hello"));
-		assertXMLEqual("<div class='section'>Hello</div> ", result.render());
+		assertXmlFragmentsEqual("<div class='section'>Hello</div> ", result.render());
 	}
 
 	@Test

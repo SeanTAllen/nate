@@ -1,4 +1,4 @@
-package org.nate.internal;
+package org.nate.internal.dom;
 
 import static java.util.Collections.singletonList;
 
