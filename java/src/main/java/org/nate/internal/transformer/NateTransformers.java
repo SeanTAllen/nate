@@ -2,7 +2,7 @@ package org.nate.internal.transformer;
 
 import java.util.Map;
 
-import org.nate.Engine;
+import org.nate.internal.NateDocumentBackedEngine;
 
 public class NateTransformers {
 
@@ -14,8 +14,8 @@ public class NateTransformers {
 		if (data instanceof Map) {
 			return new TransformationMap((Map) data);
 		}
-		if (data instanceof Engine) {
-			return new EngineInjector((Engine) data);
+		if (data instanceof NateDocumentBackedEngine) {
+			return new EngineInjector((NateDocumentBackedEngine) data);
 		}
 		if (data == null) {
 			return new NullDataInjector();

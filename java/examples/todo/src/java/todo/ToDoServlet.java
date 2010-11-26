@@ -18,11 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nate.Encoder;
 import org.nate.Engine;
+import org.nate.Nate;
 
 public class ToDoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private static final Encoder HTML_ENCODER = Engine.encoders().encoderFor("HTML");
+	private static final Encoder HTML_ENCODER = Nate.encoders().encoderFor("HTML");
 	
 	private Engine LAYOUT;
 	private Engine ADD;
@@ -111,7 +112,7 @@ public class ToDoServlet extends HttpServlet {
 	private Engine createEngineFor(ServletConfig config, String source) {
 		InputStream inputStream = new BufferedInputStream(config.getServletContext().getResourceAsStream(source));
 		try {
-			return Engine.newWith(inputStream, HTML_ENCODER);
+			return Nate.newWith(inputStream, HTML_ENCODER);
 		} finally {
 			try {
 				inputStream.close();

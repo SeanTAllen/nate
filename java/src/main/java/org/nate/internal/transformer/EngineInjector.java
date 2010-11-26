@@ -1,13 +1,13 @@
 package org.nate.internal.transformer;
 
-import org.nate.Engine;
 import org.nate.encoder.NateNode;
+import org.nate.internal.NateDocumentBackedEngine;
 
 public class EngineInjector implements NateTransformer {
 
-	private final Engine engine;
+	private final NateDocumentBackedEngine engine;
 
-	public EngineInjector(Engine engine) {
+	public EngineInjector(NateDocumentBackedEngine engine) {
 		this.engine = engine;
 	}
 

@@ -207,11 +207,11 @@ public class EngineTest {
 	}
 	
 	private Engine encodeHtmlFragment(String html) {
-		return Engine.newWith(html, Engine.encoders().encoderFor("HTMLF"));
+		return Nate.newWith(html, Nate.encoders().encoderFor("HTMLF"));
 	}
 	
 	private Engine encodeHtmlDocument(String html) {
-		return Engine.newWith(html, Engine.encoders().encoderFor("HTML"));
+		return Nate.newWith(html, Nate.encoders().encoderFor("HTML"));
 	}
 
 }

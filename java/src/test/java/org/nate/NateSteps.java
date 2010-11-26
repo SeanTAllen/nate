@@ -32,13 +32,13 @@ public class NateSteps {
 
 	@Given("^the HTML fragment \"([^\"]*)\"$")
 	public void setHtml(String html) {
-		Engine nate = Engine.newWith(html, Engine.encoders().encoderFor("HTMLF"));
+		Engine nate = Nate.newWith(html, Nate.encoders().encoderFor("HTMLF"));
 		nateStates.add(nate);
 	}
 
 	@Given("^the file \"([^\"]*)\"$")
 	public void theFile(String filename) {
-		Engine nate = Engine.newWith(new File(filename));
+		Engine nate = Nate.newWith(new File(filename));
 		nateStates.add(nate);
 	}
 
@@ -83,7 +83,7 @@ public class NateSteps {
 				"module Nate\n class Engine\n" +
 				" CONTENT_ATTRIBUTE = '*content*'\n" +
 				" def self.from_string source\n" +
-				"     org.nate.Engine.newWith(source)\n" +
+				"     org.nate.Nate.newWith(source)\n" +
 				" end\n" +
 				" end\n end\n");
 	}
