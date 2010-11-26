@@ -14,6 +14,7 @@ import org.nate.encoder.HtmlFragmentEncoder;
 import org.nate.exception.IONateException;
 import org.nate.exception.UnsupportedEncodingNateException;
 import org.nate.internal.NateDocumentBackedEngine;
+import org.nate.internal.NullEngine;
 
 public final class Nate {
 
@@ -27,6 +28,9 @@ public final class Nate {
 	}
 
 	public static Engine newWith(InputStream source, Encoder encoder) {
+		if (encoder == null) {
+			return new NullEngine(source);
+		}
 		return new NateDocumentBackedEngine(source, encoder);
 	}
 

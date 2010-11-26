@@ -3,6 +3,7 @@ package org.nate;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.junit.Assert.assertEquals;
 import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
 
 import java.util.HashMap;
@@ -204,6 +205,16 @@ public class EngineTest {
 		anchorData.put(Engine.CONTENT_ATTRIBUTE, singletonMap("span", "hello"));
 		Engine result = engine.inject(singletonMap("div", anchorData));
 		assertXMLEqual("<div class='show'><span>hello</span></div>", result.render());
+	}
+	
+	@Test
+	public void shouldUseNullEngineForUnknownEncodings() throws Exception {
+		String source = "banana";
+		Engine engine = Nate.newWith(source, Nate.encoders().encoderFor("unknown"));
+		Engine newEngine = engine
+			.inject(singletonMap(Engine.CONTENT_ATTRIBUTE, "hello"))
+			.select("blah");
+		assertEquals(source, newEngine.render());
 	}
 	
 	private Engine encodeHtmlFragment(String html) {
