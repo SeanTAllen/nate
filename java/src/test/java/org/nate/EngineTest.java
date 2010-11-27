@@ -21,7 +21,7 @@ public class EngineTest {
 	}
 	
 	@Test
-	public void shouldIgnoreNullValues() throws Exception {
+	public void shouldIgnoreNullValuesForTextInjection() throws Exception {
 		Engine engine = encodeHtmlFragment("<a/>");
 		Engine result = engine.inject(singletonMap("a", null));
 		assertXmlFragmentsEqual("<a/>", result.render());
@@ -80,6 +80,22 @@ public class EngineTest {
 		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", result.render());
 	}
 	
+	@Test
+	public void shouldRemoveAttributes() throws Exception {
+		Engine engine = encodeHtmlFragment("<a href='xxx'>my link</a>");
+		Object data = singletonMap("a @@href", null);
+		Engine result = engine.inject(data);
+		assertXmlFragmentsEqual("<a>my link</a>", result.render());
+	}
+	
+	@Test
+	public void shouldIgnoreAttemptsToRemoveNonexistentAttributes() throws Exception {
+		Engine engine = encodeHtmlFragment("<a>my link</a>");
+		Object data = singletonMap("a @@href", null);
+		Engine result = engine.inject(data);
+		assertXmlFragmentsEqual("<a>my link</a>", result.render());
+	}
+
 	@Test
 	public void shouldAllowValuesToBeAnyObject() throws Exception {
 		Engine engine = encodeHtmlFragment("<div/>");

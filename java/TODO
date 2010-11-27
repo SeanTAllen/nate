@@ -1,5 +1,4 @@
 Things left to do for Java Nate:
- * Support attribute removal
  * Make sure Engine really is thread safe!!
  * Remove the need for clients to distinguish between html docs and html fragments.
  * Try some real HTML parsers (eg tagsoup).
@@ -13,4 +12,5 @@ Things left to do for Java Nate:
  * Add css file to ToDo example.
  * Allow rendered output to (optionally) have an xml declaration tag.
  * Measure performance
+ * Revisit what to do when required encoder is not found.
 

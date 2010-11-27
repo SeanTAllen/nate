@@ -76,6 +76,12 @@ public abstract class AbstactNateNode implements NateNode {
 		verifyState();
 		topElement.setAttribute(name, value);
 	}
+	
+	@Override
+	public void removeAttribute(String attributeName) {
+		verifyState();
+		topElement.removeAttribute(attributeName);
+	}
 
 	public void replaceChildren(NateDocument newChildren) {
 		verifyState();

@@ -6,6 +6,7 @@ public class NullDataInjector implements NateTransformer {
 
 	@Override
 	public void setAttribute(String attributeName, NateNode node) {
+		node.removeAttribute(attributeName);
 	}
 
 	@Override

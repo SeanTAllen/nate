@@ -6,6 +6,8 @@ public interface NateNode {
 
 	void setAttribute(String name, String value);
 
+	void removeAttribute(String attributeName);
+
 	List<NateNode> find(String selector);
 
 	NateNode copy();
@@ -17,5 +19,4 @@ public interface NateNode {
 	void setTextContent(String text);
 
 	String render();
-
 }
