@@ -1,5 +1,4 @@
 Things left to do for Java Nate:
- * Allow combining of attribute and css selectors: eg. 'a.foo @href'
  * Support attribute removal
  * Make sure Engine really is thread safe!!
  * Remove the need for clients to distinguish between html docs and html fragments.
@@ -14,5 +13,4 @@ Things left to do for Java Nate:
  * Add css file to ToDo example.
  * Allow rendered output to (optionally) have an xml declaration tag.
  * Measure performance
- * Consider improving performance by changing the the design of TransformationMap and TransformationSequence to convert
- the maps/lists that they wrap into Transformers upon construction instead of every time they are called.
+

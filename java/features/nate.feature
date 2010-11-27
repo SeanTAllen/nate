@@ -48,7 +48,7 @@ Feature:
       | data                                         | transformed |
       | { '.section' => { '.greeting' => 'Hello' } } | <div class="section"><span class="greeting">Hello</span></div> |
       | { '.section' => { 'span' => 'Hello' } }      | <div class="section"><span class="greeting">Hello</span></div> |
-      
+  
   Scenario Outline: match and inject multiple data values into a subselection of matched html
     Given the HTML fragment "<div class='section'><span class='greeting'></span></div>"
       When <data> is injected
@@ -68,21 +68,28 @@ Feature:
       | data                       | transformed          |
       | { 'ul' => [] }             | <div></div>          |
       | { 'ul' => { 'li' => [] } } | <div><ul></ul></div> |
-                
-  Scenario: match and inject data into element attributes
-    Given the HTML fragment "<a href='#'>my link</a>"
-      When { 'a' => { '@@href' => 'http://www.example.com' } } is injected
-      Then the HTML fragment is <a href="http://www.example.com">my link</a>
   
-  Scenario: non-existent attributes on an element should be created
-    Given the HTML fragment "<h1 class='glory'>Header</h1>"
-      When { 'h1' => {'@@class' => 'glorious'}} is injected
-      Then the HTML fragment is <h1 class='glorious'>Header</h1>
-     
+  Scenario Outline: match and inject data into element attributes
+    Given the HTML fragment "<a href='#'>my link</a>"
+      When <data> is injected
+      Then the HTML fragment is <transformed>
+    
+    Examples:
+      | data | transformed |
+      | { 'a' => { '@@href' => 'http://www.example.com' } } | <a href="http://www.example.com">my link</a> |
+      | { 'a' => { 'href' => 'http://www.example.com' } }   | <a href="#">my link</a>                      |
+      | { 'a' => { '@@style' => 'color:red' } }             | <a href="#" style="color:red">my link</a>    |
+      | { 'a @@href' => 'http://www.example.com' }          | <a href="http://www.example.com">my link</a> |
+      
   Scenario: when doing an attribute match, special 'content' attribute should change the inner_html
     Given the HTML fragment "<a href='#'>my link</a>"
       When { 'a' => { '@@href' => 'http://www.example.com', Nate::Engine::CONTENT_ATTRIBUTE => 'example.com' } } is injected
       Then the HTML fragment is <a href="http://www.example.com">example.com</a>
+      
+  Scenario: special 'content' attribute should be able to be transformed
+    Given the HTML fragment "<div id='x'><p>Hi</p></div>"
+      When { 'div' => { '@@id' => 'y', Nate::Engine::CONTENT_ATTRIBUTE => { 'p' => 'Bye' } } } is injected
+      Then the HTML fragment is <div id='y'><p>Bye</p></div>
       
   Scenario: multiple value matches shouldn't leak from one value to the next
     Given the HTML fragment "<a href='#'>link</a>"
@@ -98,22 +105,16 @@ Feature:
       | data                             | transformed |
       | { 'h1' => 'New Header' }         | <h1>New Header</h1><h2>Second Header</h2><h1>New Header</h1> |
       | { 'h1' => [ 'Hello', 'There' ] } | <h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1> |
-      
+       
   Scenario Outline: value can be anything that has a string representation
     Given the HTML fragment "<a href='#'></a>"
       When <data> is injected
       Then the HTML fragment is <transformed>
       
     Examples:
-      | data                       | transformed              |
+      | data                         | transformed              |
       | { 'a' => { '@@href' => 1 } } | <a href='1'></a>         |
-      | { 'a' => 'click me' }      | <a href="#">click me</a> |
-      
-  @wip
-  Scenario: embed additional html in my injected data
-    Given the HTML fragment "<div></div>"
-      When { 'div' => '<strong>Hi</strong>'} is injected
-      Then the HTML fragment is <div><strong>Hi</strong></div>
+      | { 'a' => 'click me' }        | <a href="#">click me</a> |
     
   Scenario: use a file rather than a string as source input
     Given the file "features/support/file.html"
@@ -122,10 +123,10 @@ Feature:
   
   Scenario: should be able inject in multiple steps
     Given the HTML fragment "<div id='data'></div>"
-      When { '#data' => Nate::Engine.from_string('<span></span>') } is injected
+      When { '#data' => Nate::Engine.from_string('<span></span>')} is injected
       And { 'span' => 'hello' } is injected sometime later
       Then the HTML fragment is <div id='data'><span>hello</span></div>
-  
+      
   Scenario: injection shouldn't modify the original template, only create a new version with changes
     Given the HTML fragment "<h1>Hi</h1>"
       When { 'h1' => 'Bye' } is injected
@@ -148,9 +149,9 @@ Feature:
       Then the HTML fragment is <transformed>
       
     Examples:
-      | data | transformed |
-      | "## #header" | header text |
-      | "##div" | header textcontent text<h1>footer</h1> |
+      | data        | transformed                            |
+      | "###header" | header text                            |
+      | "##div"     | header textcontent text<h1>footer</h1> |
       
    Scenario: should be able to use a nate template as a value when injecting
      Given the HTML fragment "<div id='header'>Header</div><div id='content'></div>"

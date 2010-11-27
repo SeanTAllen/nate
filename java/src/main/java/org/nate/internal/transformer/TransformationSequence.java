@@ -5,20 +5,28 @@ import java.util.List;
 
 import org.nate.encoder.NateNode;
 
-@SuppressWarnings("unchecked")
 public class TransformationSequence implements NateTransformer {
 
-	private final Iterable sequence;
+	private final Iterable<NateTransformer> sequence;
 
-	public TransformationSequence(Iterable sequence) {
+	@SuppressWarnings("unchecked")
+	public static TransformationSequence fromObjectSequence(Iterable data) {
+		List<NateTransformer> sequence = new ArrayList<NateTransformer>();
+		for (Object value : data) {
+			NateTransformer transformer = NateTransformers.from(value);
+			sequence.add(transformer);
+		}
+		return new TransformationSequence(sequence);
+	}
+
+	public TransformationSequence(Iterable<NateTransformer> sequence) {
 		this.sequence = sequence;
 	}
 
 	@Override
 	public void transform(NateNode node) {
 		List<NateNode> newNodes = new ArrayList<NateNode>();
-		for (Object value : sequence) {
-			NateTransformer transformer = NateTransformers.from(value);
+		for (NateTransformer transformer : sequence) {
 			NateNode newNode = node.copy();
 			transformer.transform(newNode);
 			newNodes.add(newNode);

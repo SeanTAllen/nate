@@ -88,6 +88,14 @@ public class EngineTest {
 	}
 	
 	@Test
+	public void shouldMatchAndInjectIntoElementAttributeUsingCombinationOfCssAndAttributeSelection() throws Exception {
+		Engine engine = encodeHtmlFragment("<a>my link</a>");
+		Object data = singletonMap("a @@href", "http://www.example.com");
+		Engine result = engine.inject(data);
+		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", result.render());
+	}
+	
+	@Test
 	public void shouldAllowValuesToBeAnyObject() throws Exception {
 		Engine engine = encodeHtmlFragment("<div/>");
 		Object data = singletonMap("div", 42L);
