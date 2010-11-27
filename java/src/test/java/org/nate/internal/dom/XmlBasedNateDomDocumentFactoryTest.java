@@ -24,7 +24,7 @@ public class XmlBasedNateDomDocumentFactoryTest {
 				"<html><body><div/></body></html>");
 		NateNode doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocument(input);
 		assertXmlFragmentsEqual("<html><body><div/></body></html>", doc.render());
-		List<Node> rootElements = ((NateDomNode) doc).getRootNodes();
+		List<Node> rootElements = ((AbstactNateNode) doc).getRootNodes();
 		assertThat(rootElements.size(), is(1));
 		assertThat(rootElements.get(0).getNodeName(), is("html"));
 	}
@@ -34,7 +34,7 @@ public class XmlBasedNateDomDocumentFactoryTest {
 		InputStream input = inputStreamFor("apple<a>hello</a><b>foo</b>banana");
 		NateNode doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocumentFragment(input);
 		assertXmlFragmentsEqual("apple<a>hello</a><b>foo</b>banana", doc.render());
-		List<Node> rootNodes = ((NateDomNode) doc).getRootNodes();
+		List<Node> rootNodes = ((AbstactNateNode) doc).getRootNodes();
 		assertThat(rootNodes.size(), is(4));
 		assertThat(rootNodes.get(0).getNodeValue(), is("apple"));
 		assertThat(rootNodes.get(1).getNodeName(), is("a"));
@@ -44,8 +44,8 @@ public class XmlBasedNateDomDocumentFactoryTest {
 
 	@Test
 	public void shouldCreateNateDomDocumentFromW3cElements() throws Exception {
-		NateDomDocument document1 = createDocument("<a>apple</a>");
-		NateDomDocument document2 = createDocument("<a>banana</a>");
+		PseudoWrappingElementBasedNateDocument document1 = createDocument("<a>apple</a>");
+		PseudoWrappingElementBasedNateDocument document2 = createDocument("<a>banana</a>");
 		List<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(document1.getRootNodes());
 		nodes.addAll(document2.getRootNodes());
@@ -60,8 +60,8 @@ public class XmlBasedNateDomDocumentFactoryTest {
 		return new ByteArrayInputStream(string.getBytes());
 	}
 
-	private NateDomDocument createDocument(String input) {
-		return (NateDomDocument) new XmlBasedNateDomDocumentFactory().createFromXmlDocument(inputStreamFor(input));
+	private PseudoWrappingElementBasedNateDocument createDocument(String input) {
+		return (PseudoWrappingElementBasedNateDocument) new XmlBasedNateDomDocumentFactory().createFromXmlDocument(inputStreamFor(input));
 	}
 
 }

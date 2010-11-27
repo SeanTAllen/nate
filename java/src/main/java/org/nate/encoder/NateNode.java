@@ -6,7 +6,7 @@ public interface NateNode {
 
 	void setAttribute(String name, String value);
 
-	List<NateElement> find(String selector);
+	List<NateNode> find(String selector);
 
 	NateNode copy();
 

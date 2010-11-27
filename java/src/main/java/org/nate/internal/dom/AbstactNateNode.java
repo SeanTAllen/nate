@@ -2,7 +2,7 @@ package org.nate.internal.dom;
 
 import static org.nate.internal.dom.W3cUtils.asNodeList;
 import static org.nate.internal.dom.W3cUtils.convertNodeToString;
-import static org.nate.internal.dom.W3cUtils.convertToNateDomElements;
+import static org.nate.internal.dom.W3cUtils.convertToNateElements;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -13,7 +13,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
 import org.nate.encoder.NateDocument;
-import org.nate.encoder.NateElement;
+import org.nate.encoder.NateNode;
 import org.nate.exception.BadCssExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,24 +22,23 @@ import org.w3c.dom.Node;
 import se.fishtank.css.selectors.NodeSelectorException;
 import se.fishtank.css.selectors.dom.DOMNodeSelector;
 
-public abstract class NateDomNode {
+public abstract class AbstactNateNode implements NateNode {
 
-	// The top element is the top of the tree... either a fake wrapping element or an internal element found by a selector.
+	// The top element is the top of the tree: either a pseudo wrapping element or an internal element found by a selector.
 	private final Element topElement;
 	
 	private boolean validState = true;
 
-	NateDomNode(Element topElement) {
+	AbstactNateNode(Element topElement) {
 		this.topElement = topElement;
 	}
 
 	/**
-	 * Find references to nodes matching the selector such that modifications to these references will modify this
-	 * NateDomNode.
+	 * Find references to nodes matching the selector such that modifications to these references will modify this NateDomNode.
 	 */
-	public List<NateElement> find(String selector) {
+	public List<NateNode> find(String selector) {
 		verifyState();
-		return convertToNateDomElements(findMatchingW3cElements(selector));
+		return convertToNateElements(findMatchingW3cElements(selector));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -82,7 +81,7 @@ public abstract class NateDomNode {
 		verifyState();
 		removeChildren();
 		Document ownerDocument = topElement.getOwnerDocument();
-		for (Node newChild : ((NateDomNode) newChildren).getRootNodes()) {
+		for (Node newChild : ((AbstactNateNode) newChildren).getRootNodes()) {
 			topElement.appendChild(ownerDocument.importNode(newChild, true));
 		}
 	}

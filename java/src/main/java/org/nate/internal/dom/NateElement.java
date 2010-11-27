@@ -4,18 +4,17 @@ import static java.util.Collections.singletonList;
 
 import java.util.List;
 
-import org.nate.encoder.NateElement;
 import org.nate.encoder.NateNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class NateDomElement extends NateDomNode implements NateElement {
+public class NateElement extends AbstactNateNode {
 
-	private Element element;
+	private final Element element;
 	private final List<Node> rootNodes;
 
-	NateDomElement(Element element) {
+	NateElement(Element element) {
 		super(element);
 		this.element = element;
 		rootNodes = singletonList((Node) element);
@@ -28,9 +27,9 @@ public class NateDomElement extends NateDomNode implements NateElement {
 	}
 
 	@Override
-	public NateElement copy() {
+	public NateNode copy() {
 		verifyState();
-		return new NateDomElement((Element) element.cloneNode(true));
+		return new NateElement((Element) element.cloneNode(true));
 	}
 	
 
@@ -39,7 +38,7 @@ public class NateDomElement extends NateDomNode implements NateElement {
 		Document ownerDocument = element.getOwnerDocument();
 		Node parentNode = element.getParentNode();
 		for (NateNode newNode: newNodes) {
-			for (Node w3cNode : ((NateDomNode) newNode).getRootNodes()) {
+			for (Node w3cNode : ((AbstactNateNode) newNode).getRootNodes()) {
 				Node importedNode = ownerDocument.importNode(w3cNode, true);
 				parentNode.insertBefore(importedNode, element);
 			}

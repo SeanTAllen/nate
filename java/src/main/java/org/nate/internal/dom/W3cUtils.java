@@ -13,7 +13,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 
-import org.nate.encoder.NateElement;
+import org.nate.encoder.NateNode;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -49,10 +49,10 @@ public final class W3cUtils {
 		}
 	}
 	
-	static List<NateElement> convertToNateDomElements(Collection<Element> elements) {
-		List<NateElement> result = new ArrayList<NateElement>(elements.size());
+	static List<NateNode> convertToNateElements(Collection<Element> elements) {
+		List<NateNode> result = new ArrayList<NateNode>(elements.size());
 		for (Element element : elements) {
-			result.add(new NateDomElement(element));
+			result.add(new NateElement(element));
 		}
 		return result;
 	}

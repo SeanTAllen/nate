@@ -10,9 +10,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.nate.encoder.NateDocument;
-import org.nate.encoder.NateElement;
 import org.nate.encoder.NateNode;
-import org.nate.internal.dom.NateDomElement;
+import org.nate.internal.dom.NateElement;
 import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 import org.w3c.dom.Element;
 
@@ -21,7 +20,7 @@ public class NateDomElementTest {
 	@Test
 	public void shouldFindDesiredElements() throws Exception {
 		NateNode element = elementFor("<div><p>apple</p> hello <p>banana</p></div>");
-		List<NateElement> elements = element.find("p");
+		List<NateNode> elements = element.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
 		assertXmlFragmentsEqual("<p>apple</p>", elements.get(0).render());
 		assertXmlFragmentsEqual("<p>banana</p>", elements.get(1).render());
@@ -30,7 +29,7 @@ public class NateDomElementTest {
 	@Test
 	public void shouldFindNoElementsWhenNoneMatch() throws Exception {
 		NateNode element = elementFor("<div><p>apple</p> hello <p>banana</p></div>");
-		List<NateElement> elements = element.find("p.foo");
+		List<NateNode> elements = element.find("p.foo");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(0));
 	}
 	
@@ -71,7 +70,7 @@ public class NateDomElementTest {
 		NateNode document = createDocument("<div>apple</div>");
 		NateNode node1 = createDocument("a <b>banana</b> or two");
 		NateNode node2 = elementFor("<p>apple</p>");
-		NateElement element = document.find("div").get(0);
+		NateNode element = document.find("div").get(0);
 		element.replaceWith(asList(node1, node2));
 		assertXmlFragmentsEqual("a <b>banana</b> or two<p>apple</p>", document.render());
 		assertXmlFragmentsEqual("a <b>banana</b> or two", node1.render());
@@ -88,7 +87,7 @@ public class NateDomElementTest {
 	
 	private NateNode elementFor(String string) {
 		NateDocument document = createDocument(string);
-		return new NateDomElement((Element) ((NateDomNode) document).getRootNodes().get(0));
+		return new NateElement((Element) ((AbstactNateNode) document).getRootNodes().get(0));
 	}
 
 	private NateDocument createDocument(String input) {

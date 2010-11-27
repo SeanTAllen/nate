@@ -11,11 +11,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.nate.encoder.NateDocument;
-import org.nate.encoder.NateElement;
 import org.nate.encoder.NateNode;
 import org.nate.exception.BadCssExpressionException;
-import org.nate.internal.dom.NateDomElement;
-import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 import org.w3c.dom.Element;
 
 
@@ -24,7 +21,7 @@ public class NateDomDocumentTest {
 	@Test
 	public void shouldFindDesiredElements() throws Exception {
 		NateNode document = createDocument("<div><p>apple</p> hello <p>banana</p></div>");
-		List<NateElement> elements = document.find("p");
+		List<NateNode> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
 		assertXmlFragmentsEqual("<p>apple</p>", elements.get(0).render());
 		assertXmlFragmentsEqual("<p>banana</p>", elements.get(1).render());
@@ -33,7 +30,7 @@ public class NateDomDocumentTest {
 	@Test
 	public void shouldFindAnEmptyListWhenNothingMatches() throws Exception {
 		NateNode document = createDocument("<div></div>");
-		List<NateElement> elements = document.find("p");
+		List<NateNode> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(0));
 	}
 	
@@ -161,7 +158,7 @@ public class NateDomDocumentTest {
 	
 	private NateNode elementFor(String string) {
 		NateDocument document = createDocument(string);
-		return new NateDomElement((Element) ((NateDomNode) document).getRootNodes().get(0));
+		return new NateElement((Element) ((AbstactNateNode) document).getRootNodes().get(0));
 	}
 
 }

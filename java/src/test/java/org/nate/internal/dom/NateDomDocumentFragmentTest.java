@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.nate.encoder.NateDocument;
-import org.nate.encoder.NateElement;
 import org.nate.encoder.NateNode;
 import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 
@@ -18,7 +17,7 @@ public class NateDomDocumentFragmentTest {
 	@Test
 	public void shouldFindDesiredElements() throws Exception {
 		NateNode document = createDocumentFragment("apple<div><p>apple</p> hello <p>banana</p></div> ");
-		List<NateElement> elements = document.find("p");
+		List<NateNode> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
 		assertXmlFragmentsEqual("<p>apple</p>", elements.get(0).render());
 		assertXmlFragmentsEqual("<p>banana</p>", elements.get(1).render());
@@ -27,7 +26,7 @@ public class NateDomDocumentFragmentTest {
 	@Test
 	public void shouldFindAnEmptyListWhenNothingMatches() throws Exception {
 		NateNode document = createDocumentFragment("apple<div></div>");
-		List<NateElement> elements = document.find("p");
+		List<NateNode> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(0));
 	}
 

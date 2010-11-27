@@ -12,23 +12,27 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class NateDomDocument extends NateDomNode implements NateDocument {
+/**
+ * Represents a document or document fragment via a reference to an element that is a "pseudo root" wrapping
+ * the real root element(s) of the document or fragment.
+ */
+public class PseudoWrappingElementBasedNateDocument extends AbstactNateNode implements NateDocument {
 
 	// TODO: May want to inject this...
 	private final XmlBasedNateDomDocumentFactory domDocumentFactory = new XmlBasedNateDomDocumentFactory();
 	private final Element wrappingElement;
 
-	private NateDomDocument(Element wrappingElement) {
+	private PseudoWrappingElementBasedNateDocument(Element wrappingElement) {
 		super(wrappingElement);
 		this.wrappingElement = wrappingElement;
 	}
 
-	static NateDomDocument fromFakeRootWrappedFragment(Element wrappingElement) {
-		return new NateDomDocument(wrappingElement);
+	static PseudoWrappingElementBasedNateDocument fromPseudoRootWrappedFragment(Element wrappingElement) {
+		return new PseudoWrappingElementBasedNateDocument(wrappingElement);
 	}
 
-	public NateDomDocument copy() {
-		return new NateDomDocument((Element) wrappingElement.cloneNode(true));
+	public PseudoWrappingElementBasedNateDocument copy() {
+		return new PseudoWrappingElementBasedNateDocument((Element) wrappingElement.cloneNode(true));
 	}
 
 	/**
@@ -57,7 +61,7 @@ public class NateDomDocument extends NateDomNode implements NateDocument {
 		removeChildren();
 		Document ownerDocument = wrappingElement.getOwnerDocument();
 		for (NateNode newNode: newNodes) {
-			for (Node w3cNode : ((NateDomNode) newNode).getRootNodes()) {
+			for (Node w3cNode : ((AbstactNateNode) newNode).getRootNodes()) {
 				Node importedNode = ownerDocument.importNode(w3cNode, true);
 				wrappingElement.appendChild(importedNode);
 			}
