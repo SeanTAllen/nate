@@ -1,9 +1,6 @@
 package org.nate.internal;
 
-import static org.nate.internal.Assertions.assertType;
-
 import java.io.InputStream;
-import java.util.Map;
 
 import org.nate.Encoder;
 import org.nate.Engine;
@@ -23,7 +20,6 @@ public class NateDocumentBackedEngine implements Engine {
 	}
 
 	public NateDocumentBackedEngine inject(Object data) {
-		assertType("data", data, Map.class);
 		NateDocument newDocument = document.copy();
 		NateTransformers.from(data).transform(newDocument);
 		return new NateDocumentBackedEngine(newDocument);

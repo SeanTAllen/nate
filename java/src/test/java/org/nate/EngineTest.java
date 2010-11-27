@@ -15,25 +15,10 @@ import org.junit.Test;
 public class EngineTest {
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void shouldThrowAnExceptionWhenDataIsNull() throws Exception {
-		Engine engine = encodeHtmlFragment("<html/>");
-		engine.inject(null);
-	}
-
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldThrowAnExceptionWhenDataIsNotAMap() throws Exception {
-		Engine engine = encodeHtmlFragment("<html/>");
-		engine.inject("");
-	}
-
-	
-	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowAnExceptionWhenKeyIsNotAString() throws Exception {
 		Engine engine = encodeHtmlFragment("<html/>");
 		engine.inject(singletonMap(42, "b"));
 	}
-
 	
 	@Test
 	public void shouldIgnoreNullValues() throws Exception {
