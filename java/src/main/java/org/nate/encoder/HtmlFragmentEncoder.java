@@ -8,7 +8,7 @@ import org.nate.internal.jsoup.JsoupBackedNateDocumentFactory;
 public class HtmlFragmentEncoder implements Encoder {
 
 	private static final JsoupBackedNateDocumentFactory DOCUMENT_FACTORY = new JsoupBackedNateDocumentFactory();
-	private static final String TYPE = "HTMLF";
+	private static final String TYPE = "JSOUPF";
 
 	@Override
 	public String type() {

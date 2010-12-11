@@ -20,7 +20,9 @@ public class TestOfNateThreadSafety {
 	private static final long DURATION_IN_MILLIS = 20 * 1000;
 	private static final CyclicBarrier START_BARRIER = new CyclicBarrier(NUM_THREADS);
 	
-	private static final Engine ENGINE = Nate.newWith("<div><p>apple</p><section>banana</section></div>");
+	private static final Engine ENGINE = Nate.newWith(
+			"<div><p>apple</p><section>banana</section></div>",
+			Nate.encoders().encoderFor("JSOUPF"));
 	
 	private static final List<Throwable> errors = Collections.synchronizedList(new ArrayList<Throwable>());
 	
