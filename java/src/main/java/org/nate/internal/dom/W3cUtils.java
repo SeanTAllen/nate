@@ -52,7 +52,7 @@ public final class W3cUtils {
 	static List<NateNode> convertToNateElements(Collection<Element> elements) {
 		List<NateNode> result = new ArrayList<NateNode>(elements.size());
 		for (Element element : elements) {
-			result.add(new NateElement(element));
+			result.add(new NateDomElement(element));
 		}
 		return result;
 	}

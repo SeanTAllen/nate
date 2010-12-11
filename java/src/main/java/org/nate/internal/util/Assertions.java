@@ -1,4 +1,4 @@
-package org.nate.internal;
+package org.nate.internal.util;
 
 public final class Assertions {
 

@@ -3,20 +3,20 @@ package org.nate.encoder;
 import java.io.InputStream;
 
 import org.nate.Encoder;
-import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
+import org.nate.internal.jsoup.JsoupBackedNateDocumentFactory;
 
 public class HtmlFragmentEncoder implements Encoder {
-	
-	private static final XmlBasedNateDomDocumentFactory DOCUMENT_FACTORY = new XmlBasedNateDomDocumentFactory();
+
+	private static final JsoupBackedNateDocumentFactory DOCUMENT_FACTORY = new JsoupBackedNateDocumentFactory();
+	private static final String TYPE = "HTMLF";
 
 	@Override
 	public String type() {
-		return "HTMLF";
+		return TYPE;
 	}
 
 	@Override
 	public NateDocument encode(InputStream source) {
-		return DOCUMENT_FACTORY.createFromXmlDocumentFragment(source);
+		return DOCUMENT_FACTORY.createFromHtmlFragment(source);
 	}
-
 }

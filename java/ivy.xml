@@ -1,6 +1,11 @@
 <ivy-module version="2.0">
   <info organisation="org.nate" module="nate"/>
   <dependencies>
+    
+    <!-- Runtime & compile dependencies -->
+    <dependency org="org.jsoup" name="jsoup" rev="1.4.1"/>
+
+	<!-- Test dependencies -->
     <dependency org="cuke4duke" name="cuke4duke" rev="0.4.2"/>
     <dependency org="org.jruby" name="jruby-complete" rev="1.5.3" transitive="false"/>
     <dependency org="org.picocontainer" name="picocontainer" rev="2.11.2"/>

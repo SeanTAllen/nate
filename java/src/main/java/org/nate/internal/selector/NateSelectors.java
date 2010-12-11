@@ -1,6 +1,6 @@
 package org.nate.internal.selector;
 
-import static org.nate.internal.Assertions.*;
+import static org.nate.internal.util.Assertions.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

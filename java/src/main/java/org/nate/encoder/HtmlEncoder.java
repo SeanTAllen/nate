@@ -3,11 +3,11 @@ package org.nate.encoder;
 import java.io.InputStream;
 
 import org.nate.Encoder;
-import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
+import org.nate.internal.jsoup.JsoupBackedNateDocumentFactory;
 
 public class HtmlEncoder implements Encoder {
 
-	private static final XmlBasedNateDomDocumentFactory DOCUMENT_FACTORY = new XmlBasedNateDomDocumentFactory();
+	private static final JsoupBackedNateDocumentFactory DOCUMENT_FACTORY = new JsoupBackedNateDocumentFactory();
 	private static final String TYPE = "HTML";
 
 	public String type() {
@@ -16,7 +16,7 @@ public class HtmlEncoder implements Encoder {
 
 	@Override
 	public NateDocument encode(InputStream source) {
-		return DOCUMENT_FACTORY.createFromXmlDocument(source);
+		return DOCUMENT_FACTORY.createFromHtmlDocument(source);
 	}
 
 }

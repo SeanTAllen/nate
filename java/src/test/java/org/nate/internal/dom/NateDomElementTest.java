@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.Test;
 import org.nate.encoder.NateDocument;
 import org.nate.encoder.NateNode;
-import org.nate.internal.dom.NateElement;
+import org.nate.internal.dom.NateDomElement;
 import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 import org.w3c.dom.Element;
 
@@ -87,7 +87,7 @@ public class NateDomElementTest {
 	
 	private NateNode elementFor(String string) {
 		NateDocument document = createDocument(string);
-		return new NateElement((Element) ((AbstactNateNode) document).getRootNodes().get(0));
+		return new NateDomElement((Element) ((AbstactNateDomNode) document).getRootNodes().get(0));
 	}
 
 	private NateDocument createDocument(String input) {

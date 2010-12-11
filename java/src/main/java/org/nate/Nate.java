@@ -11,6 +11,8 @@ import java.io.UnsupportedEncodingException;
 
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
+import org.nate.encoder.XmllEncoder;
+import org.nate.encoder.XmlFragmentEncoder;
 import org.nate.exception.IONateException;
 import org.nate.exception.UnsupportedEncodingNateException;
 import org.nate.internal.NateDocumentBackedEngine;
@@ -25,6 +27,8 @@ public final class Nate {
 	static {
 		encoders.register(new HtmlEncoder());
 		encoders.register(new HtmlFragmentEncoder());
+		encoders.register(new XmllEncoder());
+		encoders.register(new XmlFragmentEncoder());
 	}
 
 	public static Engine newWith(InputStream source, Encoder encoder) {

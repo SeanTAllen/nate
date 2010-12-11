@@ -9,12 +9,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class NateElement extends AbstactNateNode {
+public class NateDomElement extends AbstactNateDomNode {
 
 	private final Element element;
 	private final List<Node> rootNodes;
 
-	NateElement(Element element) {
+	NateDomElement(Element element) {
 		super(element);
 		this.element = element;
 		rootNodes = singletonList((Node) element);
@@ -29,7 +29,7 @@ public class NateElement extends AbstactNateNode {
 	@Override
 	public NateNode copy() {
 		verifyState();
-		return new NateElement((Element) element.cloneNode(true));
+		return new NateDomElement((Element) element.cloneNode(true));
 	}
 	
 
@@ -38,7 +38,7 @@ public class NateElement extends AbstactNateNode {
 		Document ownerDocument = element.getOwnerDocument();
 		Node parentNode = element.getParentNode();
 		for (NateNode newNode: newNodes) {
-			for (Node w3cNode : ((AbstactNateNode) newNode).getRootNodes()) {
+			for (Node w3cNode : ((AbstactNateDomNode) newNode).getRootNodes()) {
 				Node importedNode = ownerDocument.importNode(w3cNode, true);
 				parentNode.insertBefore(importedNode, element);
 			}

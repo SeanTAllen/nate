@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
  * Represents a document or document fragment via a reference to an element that is a "pseudo root" wrapping
  * the real root element(s) of the document or fragment.
  */
-public class PseudoWrappingElementBasedNateDocument extends AbstactNateNode implements NateDocument {
+public class PseudoWrappingElementBasedNateDocument extends AbstactNateDomNode implements NateDocument {
 
 	// TODO: May want to inject this...
 	private final XmlBasedNateDomDocumentFactory domDocumentFactory = new XmlBasedNateDomDocumentFactory();
@@ -61,7 +61,7 @@ public class PseudoWrappingElementBasedNateDocument extends AbstactNateNode impl
 		removeChildren();
 		Document ownerDocument = wrappingElement.getOwnerDocument();
 		for (NateNode newNode: newNodes) {
-			for (Node w3cNode : ((AbstactNateNode) newNode).getRootNodes()) {
+			for (Node w3cNode : ((AbstactNateDomNode) newNode).getRootNodes()) {
 				Node importedNode = ownerDocument.importNode(w3cNode, true);
 				wrappingElement.appendChild(importedNode);
 			}

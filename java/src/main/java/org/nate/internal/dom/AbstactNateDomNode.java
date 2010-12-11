@@ -22,14 +22,14 @@ import org.w3c.dom.Node;
 import se.fishtank.css.selectors.NodeSelectorException;
 import se.fishtank.css.selectors.dom.DOMNodeSelector;
 
-public abstract class AbstactNateNode implements NateNode {
+public abstract class AbstactNateDomNode implements NateNode {
 
 	// The top element is the top of the tree: either a pseudo wrapping element or an internal element found by a selector.
 	private final Element topElement;
 	
 	private boolean validState = true;
 
-	AbstactNateNode(Element topElement) {
+	AbstactNateDomNode(Element topElement) {
 		this.topElement = topElement;
 	}
 
@@ -87,7 +87,7 @@ public abstract class AbstactNateNode implements NateNode {
 		verifyState();
 		removeChildren();
 		Document ownerDocument = topElement.getOwnerDocument();
-		for (Node newChild : ((AbstactNateNode) newChildren).getRootNodes()) {
+		for (Node newChild : ((AbstactNateDomNode) newChildren).getRootNodes()) {
 			topElement.appendChild(ownerDocument.importNode(newChild, true));
 		}
 	}

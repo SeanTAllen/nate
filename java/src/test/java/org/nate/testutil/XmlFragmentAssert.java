@@ -12,6 +12,11 @@ public class XmlFragmentAssert {
 		assertXMLEqual("Unexpected xml: " + actual, wrapInFakeRoot(expected), wrapInFakeRoot(actual));
 	}
 	
+	public static void assertXmlFragmentsIgnoringWhiteSpaceEqual(String expected, String actual) throws Exception {
+		// TODO: Do this properly by removing text nodes consisting of only white space.
+		assertXMLEqual("Unexpected xml: " + actual, wrapInFakeRoot(expected.replaceAll("\\s+", " ")), wrapInFakeRoot(actual.replaceAll("\\s+", " ")));
+	}
+	
 	private static String wrapInFakeRoot(String fragment) {
 		return "<fragment>" + fragment.trim() + "</fragment>";
 	}

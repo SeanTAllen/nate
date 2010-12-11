@@ -24,7 +24,7 @@ public class XmlBasedNateDomDocumentFactoryTest {
 				"<html><body><div/></body></html>");
 		NateNode doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocument(input);
 		assertXmlFragmentsEqual("<html><body><div/></body></html>", doc.render());
-		List<Node> rootElements = ((AbstactNateNode) doc).getRootNodes();
+		List<Node> rootElements = ((AbstactNateDomNode) doc).getRootNodes();
 		assertThat(rootElements.size(), is(1));
 		assertThat(rootElements.get(0).getNodeName(), is("html"));
 	}
@@ -34,7 +34,7 @@ public class XmlBasedNateDomDocumentFactoryTest {
 		InputStream input = inputStreamFor("apple<a>hello</a><b>foo</b>banana");
 		NateNode doc = new XmlBasedNateDomDocumentFactory().createFromXmlDocumentFragment(input);
 		assertXmlFragmentsEqual("apple<a>hello</a><b>foo</b>banana", doc.render());
-		List<Node> rootNodes = ((AbstactNateNode) doc).getRootNodes();
+		List<Node> rootNodes = ((AbstactNateDomNode) doc).getRootNodes();
 		assertThat(rootNodes.size(), is(4));
 		assertThat(rootNodes.get(0).getNodeValue(), is("apple"));
 		assertThat(rootNodes.get(1).getNodeName(), is("a"));

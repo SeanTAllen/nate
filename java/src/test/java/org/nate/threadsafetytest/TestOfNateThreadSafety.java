@@ -1,7 +1,6 @@
 package org.nate.threadsafetytest;
 
 import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.nate.Engine;
 import org.nate.Nate;
+import org.nate.testutil.XmlFragmentAssert;
 
 
 public class TestOfNateThreadSafety {
@@ -64,11 +64,11 @@ public class TestOfNateThreadSafety {
 			}
 		}
 
-		private void executeTask() {
+		private void executeTask() throws Exception {
 			Engine result1 = ENGINE.inject(singletonMap("section", ENGINE.select("p")));
 			Engine result2 = ENGINE.inject(singletonMap("section", ENGINE.select("##p")));
-			assertEquals("<div><p>apple</p><section><p>apple</p></section></div>", result1.render());
-			assertEquals("<div><p>apple</p><section>apple</section></div>", result2.render());
+			XmlFragmentAssert.assertXmlFragmentsIgnoringWhiteSpaceEqual(" <div> <p>apple</p> <section> <p>apple</p> </section> </div> ", result1.render());
+			XmlFragmentAssert.assertXmlFragmentsIgnoringWhiteSpaceEqual(" <div> <p>apple</p> <section> apple </section> </div> ",  result2.render());
 		}
 		
 	}

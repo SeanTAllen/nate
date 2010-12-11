@@ -5,7 +5,6 @@ import static java.util.Collections.singletonList;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -16,6 +15,7 @@ import org.nate.encoder.NateDocument;
 import org.nate.exception.IONateException;
 import org.nate.exception.NateParseException;
 import org.nate.exception.UnsupportedEncodingNateException;
+import org.nate.internal.util.StreamUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,14 +24,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class XmlBasedNateDomDocumentFactory {
-	// Element wrapped around html fragments.
-	// Needed because the XML parser cannot cope with XML having multiple root elements.
-	private static final String PSEUDO_ROOT = "pseudoroot";
 
 	// Node used as a prototype for creating new empty pseudo root nodes for HTML fragments.
 	private static final Document DOCUMENT_FRAGMENT_PROTOTYPE;
 	static {
-		DOCUMENT_FRAGMENT_PROTOTYPE = wrapInPseudoRootElement(emptyInputStream());
+		DOCUMENT_FRAGMENT_PROTOTYPE = parseXml(StreamUtils.wrapInPseudoRootElement(emptyInputStream()));
 	}
 
 	/**
@@ -47,7 +44,7 @@ public class XmlBasedNateDomDocumentFactory {
 	 * For use when the input stream does not have a document type declaration, nor an xml declaration.
 	 */
 	public PseudoWrappingElementBasedNateDocument createFromXmlDocumentFragment(InputStream input) {
-		Document document = wrapInPseudoRootElement(input);
+		Document document = parseXml(StreamUtils.wrapInPseudoRootElement(input));
 		return PseudoWrappingElementBasedNateDocument.fromPseudoRootWrappedFragment(document.getDocumentElement());
 	}
 
@@ -89,14 +86,6 @@ public class XmlBasedNateDomDocumentFactory {
 			return new InputSource(new StringReader(""));
 		}
 	};
-
-	// Need to wrap fragments in a pseudo root element otherwise they will not parse.
-	private static Document wrapInPseudoRootElement(InputStream source) {
-		InputStream startTag = new ByteArrayInputStream(("<" + PSEUDO_ROOT + ">").getBytes());
-		InputStream endTag = new ByteArrayInputStream(("</" + PSEUDO_ROOT + ">").getBytes());
-		SequenceInputStream wrappedStream = new SequenceInputStream(startTag, new SequenceInputStream(source, endTag));
-		return parseXml(wrappedStream);
-	}
 
 	private static InputStream emptyInputStream() {
 		return new ByteArrayInputStream(new byte[0]);

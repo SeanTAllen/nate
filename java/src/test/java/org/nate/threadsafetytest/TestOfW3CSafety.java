@@ -16,7 +16,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -30,11 +29,11 @@ public class TestOfW3CSafety {
 	private static final Document DOC = parseXml("<div><p>p1</p><p>p2</p></div>");
 
 	private static final int NUM_THREADS = 20;
-	private static final long DURATION_IN_MILLIS = 30 * 1000;
+	private static final long DURATION_IN_MILLIS = 5 * 1000;
 	private static final CyclicBarrier START_BARRIER = new CyclicBarrier(NUM_THREADS);
 	private static final List<Throwable> errors = Collections.synchronizedList(new ArrayList<Throwable>());
 
-	@Test
+//	@Test
 	public void cloneShouldBeThreadSafe() throws Throwable {
 		
 		ArrayList<Thread> threads = new ArrayList<Thread>();
