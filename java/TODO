@@ -1,10 +1,10 @@
 Things left to do for Java Nate:
- * Fix thread safety issues.
+ * Fix thread safety issues for xml parser backed encoders.
+ * Fix problem of jsoup backed fragment encoder not supporting a <head> fragment.
+ * Consider making the jsoup backed encoder the default html encoder.
  * Remove the need for clients to distinguish between html docs and html fragments.
- * Add current encoders as XML encoders as well as html encoders.
  * Add support for call-backs.
  * Consider what to do with {'@@foo' => ['a', 'b', 'c']}
- * Try some real HTML parsers (eg tagsoup).
  * Allow option of not having injected text HTML escaped.
  * Revisit this: {'div' => {'div' => 'foo'}}.  Should it be equivalent to {'div' => 'foo'} or {'div div' => 'foo'}
  * Revisit this: {'div' => {'*content*' => {'div' => 'foo'}}}
