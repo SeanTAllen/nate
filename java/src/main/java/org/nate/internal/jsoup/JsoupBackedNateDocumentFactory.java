@@ -14,6 +14,7 @@ import org.nate.internal.util.StreamUtils;
 public class JsoupBackedNateDocumentFactory {
 
 	private static final String NATE_FRAGMENT_WRAPPER = "natewrapper";
+	
 	/**
 	 *  TODO: What should we do with this???
 	 */

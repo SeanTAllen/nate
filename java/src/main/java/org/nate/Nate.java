@@ -11,12 +11,11 @@ import java.io.UnsupportedEncodingException;
 
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
-import org.nate.encoder.XmllEncoder;
 import org.nate.encoder.XmlFragmentEncoder;
+import org.nate.encoder.XmllEncoder;
 import org.nate.exception.IONateException;
 import org.nate.exception.UnsupportedEncodingNateException;
 import org.nate.internal.NateDocumentBackedEngine;
-import org.nate.internal.NullEngine;
 
 public final class Nate {
 
@@ -32,9 +31,6 @@ public final class Nate {
 	}
 
 	public static Engine newWith(InputStream source, Encoder encoder) {
-		if (encoder == null) {
-			return new NullEngine(source);
-		}
 		return new NateDocumentBackedEngine(source, encoder);
 	}
 

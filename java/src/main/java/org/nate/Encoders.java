@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nate.exception.EncoderNotAvailableException;
+
 public class Encoders {
 
 	private Map<String, Encoder> encoders = new HashMap<String, Encoder>();
@@ -24,10 +26,11 @@ public class Encoders {
 	}
 
 	private Encoder encoderForType(String type) {
-		if (encoders.containsKey(type)) {
-			return encoders.get(type);
+		Encoder encoder = encoders.get(type);
+		if (encoder == null) {
+			throw new EncoderNotAvailableException(type);
 		}
-		return null;
+		return encoder;
 	}
 
 	public Encoder encoderFor(File file) {
@@ -38,8 +41,8 @@ public class Encoders {
 		String filename = file.getName();
 		int period = filename.lastIndexOf(".");
 		if (period != -1)
-			return filename.substring(period+1);
+			return filename.substring(period + 1);
 		throw new IllegalStateException("Can't file file extension for '" + file.getName() + "'");
 	}
-	
+
 }

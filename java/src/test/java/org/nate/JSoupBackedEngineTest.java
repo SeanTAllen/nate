@@ -3,14 +3,15 @@ package org.nate;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertEquals;
-import static org.nate.testutil.XmlFragmentAssert.*;
+import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
+import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsIgnoringWhiteSpaceEqual;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.nate.exception.EncoderNotAvailableException;
 
 // TODO: Remove the duplication between this and EngineTest.
 // Will require a better assertXmlFragmentsIgnoringWhiteSpaceEqual.
@@ -221,14 +222,9 @@ public class JSoupBackedEngineTest {
 		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div class='show'> <span>hello</span> </div>", result.render());
 	}
 	
-	@Test
-	public void shouldUseNullEngineForUnknownEncodings() throws Exception {
-		String source = "banana";
-		Engine engine = Nate.newWith(source, Nate.encoders().encoderFor("unknown"));
-		Engine newEngine = engine
-			.inject(singletonMap(Engine.CONTENT_ATTRIBUTE, "hello"))
-			.select("blah");
-		assertEquals(source, newEngine.render());
+	@Test(expected=EncoderNotAvailableException.class)
+	public void shouldThrowExceptionForUnknownEncodings() throws Exception {
+		Nate.newWith("banana", Nate.encoders().encoderFor("unknown"));
 	}
 	
 	private Engine encodeHtmlFragment(String html) {
