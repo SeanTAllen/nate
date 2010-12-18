@@ -3,8 +3,8 @@ package org.nate;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsIgnoringWhiteSpaceEqual;
+import static org.junit.Assert.assertThat;
+import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,23 +27,22 @@ public class JSoupBackedEngineTest {
 	public void shouldIgnoreNullValuesForTextInjection() throws Exception {
 		Engine engine = encodeHtmlFragment("<a/>");
 		Engine result = engine.inject(singletonMap("a", null));
-		assertXmlFragmentsEqual("<a/>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a/>"));
 	}
 
 	@Test
 	public void shouldMatchAndInjectSingleDataValue() throws Exception {
 		Engine engine = encodeHtmlFragment("<span class='section'><span class='content'></span></span>");
 		Engine result = engine.inject(singletonMap(".section", "Hello"));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<span class='section'>Hello</span> ", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<span class='section'>Hello</span> "));
 	}
 
 	@Test
 	public void shouldMatchAndInjectMultipleDataValues() throws Exception {
-		Engine engine = encodeHtmlFragment("Before <div class='section'><span class='content'></span></div> After");
+		Engine engine = encodeHtmlFragment("Before<div class='section'><span class='content'></span></div>After");
 		Map<String, List<String>> data = singletonMap(".section", asList("Section 1", "Section 2"));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("Before <div class='section'> Section 1 </div> <div class='section'> Section 2 </div> After",
-				result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("Before<div class='section'> Section 1</div><div class='section'> Section 2</div>After"));
 	}
 
 	@Test
@@ -51,7 +50,7 @@ public class JSoupBackedEngineTest {
 		Engine engine = encodeHtmlFragment("<span class='section'><span class='greeting'></span></span>");
 		Object data = singletonMap(".section", singletonMap(".greeting", "Hello"));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<span class='section'><span class='greeting'>Hello</span></span>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<span class='section'><span class='greeting'>Hello</span></span>"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -61,10 +60,8 @@ public class JSoupBackedEngineTest {
 				"<section>This is before <div class='section'><span class='greeting'></span></div> and after</section>");
 		Object data = singletonMap(".section", asList(singletonMap(".greeting", "Hello"), singletonMap(".greeting", "Goodbye")));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(
-				"<section> This is before <div class='section'> <span class='greeting'>Hello</span> </div>" +
-				" <div class='section'> <span class='greeting'>Goodbye</span> </div> and after </section>",
-				result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace(("<section> This is before <div class='section'> <span class='greeting'>Hello</span> </div>" +
+		" <div class='section'> <span class='greeting'>Goodbye</span> </div> and after </section>")));
 	}
 	
 	@Test
@@ -72,7 +69,7 @@ public class JSoupBackedEngineTest {
 		Engine engine = encodeHtmlFragment("<a>my link</a>");
 		Object data = singletonMap("a", singletonMap("@@href", "http://www.example.com"));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a href='http://www.example.com'>my link</a>"));
 	}
 	
 	@Test
@@ -80,7 +77,7 @@ public class JSoupBackedEngineTest {
 		Engine engine = encodeHtmlFragment("<a>my link</a>");
 		Object data = singletonMap("a @@href", "http://www.example.com");
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a href='http://www.example.com'>my link</a>"));
 	}
 	
 	@Test
@@ -88,7 +85,7 @@ public class JSoupBackedEngineTest {
 		Engine engine = encodeHtmlFragment("<a href='xxx'>my link</a>");
 		Object data = singletonMap("a @@href", null);
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<a>my link</a>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a>my link</a>"));
 	}
 	
 	@Test
@@ -96,7 +93,7 @@ public class JSoupBackedEngineTest {
 		Engine engine = encodeHtmlFragment("<a>my link</a>");
 		Object data = singletonMap("a @@href", null);
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<a>my link</a>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a>my link</a>"));
 	}
 
 	@Test
@@ -104,7 +101,7 @@ public class JSoupBackedEngineTest {
 		Engine engine = encodeHtmlFragment("<span/>");
 		Object data = singletonMap("span", 42L);
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<span>42</span>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<span>42</span>"));
 	}
 	
 	@Test
@@ -115,48 +112,47 @@ public class JSoupBackedEngineTest {
 		Object data = singletonMap("div", "hello");
 		Engine result = engine.inject(data);
 		// XmlUnit has problems with the DOCTYPE
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(
-				"<html> <head/> <body> <div> hello </div> </body> </html>",
-				result.render().replaceAll("<!DOCTYPE[^>]*>", ""));
+		assertThat(result.render().replaceAll("<!DOCTYPE[^>]*>", ""), matchesXmlIgnoringWhiteSpace("<html><head/><body><div>hello</div></body></html>"));
 	}
 	
 	@Test
 	public void shouldBeAbleToExtractClippings() throws Exception {
 		Engine engine = encodeHtmlFragment("<span id='header'>Header</span><div id='content'><h1>Content</h1></div>");
 		Engine header = engine.select("#header");
-		assertXmlFragmentsEqual("<span id='header'>Header</span>", header.render());
+		assertThat(header.render(), matchesXmlIgnoringWhiteSpace("<span id='header'>Header</span>"));
 	}
 	
 	@Test
 	public void shouldNotBeModifiedByASelect() throws Exception {
-		String original = "<div id='header'> Header </div> <div id='content'> <h1>Content</h1> </div>";
+		String original = "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>";
 		Engine engine = encodeHtmlFragment(original);
 		engine.select("#header");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(original, engine.render());
+		assertThat(engine.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 	
 	@Test
 	public void shouldBeAbleToSelectAllContent() throws Exception {
 		Engine engine = encodeHtmlFragment("<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>");
 		Engine header = engine.select("##div");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("header textcontent text <h1>footer</h1>", header.render());
+		assertThat(header.render(), matchesXmlIgnoringWhiteSpace("header textcontent text <h1>footer</h1>"));
 	}
 	
 	@Test
 	public void shouldNotBeModifiedByASelectContent() throws Exception {
-		String original = "<div id='header'> header text </div> <div id='content'> content text </div> <div id='footer'> <h1>footer</h1> </div>";
+		String original = "<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>";
 		Engine engine = encodeHtmlFragment(original);
 		engine.select("##div");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(original, engine.render());
+		assertThat(engine.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 	
 	@Test
 	public void shouldReturnSelectionsWhereNodesMatchThatAreInAncestralRelationship() throws Exception {
-		String original = "<div id='outer'> <div id='inner'> hello </div> </div>";
+		String original = "<div id='outer'><div id='inner'>hello</div></div>";
 		Engine engine = encodeHtmlFragment(original);
 		String selection = engine.select("div").render();
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div id='outer'> <div id='inner'> hello </div> </div> <div id='inner'> hello </div>", selection);
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(original, engine.render());
+		assertThat(selection,
+				matchesXmlIgnoringWhiteSpace("<div id='outer'><div id='inner'>hello</div></div><div id='inner'>hello</div>"));
+		assertThat(engine.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 
 	@Test
@@ -164,16 +160,18 @@ public class JSoupBackedEngineTest {
 		Engine engine1 = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
 		Engine engine2 = encodeHtmlFragment("<h1>Hello</h1>");
 		Engine result = engine1.inject(singletonMap("#content", engine2));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div id='header'> Header </div> <div id='content'> <h1>Hello</h1> </div>", result.render());
+		assertThat(result.render(),
+				matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div><div id='content'><h1>Hello</h1></div>"));
 	}
 	
 	@Test
 	public void shouldBeAbleToInjectASeletionFromOneDocumentToAnother() throws Exception {
-		Engine source = encodeHtmlFragment("<div> <p>one</p> and <p>two</p> </div>");
+		Engine source = encodeHtmlFragment("<div><p>one</p>and<p>two</p></div>");
 		Engine selection = source.select("p");
 		Engine destination = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
 		Engine result = destination.inject(singletonMap("#content", selection));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div id='header'> Header </div> <div id='content'> <p>one</p> <p>two</p> </div>", result.render());
+		assertThat(result.render(),
+				matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div><div id='content'><p>one</p><p>two</p></div>"));
 	}
 	
 	@Test
@@ -182,8 +180,8 @@ public class JSoupBackedEngineTest {
 		Engine selection = source.select("p");
 		Engine destination = encodeHtmlFragment("<div class='content'/>");
 		Engine result = destination.inject(singletonMap(".content", selection));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div class='content'> <p>hello</p> </div>", result.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<p>hello</p>", selection.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='content'><p>hello</p></div>"));
+		assertThat(selection.render(), matchesXmlIgnoringWhiteSpace("<p>hello</p>"));
 	}
 	
 	@Test
@@ -192,14 +190,14 @@ public class JSoupBackedEngineTest {
 		Engine selection = source.select("p");
 		Engine destination = encodeHtmlFragment("<div class='content'/><div class='content'/>");
 		Engine result = destination.inject(singletonMap(".content", selection));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div class='content'> <p>hello</p> </div> <div class='content'> <p>hello</p> </div>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='content'><p>hello</p></div><div class='content'><p>hello</p></div>"));
 	}
 	
 	@Test
 	public void shouldCopeWithNameSpaces() throws Exception {
 		Engine engine = encodeHtmlDocument("<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>");
 		Engine result = engine.inject(singletonMap("body", "hi"));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<html xmls='http://www.w3.org/1999/xhtml'> <head/> <body> hi </body> </html>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<html xmls='http://www.w3.org/1999/xhtml'><head/><body>hi</body></html>"));
 	}
 	
 	@Test
@@ -219,7 +217,7 @@ public class JSoupBackedEngineTest {
 		anchorData.put("@@class", "show");
 		anchorData.put(Engine.CONTENT_ATTRIBUTE, singletonMap("span", "hello"));
 		Engine result = engine.inject(singletonMap("div", anchorData));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div class='show'> <span>hello</span> </div>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='show'><span>hello</span></div>"));
 	}
 	
 	@Test(expected=EncoderNotAvailableException.class)

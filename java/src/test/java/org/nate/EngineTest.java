@@ -3,7 +3,8 @@ package org.nate;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
+import static org.junit.Assert.assertThat;
+import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,14 +25,14 @@ public class EngineTest {
 	public void shouldIgnoreNullValuesForTextInjection() throws Exception {
 		Engine engine = encodeHtmlFragment("<a/>");
 		Engine result = engine.inject(singletonMap("a", null));
-		assertXmlFragmentsEqual("<a/>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a/>"));
 	}
 
 	@Test
 	public void shouldMatchAndInjectSingleDataValue() throws Exception {
 		Engine engine = encodeHtmlFragment("<div class='section'><span class='content'></span></div>");
 		Engine result = engine.inject(singletonMap(".section", "Hello"));
-		assertXmlFragmentsEqual("<div class='section'>Hello</div> ", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='section'>Hello</div> "));
 	}
 
 	@Test
@@ -39,8 +40,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("Before <div class='section'><span class='content'></span></div> After");
 		Map<String, List<String>> data = singletonMap(".section", asList("Section 1", "Section 2"));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("Before <div class='section'>Section 1</div><div class='section'>Section 2</div> After",
-				result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("Before <div class='section'>Section 1</div><div class='section'>Section 2</div> After"));
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<div class='section'><span class='greeting'></span></div>");
 		Object data = singletonMap(".section", singletonMap(".greeting", "Hello"));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<div class='section'><span class='greeting'>Hello</span></div>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='section'><span class='greeting'>Hello</span></div>"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,10 +58,8 @@ public class EngineTest {
 				"<body>This is before <div class='section'><span class='greeting'></span></div> and after</body>");
 		Object data = singletonMap(".section", asList(singletonMap(".greeting", "Hello"), singletonMap(".greeting", "Goodbye")));
 		Engine result = engine.inject(data);
-			assertXmlFragmentsEqual(
-				"<body>This is before <div class='section'><span class='greeting'>Hello</span></div>" +
-				"<div class='section'><span class='greeting'>Goodbye</span></div> and after</body>",
-				result.render());
+			assertThat(result.render(), matchesXmlIgnoringWhiteSpace(("<body>This is before <div class='section'><span class='greeting'>Hello</span></div>" +
+			"<div class='section'><span class='greeting'>Goodbye</span></div> and after</body>")));
 	}
 	
 	@Test
@@ -69,7 +67,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<a>my link</a>");
 		Object data = singletonMap("a", singletonMap("@@href", "http://www.example.com"));
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a href='http://www.example.com'>my link</a>"));
 	}
 	
 	@Test
@@ -77,7 +75,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<a>my link</a>");
 		Object data = singletonMap("a @@href", "http://www.example.com");
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<a href='http://www.example.com'>my link</a>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a href='http://www.example.com'>my link</a>"));
 	}
 	
 	@Test
@@ -85,7 +83,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<a href='xxx'>my link</a>");
 		Object data = singletonMap("a @@href", null);
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<a>my link</a>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a>my link</a>"));
 	}
 	
 	@Test
@@ -93,7 +91,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<a>my link</a>");
 		Object data = singletonMap("a @@href", null);
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<a>my link</a>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<a>my link</a>"));
 	}
 
 	@Test
@@ -101,7 +99,7 @@ public class EngineTest {
 		Engine engine = encodeHtmlFragment("<div/>");
 		Object data = singletonMap("div", 42L);
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<div>42</div>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div>42</div>"));
 	}
 	
 	@Test
@@ -111,14 +109,14 @@ public class EngineTest {
 				"<html><body><div/></body></html>");
 		Object data = singletonMap("div", "hello");
 		Engine result = engine.inject(data);
-		assertXmlFragmentsEqual("<html><body><div>hello</div></body></html>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<html><body><div>hello</div></body></html>"));
 	}
 	
 	@Test
 	public void shouldBeAbleToExtractClippings() throws Exception {
 		Engine engine = encodeHtmlFragment("<div id='header'>Header</div><div id='content'><h1>Content</h1></div>");
 		Engine header = engine.select("#header");
-		assertXmlFragmentsEqual("<div id='header'>Header</div>", header.render());
+		assertThat(header.render(), matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div>"));
 	}
 	
 	@Test
@@ -126,14 +124,14 @@ public class EngineTest {
 		String original = "<div id='header'>Header</div><div id='content'><h1>Content</h1></div>";
 		Engine engine = encodeHtmlFragment(original);
 		engine.select("#header");
-		assertXmlFragmentsEqual(original, engine.render());
+		assertThat(engine.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 	
 	@Test
 	public void shouldBeAbleToSelectAllContent() throws Exception {
 		Engine engine = encodeHtmlFragment("<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>");
 		Engine header = engine.select("##div");
-		assertXmlFragmentsEqual("header textcontent text<h1>footer</h1>", header.render());
+		assertThat(header.render(), matchesXmlIgnoringWhiteSpace("header textcontent text<h1>footer</h1>"));
 	}
 	
 	@Test
@@ -141,7 +139,7 @@ public class EngineTest {
 		String original = "<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>";
 		Engine engine = encodeHtmlFragment(original);
 		engine.select("content:div");
-		assertXmlFragmentsEqual(original, engine.render());
+		assertThat(engine.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 	
 	@Test
@@ -149,8 +147,8 @@ public class EngineTest {
 		String original = "<div id='outer'><div id='inner'>hello</div></div>";
 		Engine engine = encodeHtmlFragment(original);
 		String selection = engine.select("div").render();
-		assertXmlFragmentsEqual("<div id='outer'><div id='inner'>hello</div></div><div id='inner'>hello</div>", selection);
-		assertXmlFragmentsEqual(original, engine.render());
+		assertThat(selection, matchesXmlIgnoringWhiteSpace("<div id='outer'><div id='inner'>hello</div></div><div id='inner'>hello</div>"));
+		assertThat(engine.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 
 	@Test
@@ -158,7 +156,7 @@ public class EngineTest {
 		Engine engine1 = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
 		Engine engine2 = encodeHtmlFragment("<h1>Hello</h1>");
 		Engine result = engine1.inject(singletonMap("#content", engine2));
-		assertXmlFragmentsEqual("<div id='header'>Header</div><div id='content'><h1>Hello</h1></div>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div><div id='content'><h1>Hello</h1></div>"));
 	}
 	
 	@Test
@@ -167,7 +165,7 @@ public class EngineTest {
 		Engine selection = source.select("p");
 		Engine destination = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
 		Engine result = destination.inject(singletonMap("#content", selection));
-		assertXmlFragmentsEqual("<div id='header'>Header</div><div id='content'><p>one</p><p>two</p></div>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div><div id='content'><p>one</p><p>two</p></div>"));
 	}
 	
 	@Test
@@ -176,8 +174,8 @@ public class EngineTest {
 		Engine selection = source.select("p");
 		Engine destination = encodeHtmlFragment("<div class='content'/>");
 		Engine result = destination.inject(singletonMap(".content", selection));
-		assertXmlFragmentsEqual("<div class='content'><p>hello</p></div>", result.render());
-		assertXmlFragmentsEqual("<p>hello</p>", selection.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='content'><p>hello</p></div>"));
+		assertThat(selection.render(), matchesXmlIgnoringWhiteSpace("<p>hello</p>"));
 	}
 	
 	@Test
@@ -186,7 +184,7 @@ public class EngineTest {
 		Engine selection = source.select("p");
 		Engine destination = encodeHtmlFragment("<div class='content'/><div class='content'/>");
 		Engine result = destination.inject(singletonMap(".content", selection));
-		assertXmlFragmentsEqual("<div class='content'><p>hello</p></div><div class='content'><p>hello</p></div>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='content'><p>hello</p></div><div class='content'><p>hello</p></div>"));
 	}
 	
 	@Test

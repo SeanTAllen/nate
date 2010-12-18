@@ -3,7 +3,7 @@ package org.nate.internal.jsoup;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsIgnoringWhiteSpaceEqual;
+import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -20,8 +20,8 @@ public class JsoupBackedNateElementTest {
 		NateNode element = elementFor("<div><p>apple</p> hello <p>banana</p></div>");
 		List<NateNode> elements = element.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<p>apple</p>", elements.get(0).render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<p>banana</p>", elements.get(1).render());
+		assertThat(elements.get(0).render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
+		assertThat(elements.get(1).render(), matchesXmlIgnoringWhiteSpace("<p>banana</p>"));
 	}
 
 	@Test
@@ -35,14 +35,14 @@ public class JsoupBackedNateElementTest {
 	public void shouldSetTextContentWithSuppliedValue() throws Exception {
 		NateNode element = elementFor("<span><p>apple</p></span>");
 		element.setTextContent("a & b");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<span>a &amp; b</span>", element.render());
+		assertThat(element.render(), matchesXmlIgnoringWhiteSpace("<span>a &amp; b</span>"));
 	}
 	
 	@Test
 	public void shouldSetAttributeWithSuppliedValue() throws Exception {
 		NateNode element = elementFor("<span><p>apple</p></span>");
 		element.setAttribute("foo", "a & \" b");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<span foo='a &amp; &quot; b'><p>apple</p></span>", element.render());
+		assertThat(element.render(), matchesXmlIgnoringWhiteSpace("<span foo='a &amp; &quot; b'><p>apple</p></span>"));
 	}
 	
 	@Test
@@ -50,8 +50,8 @@ public class JsoupBackedNateElementTest {
 		NateNode original = elementFor("<span>apple</span>");
 		NateNode copy = original.copy();
 		copy.setTextContent("banana");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<span>banana</span>", copy.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<span>apple</span>", original.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("<span>banana</span>"));
+		assertThat(original.render(), matchesXmlIgnoringWhiteSpace("<span>apple</span>"));
 	}
 
 	@Test
@@ -59,8 +59,8 @@ public class JsoupBackedNateElementTest {
 		NateNode element = elementFor("<span><p>apple</p></span>");
 		NateDocument newChildren = createDocumentFragment("a <b>banana</b> or two");
 		element.replaceChildren(newChildren);
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<span>a <b>banana</b> or two</span>", element.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two", newChildren.render());
+		assertThat(element.render(), matchesXmlIgnoringWhiteSpace("<span>a <b>banana</b> or two</span>"));
+		assertThat(newChildren.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
 	}
 	
 	@Test
@@ -70,9 +70,9 @@ public class JsoupBackedNateElementTest {
 		NateNode node2 = elementFor("<p>apple</p>");
 		NateNode element = document.find("span").get(0);
 		element.replaceWith(asList(node1, node2));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<section> a <b>banana</b> or two <p>apple</p> </section>", document.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two", node1.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<p>apple</p>", node2.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("<section> a <b>banana</b> or two <p>apple</p> </section>"));
+		assertThat(node1.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(node2.render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
 	}
 	
 	@Test
@@ -82,9 +82,9 @@ public class JsoupBackedNateElementTest {
 		NateNode node2 = elementFor("<p>apple</p>");
 		NateNode element = document.find("span").get(0);
 		element.replaceWith(asList(node1, node2));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two <p>apple</p>", document.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two", node1.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<p>apple</p>", node2.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two <p>apple</p>"));
+		assertThat(node1.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(node2.render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
 	}
 
 	@Test(expected=IllegalStateException.class)

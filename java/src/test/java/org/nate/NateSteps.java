@@ -1,6 +1,7 @@
 package org.nate;
 
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
+import static org.junit.Assert.assertThat;
+import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class NateSteps {
 
 	@Then("^the HTML fragment is (.*)$")
 	public void test(String expectedHtml) throws Exception {
-		assertXmlFragmentsEqual(expectedHtml, currentNateEngine().render());
+		assertThat(currentNateEngine().render(), matchesXmlIgnoringWhiteSpace(expectedHtml));
 	}
 
 	@When("^(.*) is injected sometime later$")
@@ -59,7 +60,7 @@ public class NateSteps {
 
 	@Then("^the original HTML fragment is(.*)$")
 	public void theOriginalHTMLFragmentIs(String expectedHtml) throws Exception {
-		assertXmlFragmentsEqual(expectedHtml, nateStates.get(0).render());
+		assertThat(nateStates.get(0).render(), matchesXmlIgnoringWhiteSpace(expectedHtml));
 	}
 
 	@When("^\"([^\"]*)\" is selected$")

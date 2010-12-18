@@ -2,7 +2,7 @@ package org.nate.internal.dom;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
+import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.Test;
 import org.nate.encoder.NateDocument;
 import org.nate.encoder.NateNode;
-import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 
 public class NateDomDocumentFragmentTest {
 
@@ -19,8 +18,8 @@ public class NateDomDocumentFragmentTest {
 		NateNode document = createDocumentFragment("apple<div><p>apple</p> hello <p>banana</p></div> ");
 		List<NateNode> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
-		assertXmlFragmentsEqual("<p>apple</p>", elements.get(0).render());
-		assertXmlFragmentsEqual("<p>banana</p>", elements.get(1).render());
+		assertThat(elements.get(0).render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
+		assertThat(elements.get(1).render(), matchesXmlIgnoringWhiteSpace("<p>banana</p>"));
 	}
 
 	@Test
@@ -35,8 +34,8 @@ public class NateDomDocumentFragmentTest {
 		String original = "apple<body><div>a<div>b</div></div>x<div>c</div></body> ";
 		NateDocument document = createDocumentFragment(original);
 		NateNode copy = document.copy("div");
-		assertXmlFragmentsEqual("<div>a<div>b</div></div><div>b</div><div>c</div>", copy.render());
-		assertXmlFragmentsEqual(original, document.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("<div>a<div>b</div></div><div>b</div><div>c</div>"));
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 
 	private NateDocument createDocumentFragment(String input) {

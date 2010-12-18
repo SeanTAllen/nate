@@ -3,7 +3,7 @@ package org.nate.internal.jsoup;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsIgnoringWhiteSpaceEqual;
+import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -21,8 +21,8 @@ public class JsoupBackedNateDocumentFragmentTest {
 		NateDocument document = createDocumentFragment("<div><p>apple</p> hello <p>banana</p></div>");
 		List<NateNode> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<p>apple</p>", elements.get(0).render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<p>banana</p>", elements.get(1).render());
+		assertThat(elements.get(0).render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
+		assertThat(elements.get(1).render(), matchesXmlIgnoringWhiteSpace("<p>banana</p>"));
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class JsoupBackedNateDocumentFragmentTest {
 		String original = "<section><div>a</div>x<div>b</div></section>";
 		NateDocument document = createDocumentFragment(original);
 		NateNode copy = document.copy("div");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div> a </div> <div> b </div>", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("<div> a </div> <div> b </div>"));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class JsoupBackedNateDocumentFragmentTest {
 		String original = "<section><div>a<div>b</div></div>x<div>c</div></section>";
 		NateDocument document = createDocumentFragment(original);
 		NateNode copy = document.copy("div");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div> a <div> b </div> </div> <div> b </div> <div> c </div>", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("<div> a <div> b </div> </div> <div> b </div> <div> c </div>"));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class JsoupBackedNateDocumentFragmentTest {
 		String original = "<div> a <div> b </div> </div> x <div> c </div>";
 		NateDocument document = createDocumentFragment(original);
 		document.copy("div");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(original, document.render());		
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace(original));		
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class JsoupBackedNateDocumentFragmentTest {
 		String original = "<section><div>a<div>b</div></div>x<div>c</div></section>";
 		NateDocument document = createDocumentFragment(original);
 		NateNode copy = document.copy("div.foo");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace(""));
 	}
 
 	@Test
@@ -74,15 +74,15 @@ public class JsoupBackedNateDocumentFragmentTest {
 		String original = "<section><div>a<div>b</div></div>x<div>c</div></section>";
 		NateDocument document = createDocumentFragment(original);
 		NateNode copy = document.copyContentOf("div");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <div> b </div>bc", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("a <div> b </div>bc"));
 	}
 	
 	@Test
 	public void shouldLeaveOriginalUnchangedAfterCopyingContent() throws Exception {
-		String original = "<section> <div> a <div> b </div> </div> x <div> c </div> </section>";
+		String original = "<section><div>a<div>b</div></div>x<div>c</div></section>";
 		NateDocument document = createDocumentFragment(original);
 		document.copyContentOf("div");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(original, document.render());	
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace(original));	
 	}
 	
 	@Test
@@ -90,26 +90,26 @@ public class JsoupBackedNateDocumentFragmentTest {
 		String original = "<section><div>a<div>b</div></div>x<div>c</div></section>";
 		NateDocument document = createDocumentFragment(original);
 		NateNode copy = document.copyContentOf("div.foo");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace(""));
 	}
 	
 	@Test
 	public void shouldReturnCopyWhenRequested() throws Exception {
-		String source = "<section> <div> apple </div> </section>";
+		String source = "<section><div>apple</div></section>";
 		NateDocument original = createDocumentFragment(source);
 		NateNode copy = original.copy();
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(source, copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace(source));
 		NateNode div = copy.find("div").get(0);
 		div.setAttribute("class", "foo");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<div class='foo'> apple </div>", div.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual(source, original.render());
+		assertThat(div.render(), matchesXmlIgnoringWhiteSpace("<div class='foo'>apple</div>"));
+		assertThat(original.render(), matchesXmlIgnoringWhiteSpace(source));
 	}
 	
 	@Test
 	public void shouldSetTextContentWithSuppliedValue() throws Exception {
-		NateDocument document = createDocumentFragment("<div><p>apple</p> hello <p>banana</p></div>");
+		NateDocument document = createDocumentFragment("<div><p>apple</p>hello<p>banana</p></div>");
 		document.setTextContent("a & b");
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a &amp; b", document.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a &amp; b"));
 	}
 	
 	@Test
@@ -117,8 +117,8 @@ public class JsoupBackedNateDocumentFragmentTest {
 		NateDocument document = createDocumentFragment("<div><p>apple</p></div>");
 		NateDocument newChildren = createDocumentFragment("a<b>banana</b> or two");
 		document.replaceChildren(newChildren);
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two", document.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two", newChildren.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(newChildren.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
 	}
 	
 	@Test
@@ -126,8 +126,8 @@ public class JsoupBackedNateDocumentFragmentTest {
 		NateDocument document = createDocumentFragment("<div/>");
 		NateDocument newChildren = createDocumentFragment("a <b>banana</b> or two");
 		document.replaceChildren(newChildren);
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two", document.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two", newChildren.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(newChildren.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
 	}
 	@Test
 	public void shouldReplaceSelfWithNewNodes() throws Exception {
@@ -135,9 +135,9 @@ public class JsoupBackedNateDocumentFragmentTest {
 		NateNode node1 = createDocumentFragment("a <b>banana</b> or two");
 		NateNode node2 = elementFor("<p>apple</p>");
 		document.replaceWith(asList(node1, node2));
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two <p>apple</p>", document.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("a <b>banana</b> or two", node1.render());
-		assertXmlFragmentsIgnoringWhiteSpaceEqual("<p>apple</p>", node2.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two <p>apple</p>"));
+		assertThat(node1.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(node2.render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
 	}
 
 

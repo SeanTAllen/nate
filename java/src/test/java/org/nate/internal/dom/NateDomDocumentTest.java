@@ -4,7 +4,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
+import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -23,8 +23,8 @@ public class NateDomDocumentTest {
 		NateNode document = createDocument("<div><p>apple</p> hello <p>banana</p></div>");
 		List<NateNode> elements = document.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
-		assertXmlFragmentsEqual("<p>apple</p>", elements.get(0).render());
-		assertXmlFragmentsEqual("<p>banana</p>", elements.get(1).render());
+		assertThat(elements.get(0).render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
+		assertThat(elements.get(1).render(), matchesXmlIgnoringWhiteSpace("<p>banana</p>"));
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class NateDomDocumentTest {
 		String original = "<body><div>a</div>x<div>b</div></body>";
 		NateDocument document = createDocument(original);
 		NateNode copy = document.copy("div");
-		assertXmlFragmentsEqual("<div>a</div><div>b</div>", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("<div>a</div><div>b</div>"));
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class NateDomDocumentTest {
 		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
 		NateDocument document = createDocument(original);
 		NateNode copy = document.copy("div");
-		assertXmlFragmentsEqual("<div>a<div>b</div></div><div>b</div><div>c</div>", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("<div>a<div>b</div></div><div>b</div><div>c</div>"));
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class NateDomDocumentTest {
 		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
 		NateDocument document = createDocument(original);
 		document.copy("div");
-		assertXmlFragmentsEqual(original, document.render());		
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace(original));		
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class NateDomDocumentTest {
 		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
 		NateDocument document = createDocument(original);
 		NateNode copy = document.copy("div.foo");
-		assertXmlFragmentsEqual("", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace(""));
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class NateDomDocumentTest {
 		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
 		NateDocument document = createDocument(original);
 		NateNode copy = document.copyContentOf("div");
-		assertXmlFragmentsEqual("a<div>b</div>bc", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("a<div>b</div>bc"));
 	}
 	
 	@Test
@@ -89,7 +89,7 @@ public class NateDomDocumentTest {
 		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
 		NateDocument document = createDocument(original);
 		document.copyContentOf("div");
-		assertXmlFragmentsEqual(original, document.render());	
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace(original));	
 	}
 	
 	@Test
@@ -97,24 +97,24 @@ public class NateDomDocumentTest {
 		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
 		NateDocument document = createDocument(original);
 		NateNode copy = document.copyContentOf("div.foo");
-		assertXmlFragmentsEqual("", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace(""));
 	}
 	
 	@Test
 	public void shouldSetTextContentWithSuppliedValue() throws Exception {
 		NateDocument document = createDocument("<div><p>apple</p> hello <p>banana</p></div>");
 		document.setTextContent("a & b");
-		assertXmlFragmentsEqual("a &amp; b", document.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a &amp; b"));
 	}
 	
 	@Test
 	public void shouldReturnCopyWhenRequested() throws Exception {
 		NateNode original = createDocument("<div>apple</div>");
 		NateNode copy = original.copy();
-		assertXmlFragmentsEqual("<div>apple</div>", copy.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("<div>apple</div>"));
 		copy.setTextContent("banana");
-		assertXmlFragmentsEqual("banana", copy.render());
-		assertXmlFragmentsEqual("<div>apple</div>", original.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("banana"));
+		assertThat(original.render(), matchesXmlIgnoringWhiteSpace("<div>apple</div>"));
 	}
 	
 	@Test
@@ -122,8 +122,8 @@ public class NateDomDocumentTest {
 		NateDocument document = createDocument("<div><p>apple</p></div>");
 		NateDocument newChildren = createDocumentFragment("a <b>banana</b> or two");
 		document.replaceChildren(newChildren);
-		assertXmlFragmentsEqual("a <b>banana</b> or two", document.render());
-		assertXmlFragmentsEqual("a <b>banana</b> or two", newChildren.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(newChildren.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
 	}
 	
 	@Test
@@ -131,8 +131,8 @@ public class NateDomDocumentTest {
 		NateDocument document = createDocument("<div/>");
 		NateDocument newChildren = createDocumentFragment("a <b>banana</b> or two");
 		document.replaceChildren(newChildren);
-		assertXmlFragmentsEqual("a <b>banana</b> or two", document.render());
-		assertXmlFragmentsEqual("a <b>banana</b> or two", newChildren.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(newChildren.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
 	}
 
 	@Test
@@ -141,9 +141,9 @@ public class NateDomDocumentTest {
 		NateNode node1 = createDocumentFragment("a <b>banana</b> or two");
 		NateNode node2 = elementFor("<p>apple</p>");
 		document.replaceWith(asList(node1, node2));
-		assertXmlFragmentsEqual("a <b>banana</b> or two<p>apple</p>", document.render());
-		assertXmlFragmentsEqual("a <b>banana</b> or two", node1.render());
-		assertXmlFragmentsEqual("<p>apple</p>", node2.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two<p>apple</p>"));
+		assertThat(node1.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(node2.render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
 	}
 
 	private NateDocument createDocument(String input) {

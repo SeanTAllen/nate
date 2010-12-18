@@ -1,5 +1,7 @@
 package org.nate.internal.dom;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +14,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.nate.encoder.NateNode;
 import org.w3c.dom.Element;
@@ -48,7 +51,14 @@ public final class W3cUtils {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
+	public static String asString(Node node) {
+		Writer stringWriter = new StringWriter();
+		W3cUtils.convertNodeToString(node, new StreamResult(stringWriter));
+		return stringWriter.toString();
+	}
+
+	// TODO: this does not belong here.
 	static List<NateNode> convertToNateElements(Collection<Element> elements) {
 		List<NateNode> result = new ArrayList<NateNode>(elements.size());
 		for (Element element : elements) {

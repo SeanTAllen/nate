@@ -3,7 +3,7 @@ package org.nate.internal.dom;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.nate.testutil.XmlFragmentAssert.assertXmlFragmentsEqual;
+import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -11,8 +11,6 @@ import java.util.List;
 import org.junit.Test;
 import org.nate.encoder.NateDocument;
 import org.nate.encoder.NateNode;
-import org.nate.internal.dom.NateDomElement;
-import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 import org.w3c.dom.Element;
 
 public class NateDomElementTest {
@@ -22,8 +20,8 @@ public class NateDomElementTest {
 		NateNode element = elementFor("<div><p>apple</p> hello <p>banana</p></div>");
 		List<NateNode> elements = element.find("p");
 		assertThat("Unexpected size for: " + elements, elements.size(), is(2));
-		assertXmlFragmentsEqual("<p>apple</p>", elements.get(0).render());
-		assertXmlFragmentsEqual("<p>banana</p>", elements.get(1).render());
+		assertThat(elements.get(0).render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
+		assertThat(elements.get(1).render(), matchesXmlIgnoringWhiteSpace("<p>banana</p>"));
 	}
 
 	@Test
@@ -37,14 +35,14 @@ public class NateDomElementTest {
 	public void shouldSetTextContentWithSuppliedValue() throws Exception {
 		NateNode element = elementFor("<div><p>apple</p></div>");
 		element.setTextContent("a & b");
-		assertXmlFragmentsEqual("<div>a &amp; b</div>", element.render());
+		assertThat(element.render(), matchesXmlIgnoringWhiteSpace("<div>a &amp; b</div>"));
 	}
 	
 	@Test
 	public void shouldSetAttributeWithSuppliedValue() throws Exception {
 		NateNode element = elementFor("<div><p>apple</p></div>");
 		element.setAttribute("foo", "a & \" b");
-		assertXmlFragmentsEqual("<div foo='a &amp; &quot; b'><p>apple</p></div>", element.render());
+		assertThat(element.render(), matchesXmlIgnoringWhiteSpace("<div foo='a &amp; &quot; b'><p>apple</p></div>"));
 	}
 	
 	@Test
@@ -52,8 +50,8 @@ public class NateDomElementTest {
 		NateNode original = elementFor("<div>apple</div>");
 		NateNode copy = original.copy();
 		copy.setTextContent("banana");
-		assertXmlFragmentsEqual("<div>banana</div>", copy.render());
-		assertXmlFragmentsEqual("<div>apple</div>", original.render());
+		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("<div>banana</div>"));
+		assertThat(original.render(), matchesXmlIgnoringWhiteSpace("<div>apple</div>"));
 	}
 
 	@Test
@@ -61,8 +59,8 @@ public class NateDomElementTest {
 		NateNode element = elementFor("<div><p>apple</p></div>");
 		NateDocument newChildren = createDocument("a <b>banana</b> or two");
 		element.replaceChildren(newChildren);
-		assertXmlFragmentsEqual("<div>a <b>banana</b> or two</div>", element.render());
-		assertXmlFragmentsEqual("a <b>banana</b> or two", newChildren.render());
+		assertThat(element.render(), matchesXmlIgnoringWhiteSpace("<div>a <b>banana</b> or two</div>"));
+		assertThat(newChildren.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
 	}
 	
 	@Test
@@ -72,9 +70,9 @@ public class NateDomElementTest {
 		NateNode node2 = elementFor("<p>apple</p>");
 		NateNode element = document.find("div").get(0);
 		element.replaceWith(asList(node1, node2));
-		assertXmlFragmentsEqual("a <b>banana</b> or two<p>apple</p>", document.render());
-		assertXmlFragmentsEqual("a <b>banana</b> or two", node1.render());
-		assertXmlFragmentsEqual("<p>apple</p>", node2.render());
+		assertThat(document.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two<p>apple</p>"));
+		assertThat(node1.render(), matchesXmlIgnoringWhiteSpace("a <b>banana</b> or two"));
+		assertThat(node2.render(), matchesXmlIgnoringWhiteSpace("<p>apple</p>"));
 	}
 	
 	@Test(expected=IllegalStateException.class)
