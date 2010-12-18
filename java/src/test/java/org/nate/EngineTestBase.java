@@ -13,7 +13,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.nate.exception.EncoderNotAvailableException;
 
-public class EngineTest {
+public abstract class EngineTestBase {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowAnExceptionWhenKeyIsNotAString() throws Exception {
@@ -30,36 +30,36 @@ public class EngineTest {
 
 	@Test
 	public void shouldMatchAndInjectSingleDataValue() throws Exception {
-		Engine engine = encodeHtmlFragment("<div class='section'><span class='content'></span></div>");
+		Engine engine = encodeHtmlFragment("<span class='section'><span class='content'></span></span>");
 		Engine result = engine.inject(singletonMap(".section", "Hello"));
-		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='section'>Hello</div> "));
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<span class='section'>Hello</span> "));
 	}
 
 	@Test
 	public void shouldMatchAndInjectMultipleDataValues() throws Exception {
-		Engine engine = encodeHtmlFragment("Before <div class='section'><span class='content'></span></div> After");
+		Engine engine = encodeHtmlFragment("Before<div class='section'><span class='content'></span></div>After");
 		Map<String, List<String>> data = singletonMap(".section", asList("Section 1", "Section 2"));
 		Engine result = engine.inject(data);
-		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("Before <div class='section'>Section 1</div><div class='section'>Section 2</div> After"));
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("Before<div class='section'> Section 1</div><div class='section'> Section 2</div>After"));
 	}
 
 	@Test
 	public void shouldMatchAndInjectIntoASubselection() throws Exception {
-		Engine engine = encodeHtmlFragment("<div class='section'><span class='greeting'></span></div>");
+		Engine engine = encodeHtmlFragment("<span class='section'><span class='greeting'></span></span>");
 		Object data = singletonMap(".section", singletonMap(".greeting", "Hello"));
 		Engine result = engine.inject(data);
-		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='section'><span class='greeting'>Hello</span></div>"));
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<span class='section'><span class='greeting'>Hello</span></span>"));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldMatchAndInjectMultipleDataValuesIntoSubselection() throws Exception {
 		Engine engine = encodeHtmlFragment(
-				"<body>This is before <div class='section'><span class='greeting'></span></div> and after</body>");
+				"<section>This is before <div class='section'><span class='greeting'></span></div> and after</section>");
 		Object data = singletonMap(".section", asList(singletonMap(".greeting", "Hello"), singletonMap(".greeting", "Goodbye")));
 		Engine result = engine.inject(data);
-			assertThat(result.render(), matchesXmlIgnoringWhiteSpace(("<body>This is before <div class='section'><span class='greeting'>Hello</span></div>" +
-			"<div class='section'><span class='greeting'>Goodbye</span></div> and after</body>")));
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace(("<section> This is before <div class='section'> <span class='greeting'>Hello</span> </div>" +
+		" <div class='section'> <span class='greeting'>Goodbye</span> </div> and after </section>")));
 	}
 	
 	@Test
@@ -96,27 +96,27 @@ public class EngineTest {
 
 	@Test
 	public void shouldAllowValuesToBeAnyObject() throws Exception {
-		Engine engine = encodeHtmlFragment("<div/>");
-		Object data = singletonMap("div", 42L);
+		Engine engine = encodeHtmlFragment("<span/>");
+		Object data = singletonMap("span", 42L);
 		Engine result = engine.inject(data);
-		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div>42</div>"));
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<span>42</span>"));
 	}
 	
 	@Test
 	public void shouldAllowHtmlWithDoctype() throws Exception {
-		Engine engine = encodeHtmlDocument(
-				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
-				"<html><body><div/></body></html>");
+		String original = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
+			"<html><head/><body><div/></body></html>";
+		Engine engine = encodeHtmlDocument(original);
 		Object data = singletonMap("div", "hello");
 		Engine result = engine.inject(data);
-		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<html><body><div>hello</div></body></html>"));
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<html><head/><body><div>hello</div></body></html>"));
 	}
 	
 	@Test
 	public void shouldBeAbleToExtractClippings() throws Exception {
-		Engine engine = encodeHtmlFragment("<div id='header'>Header</div><div id='content'><h1>Content</h1></div>");
+		Engine engine = encodeHtmlFragment("<span id='header'>Header</span><div id='content'><h1>Content</h1></div>");
 		Engine header = engine.select("#header");
-		assertThat(header.render(), matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div>"));
+		assertThat(header.render(), matchesXmlIgnoringWhiteSpace("<span id='header'>Header</span>"));
 	}
 	
 	@Test
@@ -131,14 +131,14 @@ public class EngineTest {
 	public void shouldBeAbleToSelectAllContent() throws Exception {
 		Engine engine = encodeHtmlFragment("<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>");
 		Engine header = engine.select("##div");
-		assertThat(header.render(), matchesXmlIgnoringWhiteSpace("header textcontent text<h1>footer</h1>"));
+		assertThat(header.render(), matchesXmlIgnoringWhiteSpace("header textcontent text <h1>footer</h1>"));
 	}
 	
 	@Test
 	public void shouldNotBeModifiedByASelectContent() throws Exception {
 		String original = "<div id='header'>header text</div><div id='content'>content text</div><div id='footer'><h1>footer</h1></div>";
 		Engine engine = encodeHtmlFragment(original);
-		engine.select("content:div");
+		engine.select("##div");
 		assertThat(engine.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 	
@@ -147,7 +147,8 @@ public class EngineTest {
 		String original = "<div id='outer'><div id='inner'>hello</div></div>";
 		Engine engine = encodeHtmlFragment(original);
 		String selection = engine.select("div").render();
-		assertThat(selection, matchesXmlIgnoringWhiteSpace("<div id='outer'><div id='inner'>hello</div></div><div id='inner'>hello</div>"));
+		assertThat(selection,
+				matchesXmlIgnoringWhiteSpace("<div id='outer'><div id='inner'>hello</div></div><div id='inner'>hello</div>"));
 		assertThat(engine.render(), matchesXmlIgnoringWhiteSpace(original));
 	}
 
@@ -156,16 +157,18 @@ public class EngineTest {
 		Engine engine1 = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
 		Engine engine2 = encodeHtmlFragment("<h1>Hello</h1>");
 		Engine result = engine1.inject(singletonMap("#content", engine2));
-		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div><div id='content'><h1>Hello</h1></div>"));
+		assertThat(result.render(),
+				matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div><div id='content'><h1>Hello</h1></div>"));
 	}
 	
 	@Test
 	public void shouldBeAbleToInjectASeletionFromOneDocumentToAnother() throws Exception {
-		Engine source = encodeHtmlFragment("<div> <p>one</p> and <p>two</p> </div>");
+		Engine source = encodeHtmlFragment("<div><p>one</p>and<p>two</p></div>");
 		Engine selection = source.select("p");
 		Engine destination = encodeHtmlFragment("<div id='header'>Header</div><div id='content'></div>");
 		Engine result = destination.inject(singletonMap("#content", selection));
-		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div><div id='content'><p>one</p><p>two</p></div>"));
+		assertThat(result.render(),
+				matchesXmlIgnoringWhiteSpace("<div id='header'>Header</div><div id='content'><p>one</p><p>two</p></div>"));
 	}
 	
 	@Test
@@ -189,9 +192,9 @@ public class EngineTest {
 	
 	@Test
 	public void shouldCopeWithNameSpaces() throws Exception {
-		Engine engine = encodeHtmlFragment("<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>");
+		Engine engine = encodeHtmlDocument("<html xmls='http://www.w3.org/1999/xhtml'><head/><body><div id='header'>header</div></body></html>");
 		Engine result = engine.inject(singletonMap("body", "hi"));
-		assertXMLEqual("<html xmls='http://www.w3.org/1999/xhtml'><body>hi</body></html>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<html xmls='http://www.w3.org/1999/xhtml'><head/><body>hi</body></html>"));
 	}
 	
 	@Test
@@ -211,21 +214,16 @@ public class EngineTest {
 		anchorData.put("@@class", "show");
 		anchorData.put(Engine.CONTENT_ATTRIBUTE, singletonMap("span", "hello"));
 		Engine result = engine.inject(singletonMap("div", anchorData));
-		assertXMLEqual("<div class='show'><span>hello</span></div>", result.render());
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='show'><span>hello</span></div>"));
 	}
-	
 	
 	@Test(expected=EncoderNotAvailableException.class)
 	public void shouldThrowExceptionForUnknownEncodings() throws Exception {
 		Nate.newWith("banana", Nate.encoders().encoderFor("unknown"));
 	}
 	
-	private Engine encodeHtmlFragment(String html) {
-		return Nate.newWith(html, Nate.encoders().encoderFor("HTMLF"));
-	}
+	protected abstract Engine encodeHtmlFragment(String html);
 	
-	private Engine encodeHtmlDocument(String html) {
-		return Nate.newWith(html, Nate.encoders().encoderFor("HTML"));
-	}
+	protected abstract Engine encodeHtmlDocument(String html);
 
 }

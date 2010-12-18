@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 public class WhiteSpaceIgnoringXmlMatcher extends TypeSafeMatcher<String> {
 	
 	private final Document expected;
+	private Diff diff;
 
 	public WhiteSpaceIgnoringXmlMatcher(String expected) {
 		this.expected = stripWhiteSpace(parse(expected));
@@ -56,7 +57,7 @@ public class WhiteSpaceIgnoringXmlMatcher extends TypeSafeMatcher<String> {
 	}
 
 	private static Document parse(String string) {
-		return parseXml(wrapInPseudoRootElement(new ByteArrayInputStream(string.getBytes())));
+		return parseXml(wrapInPseudoRootElement(new ByteArrayInputStream(stripProblematicTags(string).getBytes())));
 	}
 	
 	private static Document parseXml(InputStream inputStream) {
@@ -106,6 +107,9 @@ public class WhiteSpaceIgnoringXmlMatcher extends TypeSafeMatcher<String> {
 			return new InputSource(new StringReader(""));
 		}
 	};
-	private Diff diff;
+
+	private static String stripProblematicTags(String html) {
+		return html.replaceAll("<!DOCTYPE[^>]*>", "").replaceAll("<META[^>]*>", "");
+	}
 
 }
