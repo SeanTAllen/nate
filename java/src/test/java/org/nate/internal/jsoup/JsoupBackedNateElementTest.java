@@ -76,6 +76,16 @@ public class JsoupBackedNateElementTest {
 	}
 	
 	@Test
+	public void shouldLeaveSiblingsUntouchedWhenReplacingSelf() throws Exception {
+		NateNode document = createDocumentFragment("<section><span>apple</span><p>orange</p></section>");
+		NateNode element = document.find("span").get(0);
+		NateNode sibling = document.find("p").get(0);
+		element.replaceWith(asList((NateNode)createDocumentFragment("banana")));
+		sibling.setAttribute("id", "7");
+		assertThat(document.find("p").get(0).render(), matchesXmlIgnoringWhiteSpace("<p id='7'>orange</p>"));
+	}
+	
+	@Test
 	public void shouldReplaceSelfWithNewNodesWhenNoParent() throws Exception {
 		NateNode document = createDocumentFragment("<span>apple</span>");
 		NateNode node1 = createDocumentFragment("a <b>banana</b> or two");

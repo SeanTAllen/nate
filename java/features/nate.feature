@@ -117,7 +117,7 @@ Feature:
       | { 'a' => 'click me' }        | <a href="#">click me</a> |
     
   Scenario: use a file rather than a string as source input
-    Given the file "features/support/file.html"
+    Given the file "features/support/file.htmlf"
       When { 'h1' => 'Monkey in a file' } is injected
       Then the HTML fragment is <h1>Monkey in a file</h1>
   
@@ -169,7 +169,7 @@ Feature:
       Then the HTML fragment is <div>hi</div><div>hi</div>
       
   Scenario Outline: should match in namespaces
-    Given the HTML fragment "<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>"
+    Given the HTML document "<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>"
       When <data> is selected
       Then the HTML fragment is <transformed>
       
@@ -179,12 +179,12 @@ Feature:
       | "#header" | <div id='header'>header</div> |
     
   Scenario Outline: should inject with namespaces
-    Given the HTML fragment "<html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>header</div></body></html>"
+    Given the HTML document "<html xmls='http://www.w3.org/1999/xhtml'><head/><body><div id='header'>header</div></body></html>"
       When <data> is inject
       Then the HTML fragment is <transformed>  
     
       | data                 | transformed |
-      | { 'body' => 'hi' }   | <html xmls='http://www.w3.org/1999/xhtml'><body>hi</body></html> |
-      | { '#header' => 'bye' | <html xmls='http://www.w3.org/1999/xhtml'><body><div id='header'>bye</div></body></html> |      
+      | { 'body' => 'hi' }   | <html xmls='http://www.w3.org/1999/xhtml'><head/><body>hi</body></html> |
+      | { '#header' => 'bye' | <html xmls='http://www.w3.org/1999/xhtml'><head/><body><div id='header'>bye</div></body></html> |      
 
 

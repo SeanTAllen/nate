@@ -44,6 +44,14 @@ public abstract class EngineTestBase {
 	}
 
 	@Test
+	public void shouldMatchAndInjectMultipleTimes() throws Exception {
+		Engine engine = encodeHtmlFragment("<h1>First Header</h1><h2>Second Header</h2><h1>Third Header</h1>");
+		Map<String, List<String>> data = singletonMap("h1", asList("Hello", "There"));
+		Engine result = engine.inject(data);
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<h1>Hello</h1><h1>There</h1><h2>Second Header</h2><h1>Hello</h1><h1>There</h1>"));
+	}
+
+	@Test
 	public void shouldMatchAndInjectIntoASubselection() throws Exception {
 		Engine engine = encodeHtmlFragment("<span class='section'><span class='greeting'></span></span>");
 		Object data = singletonMap(".section", singletonMap(".greeting", "Hello"));

@@ -46,7 +46,7 @@
  	    </classpath>
 		<assertions><enable/></assertions>
  		<formatter type="xml"/>
-		<batchtest fork="yes" todir="${reports.tests}">
+		<batchtest fork="no" todir="${reports.tests}">
 			<fileset dir="src/test/java">
 				<include name="**/*Test.java"/>
 			</fileset>

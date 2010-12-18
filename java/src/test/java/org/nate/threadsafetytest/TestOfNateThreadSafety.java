@@ -23,7 +23,7 @@ public class TestOfNateThreadSafety {
 	
 	private static final Engine ENGINE = Nate.newWith(
 			"<div><p>apple</p><section>banana</section></div>",
-			Nate.encoders().encoderFor("JSOUPF"));
+			Nate.encoders().encoderFor("HTMLF"));
 	
 	private static final List<Throwable> errors = Collections.synchronizedList(new ArrayList<Throwable>());
 	

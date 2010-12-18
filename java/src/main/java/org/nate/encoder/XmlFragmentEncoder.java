@@ -11,7 +11,7 @@ public class XmlFragmentEncoder implements Encoder {
 
 	@Override
 	public String type() {
-		return "HTMLF";
+		return "XMLF";
 	}
 
 	@Override

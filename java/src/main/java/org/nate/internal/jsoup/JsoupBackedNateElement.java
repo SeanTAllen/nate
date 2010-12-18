@@ -61,18 +61,26 @@ public class JsoupBackedNateElement extends JsoupBackedAbstractNode {
 		List<Node> newFamily = new ArrayList<Node>();
 		for (Node sibling : parent.childNodes()) {
 			if (sibling == this.element) {
-				newFamily.addAll(jsoupNodesOf(newNodes));
+				newFamily.addAll(cloneAll(jsoupNodesOf(newNodes)));
 			} else {
 				newFamily.add(sibling);
 			}
 		}
 		removeChildrenFrom(parent);
 		for (Node node : newFamily) {
-			parent.appendChild(node.clone());
+			parent.appendChild(node);
 		}
 		
 		// This element has been removed, and so no further operations will be valid.
 		invalidate();
+	}
+
+	private Collection<Node> cloneAll(Collection<Node> originals) {
+		Collection<Node> clones = new ArrayList<Node>(originals.size());
+		for (Node node : originals) {
+			clones.add(node.clone());
+		}
+		return clones;
 	}
 
 	private static List<Node> jsoupNodesOf(List<NateNode> nateNodes) {

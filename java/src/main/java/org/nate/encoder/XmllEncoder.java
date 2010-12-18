@@ -8,7 +8,7 @@ import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 public class XmllEncoder implements Encoder {
 
 	private static final XmlBasedNateDomDocumentFactory DOCUMENT_FACTORY = new XmlBasedNateDomDocumentFactory();
-	private static final String TYPE = "HTML";
+	private static final String TYPE = "XML";
 
 	public String type() {
 		return TYPE;
