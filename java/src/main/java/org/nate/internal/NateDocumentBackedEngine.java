@@ -14,7 +14,11 @@ public class NateDocumentBackedEngine implements Engine {
 	public NateDocumentBackedEngine(InputStream source, Encoder encoder) {
 		this.document = encoder.encode(source);
 	}
-	
+
+	public NateDocumentBackedEngine(String source, Encoder encoder) {
+		this.document = encoder.encode(source);
+	}
+
 	private NateDocumentBackedEngine(NateDocument newDocument) {
 		this.document = newDocument;
 	}

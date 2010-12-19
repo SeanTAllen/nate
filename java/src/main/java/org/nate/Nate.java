@@ -1,20 +1,17 @@
 package org.nate;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
 import org.nate.encoder.XmlFragmentEncoder;
 import org.nate.encoder.XmllEncoder;
 import org.nate.exception.IONateException;
-import org.nate.exception.UnsupportedEncodingNateException;
 import org.nate.internal.NateDocumentBackedEngine;
 
 public final class Nate {
@@ -35,13 +32,7 @@ public final class Nate {
 	}
 
 	public static Engine newWith(String source, Encoder encoder) {
-		try {
-			// We are using an xml parser, and so we really need to use UTF-8.
-			// TODO: Test this assumption!!!
-			return newWith(new ByteArrayInputStream(source.getBytes("UTF-8")), encoder);
-		} catch (UnsupportedEncodingException e) {
-			throw new UnsupportedEncodingNateException(e);
-		}
+		return new NateDocumentBackedEngine(source, encoder);
 	}
 
 	public static Engine newWith(String source) {

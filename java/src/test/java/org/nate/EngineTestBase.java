@@ -225,6 +225,24 @@ public abstract class EngineTestBase {
 		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div class='show'><span>hello</span></div>"));
 	}
 	
+	@Test
+	public void shouldHandleNonAsciiCharactersInStrings() throws Exception {
+		// Random chinese characters.  Hope they don't mean anything offensive!
+		Engine engine = encodeHtmlFragment("<div>\u4E10</div><p/>");
+		Engine result = engine.inject(singletonMap("p", "\u4E11"));
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<div>\u4E10</div><p>\u4E11</p>"));
+	}
+	
+	@Test
+	public void shouldHandleNonAsciiCharactersInWholeDocumentStrings() throws Exception {
+		// Random chinese characters.  Hope they don't mean anything offensive!
+		String original = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
+			"<html><head/><body><div>\u4E10</div><p/></body></html>";
+		Engine engine = encodeHtmlDocument(original);
+		Engine result = engine.inject(singletonMap("p", "\u4E11"));
+		assertThat(result.render(), matchesXmlIgnoringWhiteSpace("<html><head/><body><div>\u4E10</div><p>\u4E11</p></body></html>"));
+	}
+
 	@Test(expected=EncoderNotAvailableException.class)
 	public void shouldThrowExceptionForUnknownEncodings() throws Exception {
 		Nate.newWith("banana", Nate.encoders().encoderFor("unknown"));

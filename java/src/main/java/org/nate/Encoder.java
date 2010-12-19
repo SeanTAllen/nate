@@ -7,4 +7,5 @@ import org.nate.encoder.NateDocument;
 public interface Encoder {
 	String type();
 	NateDocument encode(InputStream source);
+	NateDocument encode(String source);
 }

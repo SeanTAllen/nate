@@ -19,4 +19,9 @@ public class HtmlEncoder implements Encoder {
 		return DOCUMENT_FACTORY.createFromHtmlDocument(source);
 	}
 
+	@Override
+	public NateDocument encode(String source) {
+		return DOCUMENT_FACTORY.createFromHtmlDocument(source);
+	}
+
 }

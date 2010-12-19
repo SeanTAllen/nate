@@ -19,4 +19,9 @@ public class HtmlFragmentEncoder implements Encoder {
 	public NateDocument encode(InputStream source) {
 		return DOCUMENT_FACTORY.createFromHtmlFragment(source);
 	}
+
+	@Override
+	public NateDocument encode(String source) {
+		return DOCUMENT_FACTORY.createFromHtmlFragment(source);
+	}
 }
