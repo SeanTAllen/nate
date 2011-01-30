@@ -1,11 +1,10 @@
-package org.nate.internal.jsoup;
+package org.nate.internal.dom4j;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.nate.testutil.WhiteSpaceIgnoringXmlMatcher.matchesXmlIgnoringWhiteSpace;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.junit.Test;
@@ -13,7 +12,7 @@ import org.nate.encoder.NateDocument;
 import org.nate.encoder.NateNode;
 
 
-public class JsoupBackedNateElementTest {
+public class Dom4jBackedNateElementTest {
 
 	@Test
 	public void shouldFindDesiredElements() throws Exception {
@@ -106,15 +105,12 @@ public class JsoupBackedNateElementTest {
 	}
 
 	private NateDocument createDocumentFragment(String input) {
-		 JsoupBackedNateDocument fullDocument = new JsoupBackedNateDocumentFactory()
-				.createFromHtmlDocument(new ByteArrayInputStream(input.getBytes()));
-		 return fullDocument.copyContentOf("body");		 
+		return new Dom4jBackedNateDocumentFactory().createFromXmlDocumentFragment(input);
 	}
 	
-	private JsoupBackedNateElement elementFor(String input) {
+	private Dom4jBackedNateElement elementFor(String input) {
 		NateDocument document = createDocumentFragment("<wrapper>" + input + "</wrapper>");
-		return (JsoupBackedNateElement) document.find("wrapper > *").get(0);
+		return (Dom4jBackedNateElement) document.find("wrapper > *").get(0);
 	}
-
 
 }

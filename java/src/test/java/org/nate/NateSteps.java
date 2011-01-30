@@ -33,13 +33,13 @@ public class NateSteps {
 
 	@Given("^the HTML fragment \"([^\"]*)\"$")
 	public void setHtmlFragment(String html) {
-		Engine nate = Nate.newWith(html, Nate.encoders().encoderFor("HTMLF"));
+		Engine nate = Nate.newWith(html, Nate.encoders().encoderFor("XMLF"));
 		nateStates.add(nate);
 	}
 
 	@Given("^the HTML document \"([^\"]*)\"$")
 	public void setHtml(String html) {
-		Engine nate = Nate.newWith(html, Nate.encoders().encoderFor("HTML"));
+		Engine nate = Nate.newWith(html, Nate.encoders().encoderFor("XML"));
 		nateStates.add(nate);
 	}
 

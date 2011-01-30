@@ -75,7 +75,7 @@ public class JsoupBackedNateElement extends JsoupBackedAbstractNode {
 		invalidate();
 	}
 
-	private Collection<Node> cloneAll(Collection<Node> originals) {
+	private static Collection<Node> cloneAll(Collection<Node> originals) {
 		Collection<Node> clones = new ArrayList<Node>(originals.size());
 		for (Node node : originals) {
 			clones.add(node.clone());

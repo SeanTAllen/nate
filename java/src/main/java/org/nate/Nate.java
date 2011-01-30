@@ -7,10 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.nate.encoder.Dom4jEncoder;
+import org.nate.encoder.Dom4jFragmentEncoder;
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
-import org.nate.encoder.XmlFragmentEncoder;
-import org.nate.encoder.XmllEncoder;
+import org.nate.encoder.W3cDomFragmentEncoder;
+import org.nate.encoder.W3cDomEncoder;
 import org.nate.exception.IONateException;
 import org.nate.internal.NateDocumentBackedEngine;
 
@@ -23,8 +25,10 @@ public final class Nate {
 	static {
 		encoders.register(new HtmlEncoder());
 		encoders.register(new HtmlFragmentEncoder());
-		encoders.register(new XmllEncoder());
-		encoders.register(new XmlFragmentEncoder());
+		encoders.register(new W3cDomEncoder());
+		encoders.register(new W3cDomFragmentEncoder());
+		encoders.register(new Dom4jEncoder());
+		encoders.register(new Dom4jFragmentEncoder());
 	}
 
 	public static Engine newWith(InputStream source, Encoder encoder) {
@@ -36,7 +40,7 @@ public final class Nate {
 	}
 
 	public static Engine newWith(String source) {
-		return newWith(source, encoders.encoderFor("HTMLF"));
+		return newWith(source, encoders.encoderFor("XMLF"));
 	}
 
 	public static NateDocumentBackedEngine newWith(File file) {

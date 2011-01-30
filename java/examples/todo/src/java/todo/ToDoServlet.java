@@ -23,7 +23,7 @@ import org.nate.Nate;
 public class ToDoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private static final Encoder HTML_ENCODER = Nate.encoders().encoderFor("HTML");
+	private static final Encoder HTML_ENCODER = Nate.encoders().encoderFor("XML");
 	
 	private Engine LAYOUT;
 	private Engine ADD;

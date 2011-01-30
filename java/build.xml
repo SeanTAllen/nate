@@ -41,6 +41,7 @@
     <mkdir dir="${reports.tests}"/>
  	<junit haltonfailure="true" printsummary="true" showoutput="true" >
  	    <classpath>
+ 	        <pathelement location="src/test/resources"/>
  	        <pathelement location="target/classes"/>
  	      	<path refid="compile.classpath"/>
  	    </classpath>

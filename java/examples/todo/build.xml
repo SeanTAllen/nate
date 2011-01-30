@@ -22,6 +22,7 @@
 		<copy todir="target/war/WEB-INF/lib">
 			<fileset dir="${project.dir}/lib2"/>
 			<fileset dir="${project.dir}/lib" includes="jsoup-1.4.1.jar"/>
+			<fileset dir="${project.dir}/lib" includes="dom4j-1.6.1.jar"/>
 			<fileset dir="${project.dir}/target" includes="nate.jar" />
 		</copy>
 		<war destfile="target/todo.war" basedir="target/war" />

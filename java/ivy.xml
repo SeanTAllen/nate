@@ -4,6 +4,7 @@
     
     <!-- Runtime & compile dependencies -->
     <dependency org="org.jsoup" name="jsoup" rev="1.4.1"/>
+    <dependency org="dom4j" name="dom4j" rev="1.6.1"/>
 
 	<!-- Test dependencies -->
     <dependency org="cuke4duke" name="cuke4duke" rev="0.4.2"/>

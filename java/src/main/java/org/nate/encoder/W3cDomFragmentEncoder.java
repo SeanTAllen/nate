@@ -8,13 +8,13 @@ import org.nate.Encoder;
 import org.nate.exception.NateException;
 import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 
-public class XmlFragmentEncoder implements Encoder {
+public class W3cDomFragmentEncoder implements Encoder {
 	
 	private static final XmlBasedNateDomDocumentFactory DOCUMENT_FACTORY = new XmlBasedNateDomDocumentFactory();
 
 	@Override
 	public String type() {
-		return "XMLF";
+		return "W3CF";
 	}
 
 	@Override

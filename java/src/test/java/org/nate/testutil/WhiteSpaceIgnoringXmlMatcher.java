@@ -109,7 +109,7 @@ public class WhiteSpaceIgnoringXmlMatcher extends TypeSafeMatcher<String> {
 	};
 
 	private static String stripProblematicTags(String html) {
-		return html.replaceAll("<!DOCTYPE[^>]*>", "").replaceAll("<META[^>]*>", "");
+		return html.replaceAll("<!DOCTYPE[^>]*>", "").replaceAll("<META[^>]*>", "").replaceAll("<\\?xml[^>]+>", "");
 	}
 
 }

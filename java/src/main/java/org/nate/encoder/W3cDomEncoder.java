@@ -8,10 +8,10 @@ import org.nate.Encoder;
 import org.nate.exception.NateException;
 import org.nate.internal.dom.XmlBasedNateDomDocumentFactory;
 
-public class XmllEncoder implements Encoder {
+public class W3cDomEncoder implements Encoder {
 
 	private static final XmlBasedNateDomDocumentFactory DOCUMENT_FACTORY = new XmlBasedNateDomDocumentFactory();
-	private static final String TYPE = "XML";
+	private static final String TYPE = "W3C";
 
 	public String type() {
 		return TYPE;
