@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -19,9 +20,9 @@ import org.hamcrest.TypeSafeMatcher;
 import org.nate.exception.IONateException;
 import org.nate.exception.NateParseException;
 import org.nate.exception.UnsupportedEncodingNateException;
-import org.nate.internal.dom.W3cUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -75,7 +76,7 @@ public class WhiteSpaceIgnoringXmlMatcher extends TypeSafeMatcher<String> {
 	}
 
 	private static <T extends Node> T stripWhiteSpace(T parent) {
-		List<Node> nodes = W3cUtils.asNodeList(parent.getChildNodes());
+		List<Node> nodes = asNodeList(parent.getChildNodes());
 		for (Node node : nodes) {
 			if (node.getNodeType() == Node.TEXT_NODE) {
 				trimTextNode(node);
@@ -110,6 +111,16 @@ public class WhiteSpaceIgnoringXmlMatcher extends TypeSafeMatcher<String> {
 
 	private static String stripProblematicTags(String html) {
 		return html.replaceAll("<!DOCTYPE[^>]*>", "").replaceAll("<META[^>]*>", "").replaceAll("<\\?xml[^>]+>", "");
+	}
+
+
+	private static List<Node> asNodeList(NodeList nodes) {
+		int length = nodes.getLength();
+		List<Node> result = new ArrayList<Node>(length);
+		for(int i = 0; i < length; i++) {
+			result.add(nodes.item(i));
+		}
+		return result;
 	}
 
 }

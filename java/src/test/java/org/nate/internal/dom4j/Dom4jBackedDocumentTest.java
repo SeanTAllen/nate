@@ -72,7 +72,6 @@ public class Dom4jBackedDocumentTest {
 		String original = "<body><div>a<div>b</div></div>x<div>c</div></body>";
 		Dom4jBackedNateDocument document = createDocument(original);
 		NateNode copy = document.copyContentOf("div");
-		// TODO: Should really end in bc
 		assertThat(copy.render(), matchesXmlIgnoringWhiteSpace("a <div> b </div>bc"));
 	}
 	

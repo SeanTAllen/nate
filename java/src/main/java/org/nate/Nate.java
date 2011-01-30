@@ -11,8 +11,6 @@ import org.nate.encoder.Dom4jEncoder;
 import org.nate.encoder.Dom4jFragmentEncoder;
 import org.nate.encoder.HtmlEncoder;
 import org.nate.encoder.HtmlFragmentEncoder;
-import org.nate.encoder.W3cDomFragmentEncoder;
-import org.nate.encoder.W3cDomEncoder;
 import org.nate.exception.IONateException;
 import org.nate.internal.NateDocumentBackedEngine;
 
@@ -25,8 +23,6 @@ public final class Nate {
 	static {
 		encoders.register(new HtmlEncoder());
 		encoders.register(new HtmlFragmentEncoder());
-		encoders.register(new W3cDomEncoder());
-		encoders.register(new W3cDomFragmentEncoder());
 		encoders.register(new Dom4jEncoder());
 		encoders.register(new Dom4jFragmentEncoder());
 	}
