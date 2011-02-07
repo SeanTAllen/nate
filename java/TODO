@@ -1,0 +1,16 @@
+Things left to do for Java Nate:
+ * Fix problem of jsoup backed fragment encoder not supporting a <head> fragment.
+ * Remove the need for clients to distinguish between html docs and html fragments.
+ * Add support for call-backs.
+ * Consider what to do with {'@@foo' => ['a', 'b', 'c']}
+ * Allow option of not having injected text HTML escaped.
+ * Revisit this: {'div' => {'div' => 'foo'}}.  Should it be equivalent to {'div' => 'foo'} or {'div div' => 'foo'}
+ * Revisit this: {'div' => {'*content*' => {'div' => 'foo'}}}
+ * Fix build and ivy config to make it clear what the nate runtime dependencies are.
+ * Convince css-selectors library author to upload a release to a maven repo or do it ourselves.
+ * Allow output to be via InputStream.
+ * Revisit character encoding issues.
+ * Add css file to ToDo example.
+ * Allow rendered output to (optionally) have an xml declaration tag.
+ * Measure performance
+

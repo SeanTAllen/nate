@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     To Do Service    
+     Sample Java Nate Web Application
+     ====================================================================== -->
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="To Do Service" default="default">
+    <description>
+            Sample Java Nate Web Application
+    </description>
+	
+	<property name="project.dir" value="../.."/>
+	<property name="ivy" value="true"/>
+	
+    <target name="default" depends="-build-nate, run" description="Sample Java Nate Web Application" />
+
+	<target name="clean" description="Delete all generated artifacts">
+		<delete dir="${basedir}/target"/>
+	</target>
+	
+	<target name="war" depends="-compile-steps" description="crease the war file">
+	    <mkdir dir="target/war/WEB-INF/lib"/>
+		<copy todir="target/war/WEB-INF/lib">
+			<fileset dir="${project.dir}/lib2"/>
+			<fileset dir="${project.dir}/lib" includes="jsoup-1.4.1.jar"/>
+			<fileset dir="${project.dir}/lib" includes="dom4j-1.6.1.jar"/>
+			<fileset dir="${project.dir}/target" includes="nate.jar" />
+		</copy>
+		<war destfile="target/todo.war" basedir="target/war" />
+	</target>
+	
+	<target name="run" depends="war">
+		<java classname="todo.ToDoServer" classpathref="run.classpath"
+			jvmargs="-Dwar.path=target/todo.war" fork="true" />
+	</target>
+	
+    <target name="-build-nate">
+    	<ant dir="${project.dir}" antfile="build.xml" target="jar"/>
+    </target>
+	
+
+	  <target name="-compile-steps" depends="-define-paths, -download-jars">
+	    <mkdir dir="target/server"/>
+	    <javac srcdir="src/server" destdir="target/server" classpathref="compile.classpath" encoding="UTF-8"/>
+	  	<copydir dest="target/war" src="src/war"/>
+	    <mkdir dir="target/war/WEB-INF/classes"/>
+	    <javac srcdir="src/java" destdir="target/war/WEB-INF/classes" classpathref="compile.classpath" encoding="UTF-8"/>
+	  </target>
+
+	  <target name="-define-paths">
+	    <path id="compile.classpath">
+	        <fileset dir="lib">
+	          <include name="**/*.jar"/>
+	        </fileset>
+	        <fileset dir="${project.dir}/lib">
+	          <include name="**/*.jar"/>
+	        </fileset>
+	        <fileset dir="${project.dir}/target">
+	          <include name="nate.jar"/>
+	        </fileset>
+	    </path>
+	  	<path id="run.classpath">
+	  		<pathelement path="target/server"/>
+	        <fileset dir="lib">
+	          <include name="**/*.jar"/>
+	        </fileset>
+	    </path>
+	  </target>
+
+	  <target name="-download-jars" if="ivy">
+	    <ivy:retrieve/>
+	  </target>
+
+</project>

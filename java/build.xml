@@ -1,4 +1,4 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="nate" default="tests" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="nate" default="publish" basedir=".">
 
   <property name="jruby.home" value="${basedir}/lib/.jruby"/>
   <property name="reports.tests" value="target/junit-report"/>
@@ -6,8 +6,9 @@
   <!-- By default, cucumber skips Work In Progess (@wip) -->
   <property name="cucumber.tags" value="--tags ~@wip" />
 
-  <target name="tests" depends="unit-tests,cucumber" description="Unit and acceptance tests">
-  </target>
+  <target name="publish" depends="tests, jar" description="Build, run tests, and create jar" />
+	
+  <target name="tests" depends="unit-tests,cucumber" description="Unit and acceptance tests" />
 	
   <target name="configure" description="Configure the project (download libs and install gems)">
     <property name="ivy" value="true"/>
@@ -22,7 +23,7 @@
   </target>
 	
   <target name="cucumber" depends="-compile-steps,-install-gems" 
-  		description="Run Cucumber. Use -Dcucumber.tags='' to also run Work In Progess (@wip) scenarios.">
+  		description="Run Cucumber. Use -Dcucumber.tags='' to also run Work In Progess (@wip) scenarios. To use other tags, use -Dcucumber.tags='--tags @mytag'">
     <mkdir dir="${reports.tests}"/>
     <taskdef name="cucumber" classname="cuke4duke.ant.CucumberTask" classpathref="compile.classpath"/>
     <cucumber
@@ -39,18 +40,23 @@
   		description="Run the unit tests.">
     <mkdir dir="${reports.tests}"/>
  	<junit haltonfailure="true" printsummary="true" showoutput="true" >
- 	      <classpath>
+ 	    <classpath>
+ 	        <pathelement location="src/test/resources"/>
  	        <pathelement location="target/classes"/>
  	      	<path refid="compile.classpath"/>
- 	      </classpath>
+ 	    </classpath>
+		<assertions><enable/></assertions>
  		<formatter type="xml"/>
-		<batchtest fork="yes" todir="${reports.tests}">
-			
+		<batchtest fork="no" todir="${reports.tests}">
 			<fileset dir="src/test/java">
 				<include name="**/*Test.java"/>
 			</fileset>
 		</batchtest>
  	</junit>
+  </target>
+	
+  <target name="jar" depends="-compile-steps" description="Compile and create jar">
+  	<jar destfile="target/nate.jar" basedir="target/classes" />
   </target>
 
   <target name="-download-jars" if="ivy">

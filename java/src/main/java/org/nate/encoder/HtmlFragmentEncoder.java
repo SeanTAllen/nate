@@ -1,24 +1,27 @@
 package org.nate.encoder;
 
+import java.io.InputStream;
+
 import org.nate.Encoder;
-import org.nate.html.Html;
-import org.nate.html.XmlParserBackedHtml;
+import org.nate.internal.jsoup.JsoupBackedNateDocumentFactory;
 
 public class HtmlFragmentEncoder implements Encoder {
 
-	@Override
-	public Html encode(String source) {
-		return XmlParserBackedHtml.fromFragment(source);
-	}
-
-	@Override
-	public boolean isNullEncoder() {
-		return false;
-	}
+	private static final JsoupBackedNateDocumentFactory DOCUMENT_FACTORY = new JsoupBackedNateDocumentFactory();
+	private static final String TYPE = "HTMLF";
 
 	@Override
 	public String type() {
-		return "HTMLF";
+		return TYPE;
 	}
 
+	@Override
+	public NateDocument encode(InputStream source) {
+		return DOCUMENT_FACTORY.createFromHtmlFragment(source);
+	}
+
+	@Override
+	public NateDocument encode(String source) {
+		return DOCUMENT_FACTORY.createFromHtmlFragment(source);
+	}
 }

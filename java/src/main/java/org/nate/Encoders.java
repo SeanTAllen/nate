@@ -1,16 +1,12 @@
 package org.nate;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.nate.html.Html;
+import org.nate.exception.EncoderNotAvailableException;
 
 public class Encoders {
-
-	private static final Encoder NULL_ENCODER = new NullEncoder();
 
 	private Map<String, Encoder> encoders = new HashMap<String, Encoder>();
 
@@ -30,10 +26,11 @@ public class Encoders {
 	}
 
 	private Encoder encoderForType(String type) {
-		if (encoders.containsKey(type)) {
-			return encoders.get(type);
+		Encoder encoder = encoders.get(type);
+		if (encoder == null) {
+			throw new EncoderNotAvailableException(type);
 		}
-		return NULL_ENCODER;
+		return encoder;
 	}
 
 	public Encoder encoderFor(File file) {
@@ -44,70 +41,8 @@ public class Encoders {
 		String filename = file.getName();
 		int period = filename.lastIndexOf(".");
 		if (period != -1)
-			return filename.substring(period+1);
+			return filename.substring(period + 1);
 		throw new IllegalStateException("Can't file file extension for '" + file.getName() + "'");
 	}
 
-	private static class NullEncoder implements Encoder {
-		public String type() { return "null"; }
-		public Html encode(String source) { return new NullHtml(source); }
-		public boolean isNullEncoder() { return true; }
-	}
-	
-	private static class NullHtml implements Html {
-
-		private final String source;
-
-		public NullHtml(String source) {
-			this.source = source;
-		}
-
-		@Override
-		public void appendChild(Html newNode) {
-			
-		}
-
-		@Override
-		public Html cloneFragment(boolean deep) {
-			return new NullHtml(source);
-		}
-
-		@Override
-		public Html getParentNode() {
-			return this;
-		}
-
-		@Override
-		public boolean hasAttribute(String name) {
-			return false;
-		}
-
-		@Override
-		public void removeChild(Html child) {
-			
-		}
-
-		@Override
-		public List<Html> selectNodes(String selector) {
-			return Collections.emptyList();
-		}
-
-		@Override
-		public void setAttribute(String name, Object value) {
-		}
-
-		@Override
-		public void setTextContent(String value) {
-		}
-
-		@Override
-		public String toHtml() {
-			return source;
-		}
-
-		@Override
-		public void replaceChildren(Html template) {
-		}
-		
-	}
 }

@@ -1,9 +1,11 @@
 package org.nate;
 
-import org.nate.html.Html;
+import java.io.InputStream;
+
+import org.nate.encoder.NateDocument;
 
 public interface Encoder {
-	boolean isNullEncoder();
 	String type();
-	Html encode(String source);
+	NateDocument encode(InputStream source);
+	NateDocument encode(String source);
 }
