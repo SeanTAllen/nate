@@ -1,8 +1,7 @@
 module Nate
-  class Engine
-    private
-    def encode_template
-      @template
+  class HtmlEncoder
+    def encode string
+      string
     end
   end
 end

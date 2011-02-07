@@ -28,8 +28,10 @@ module Nate
       case encoder_type
       when :html
         require 'nate/encoder/html'
+        @encoder = Nate::HtmlEncoder.new
       when :haml
         require 'nate/encoder/haml'
+        @encoder = Nate::HamlEncoder.new
       else
         raise "Nate encoder type needs to be set"
       end
@@ -195,7 +197,8 @@ module Nate
     end
     
     def template_to_fragment
-      string_to_fragment( encode_template() )
+      encoded_template = @encoder.encode( @template )
+      string_to_fragment( encoded_template )
     end 
   end
 end

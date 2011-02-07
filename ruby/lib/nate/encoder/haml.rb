@@ -2,10 +2,9 @@ require 'rubygems'
 require 'haml'
 
 module Nate
-  class Engine
-    private
-    def encode_template
-      haml = Haml::Engine.new @template
+  class HamlEncoder
+    def encode string
+      haml = Haml::Engine.new string
       haml.to_html
     end
   end
